@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Các thì và Thời tiết · Tự học</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js" defer></script>
+<style>
+:root{
+  --bg:#EAF6F7; --paper:#FFFFFF; --ink:#10304A; --muted:#557085; --line:#CFE3E6;
+  --sea:#0E7C86; --sea2:#2BB3B1; --seaSoft:#D5F0EF; --coral:#EF5B43; --coralSoft:#FDE3DD;
+  --sun:#FFC24B; --sunSoft:#FFF1CF; --ok:#1E8F52; --okSoft:#DDF3E6; --bad:#D23B2A; --badSoft:#FBE1DD;
+  --cs:#0B6E78; --csSoft:#D5F0EF; --cz:#B8420F; --czSoft:#FFE6D3; --ci:#6D3FC0; --ciSoft:#EBE2FB;
+  --head:"Baloo 2","Be Vietnam Pro",system-ui,sans-serif;
+  --body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0B1E28; --paper:#12303D; --ink:#E4F2F4; --muted:#9DB8C4; --line:#24505F;
+  --sea:#43C6C4; --sea2:#2BB3B1; --seaSoft:#16434B; --coral:#FF7A63; --coralSoft:#4A2622;
+  --sun:#FFC24B; --sunSoft:#473a1b; --ok:#4FD08A; --okSoft:#173D2A; --bad:#FF7A6A; --badSoft:#4A2320;
+  --cs:#5FD9D6; --csSoft:#16434B; --cz:#FFA070; --czSoft:#4A2E1E; --ci:#B79BFF; --ciSoft:#33274F;
+}}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,.wd:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;padding:16px 16px 90px}
+
+.hero{display:grid;grid-template-columns:1fr auto;gap:18px;background:var(--paper);border:2px solid var(--ink);border-radius:18px;padding:20px 22px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:10px;background:repeating-linear-gradient(90deg,var(--cs) 0 22px,var(--cz) 22px 44px,var(--ci) 44px 66px)}
+.hero h1{font-family:var(--head);font-weight:800;font-size:clamp(26px,5vw,42px);line-height:1.08;margin:0 0 6px}
+.hero .sub{color:var(--muted);margin:0 0 10px}
+.cue{border-left:4px solid var(--sea2);padding:4px 0 4px 14px}
+.cue ul{margin:4px 0 0;padding-left:20px}
+.stamp{width:118px;height:136px;border:3px dashed var(--coral);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:var(--head);transform:rotate(4deg);background:var(--coralSoft);align-self:start}
+.stamp .e{font-size:40px;line-height:1}.stamp .t{font-weight:800;font-size:19px;color:var(--coral)}.stamp .s{font-size:13px;color:var(--muted)}
+@media (max-width:560px){.hero{grid-template-columns:1fr}.stamp{display:none}}
+
+.settings{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:14px 0 6px;font-size:14px;color:var(--muted)}
+.settings select{max-width:230px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
+.settings input[type=range]{accent-color:var(--sea)}
+
+.tabs{display:flex;gap:6px;overflow-x:auto;position:sticky;top:0;z-index:6;background:var(--bg);padding:8px 0;margin-bottom:8px}
+.tab{flex:0 0 auto;border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 14px;font-weight:600;font-size:15px;white-space:nowrap}
+.tab[aria-selected=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.panel{display:none}.panel.on{display:block}
+h2{font-family:var(--head);font-weight:800;font-size:26px;margin:10px 0 4px}
+h3{font-family:var(--head);font-weight:700;font-size:20px;margin:18px 0 6px}
+.hint{color:var(--muted);font-size:14px;margin:0 0 12px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:10px 0}
+.tip{font-size:14px;margin-top:6px}
+.warn{background:var(--sunSoft);border-radius:10px;padding:8px 12px;font-size:14px}
+
+/* sound colours */
+.c-s{color:var(--cs);background:var(--csSoft)}.c-z{color:var(--cz);background:var(--czSoft)}.c-iz{color:var(--ci);background:var(--ciSoft)}
+.tag{display:inline-block;border-radius:999px;padding:0 9px;font-weight:800;font-size:14px;font-family:"Lucida Sans Unicode","Arial Unicode MS",var(--body)}
+.ipa{font-family:"Lucida Sans Unicode","Arial Unicode MS",var(--body);color:var(--sea);font-size:15px}
+.pos{display:inline-block;background:var(--ink);color:var(--paper);border-radius:6px;padding:0 7px;font-size:13px;font-weight:700;font-style:italic}
+
+/* theory */
+.rules table{width:100%;border-collapse:collapse;font-size:15px}
+.rules td,.rules th{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}
+.rules th{font-family:var(--head);font-size:16px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{border:1.5px solid transparent;border-radius:999px;padding:3px 11px;font-weight:600;font-size:15px}
+.chip i{font-style:normal;font-size:13px;opacity:.85;margin-left:4px;font-family:"Lucida Sans Unicode","Arial Unicode MS",var(--body)}
+.pairs{display:flex;flex-wrap:wrap;gap:8px}
+.throat{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.throat{grid-template-columns:1fr}}
+.throat>div{border-radius:12px;padding:10px 12px}
+
+/* buttons */
+.b{border:1.5px solid var(--line);background:var(--paper);border-radius:10px;padding:5px 11px;font-size:14px;font-weight:600;display:inline-flex;gap:5px;align-items:center}
+.b:hover:not(:disabled){border-color:var(--sea)}
+.b:disabled{opacity:.4;cursor:not-allowed}
+.b.primary{background:var(--sea);border-color:var(--sea);color:#fff}
+.b.rec{border-color:var(--coral);color:var(--coral)}
+.b.rec.on{background:var(--coral);color:#fff;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px var(--coralSoft)}}
+@media (prefers-reduced-motion:reduce){.b.rec.on{animation:none}}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+/* quiz */
+.setscore{background:var(--sunSoft);border-color:var(--sun);font-size:15px}
+.q{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin:10px 0}
+.q .qt{display:flex;gap:10px;align-items:flex-start;font-weight:600;margin-bottom:8px}
+.qn{flex:0 0 28px;height:28px;border-radius:50%;background:var(--sea);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{font-size:16px;padding:7px 14px}
+.opt.right{background:var(--okSoft);border-color:var(--ok);color:var(--ok)}
+.opt.wrong{background:var(--badSoft);border-color:var(--bad);color:var(--bad)}
+.q.right{border-color:var(--ok)}.q.wrong{border-color:var(--bad)}
+.fb:not(:empty){margin-top:8px;font-size:15px}
+.rv{margin-top:4px;font-size:15px}
+.q input[type=text]{flex:1 1 200px;min-width:0}
+input[type=text]{padding:9px 12px;border-radius:10px;border:1.5px solid var(--line);font:inherit;background:var(--paper);color:var(--ink);min-width:240px;font-size:18px}
+
+/* word groups & sentences */
+.gcard h3{margin:0 0 6px;display:flex;gap:8px;align-items:center}
+.sent-line{font-size:19px;line-height:1.8}
+.sw{border-radius:6px;padding:0 4px;font-weight:700}
+.sw small{font-size:11px;font-weight:800;margin-left:2px;vertical-align:super;font-family:"Lucida Sans Unicode","Arial Unicode MS",var(--body)}
+
+/* practice bar */
+.pr{margin-top:10px}
+.pr-btns{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.timer{font-variant-numeric:tabular-nums;color:var(--coral);font-weight:700;font-size:14px}
+.live{font-size:14px;color:var(--muted)}.live:not(:empty){margin-top:6px}
+.res:not(:empty){margin-top:8px;padding:10px 12px;border-radius:10px;background:var(--bg)}
+.score{display:inline-block;font-weight:800;border-radius:999px;padding:1px 12px;margin-right:6px;font-size:16px}
+.score.hi{background:var(--okSoft);color:var(--ok)}.score.mid{background:var(--sunSoft);color:#9a6700}.score.lo{background:var(--badSoft);color:var(--bad)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .score.mid{color:var(--sun)}}
+.w-ok{color:var(--ok)}
+.w-no{color:var(--bad);text-decoration:underline wavy;text-underline-offset:3px;cursor:pointer;background:none;border:0;padding:0;font:inherit;font-weight:700}
+.diff{line-height:1.9;margin-top:6px}
+.fixlist{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.fix{border:1px solid var(--bad);background:var(--badSoft);color:var(--bad);border-radius:8px;padding:2px 8px;font-size:14px}
+.selfrate{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.sent-ok{color:var(--ok);font-size:13px;font-weight:600}.sent-wait{color:var(--muted);font-size:13px}.sent-bad{color:var(--bad);font-size:13px}
+
+/* paragraph */
+.wcard{position:sticky;top:56px;z-index:4;border:2px solid var(--sea);min-height:64px}
+.wc-top{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.wc-w{font-family:var(--head);font-weight:800;font-size:24px}
+.wc-vi{font-size:17px;margin-top:2px}
+.ptext{font-size:19px;line-height:2}
+.wd{cursor:pointer;border-radius:5px;padding:0 1px;border-bottom:1.5px dotted var(--sea2)}
+.wd:hover{background:var(--sunSoft)}
+.wd.on{background:var(--sun);color:#10304A}
+.hl .wd.pl{font-weight:700;border-bottom:2px solid currentColor}
+.hl .wd[data-c=s]{color:var(--cs);background:var(--csSoft)}
+.hl .wd[data-c=z]{color:var(--cz);background:var(--czSoft)}
+.hl .wd[data-c=iz]{color:var(--ci);background:var(--ciSoft)}
+.hl .wd.pl::after{content:attr(data-pl);font-size:11px;font-weight:800;vertical-align:super;margin-left:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);margin:6px 0}
+.legend b{color:var(--ink)}
+details.sents summary{cursor:pointer;font-weight:700;margin:6px 0}
+.sline{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;background:var(--paper)}
+
+/* submit */
+.tbl{overflow-x:auto}
+table.sum{border-collapse:collapse;width:100%;font-size:14px}
+table.sum td,table.sum th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.rv-item{border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:6px 0;font-size:14px;background:var(--paper)}
+.rv-item.ok{border-color:var(--ok);background:var(--okSoft)}.rv-item.no{border-color:var(--bad);background:var(--badSoft)}
+.steps{counter-reset:s;list-style:none;padding:0}
+.steps li{counter-increment:s;display:flex;gap:10px;align-items:center;margin:8px 0}
+.steps li::before{content:counter(s);flex:0 0 30px;height:30px;border-radius:50%;background:var(--sea);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:12px;font-size:14px;z-index:30;display:none;max-width:90%}
+.cloud{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));background:var(--paper);border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;z-index:15;box-shadow:0 2px 8px rgba(16,48,74,.12)}
+.gate{position:fixed;inset:0;background:rgba(11,30,40,.55);z-index:40;display:flex;align-items:center;justify-content:center;padding:16px}
+.gate-box{background:var(--paper);border:2px solid var(--ink);border-radius:18px;padding:22px;max-width:380px;width:100%;text-align:center}
+.gate-box input{width:100%;min-width:0}
+[hidden]{display:none!important}
+
+
+/* ===== Các thì & thời tiết ===== */
+.tc-ps{--tc:#0E7C86}.tc-prc{--tc:#2563EB}.tc-pa{--tc:#B8420F}.tc-pc{--tc:#B45309}.tc-pp{--tc:#6D3FC0}
+.tc-will{--tc:#1E8F52}.tc-gt{--tc:#0891B2}.tc-c1{--tc:#BE185D}.tc-modal{--tc:#475569}
+[class*="tc-"]{--tcx:var(--tc);--tcs:color-mix(in srgb,var(--tc) 13%,var(--paper))}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) [class*="tc-"]{--tcx:color-mix(in srgb,var(--tc) 50%,#fff)}}
+.timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media (max-width:640px){.timeline{grid-template-columns:1fr 1fr}}
+.tl-col{border:1px solid var(--line);border-radius:12px;padding:8px;background:var(--paper)}
+.tl-h{font-family:var(--head);font-weight:700;font-size:15px;margin-bottom:6px}
+.tl-chip{display:block;width:100%;text-align:left;border:1.5px solid var(--tc);background:var(--tcs);color:var(--tcx);border-radius:9px;padding:3px 9px;margin:3px 0;font-weight:700;font-size:14px}
+.tl-chip small{display:block;font-weight:500;color:var(--muted);font-size:12px}
+.tcard{border:2px solid var(--tc);border-radius:16px;background:var(--paper);margin:14px 0;overflow:hidden}
+.tcard>header{background:var(--tcs);padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;border-bottom:2px solid var(--tc)}
+.tcard h3{margin:0;color:var(--tcx);font-size:22px}
+.tcard .vi-t{color:var(--muted);font-weight:600}
+.tcard .body{padding:12px 14px}
+.forms{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+@media (max-width:700px){.forms{grid-template-columns:1fr}}
+.fm{border-radius:10px;padding:8px 10px;font-weight:700;font-size:15px;line-height:1.35}
+.fm small{display:block;font-size:12px;opacity:.8;font-weight:800;margin-bottom:2px}
+.fm.p{background:var(--okSoft);color:var(--ok)}.fm.n{background:var(--badSoft);color:var(--bad)}.fm.qq{background:var(--ciSoft);color:var(--ci)}
+.tcard ul{margin:4px 0 8px;padding-left:20px}
+.sigline{font-size:14px;margin:6px 0}
+.sigline .chipw{background:var(--tcs);border-color:var(--tc);color:var(--tcx);font-weight:600}
+.exl{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-top:1px dashed var(--line)}
+.exl .kk{flex:0 0 26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:15px}
+.kk.p{background:var(--ok)}.kk.n{background:var(--bad)}.kk.qq{background:var(--ci)}
+.exl .tx{flex:1}.exl .en{font-weight:600;font-size:17px}.exl .vn{color:var(--muted);font-size:14px}
+.exl button{flex:0 0 auto}
+.subh{font-family:var(--head);font-weight:700;margin:10px 0 2px;font-size:16px}
+.mist{margin-top:8px;border:1.5px dashed var(--sea);border-radius:10px;padding:8px 12px;font-size:15px}
+.mist s{color:var(--bad)}.mist b.g{color:var(--ok)}
+.rd{margin-top:8px}.rd label{display:inline-flex;gap:8px;align-items:center;font-weight:600;cursor:pointer}
+.rd input{width:20px;height:20px;accent-color:var(--ok)}
+table.cmp{width:100%;border-collapse:collapse;font-size:14px}
+table.cmp th,table.cmp td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+table.cmp th{font-family:var(--head)}
+table.cmp td:first-child{font-weight:700;color:var(--tcx)}
+.vgrp{margin:10px 0}.vgrp h3{margin:10px 0 4px}
+.vw{border:1.5px solid var(--line);background:var(--paper);border-radius:999px;padding:3px 12px;font-size:16px}
+.vw:hover{border-color:var(--sea)}.vw.on{background:var(--sun);color:#10304A;border-color:var(--sun)}
+.phr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;margin:8px 0}
+.phr{border:1px solid var(--line);border-radius:12px;padding:8px 12px;background:var(--paper);display:flex;gap:10px;align-items:center;text-align:left}
+.phr .em{font-size:26px}.phr b{font-size:16px}.phr .vn{font-size:13px;color:var(--muted)}
+.wc-top .em{font-size:30px}
+.frame{background:var(--sunSoft);border-radius:10px;padding:8px 12px;margin:8px 0;font-size:15px;font-weight:600}
+.sigout{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+.sg{border:1.5px solid var(--line);background:var(--paper);border-radius:999px;padding:3px 11px;font-size:14px}
+.sg.on{background:var(--tcs);border-color:var(--tc);color:var(--tcx);font-weight:700}
+.sit{border:2px solid var(--line);border-radius:16px;background:var(--paper);margin:12px 0}
+.sit>summary{cursor:pointer;list-style:none;padding:12px 14px;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-family:var(--head);font-weight:700;font-size:19px}
+.sit>summary::-webkit-details-marker{display:none}
+.sit[open]{border-color:var(--sea)}
+.sit .prog{margin-left:auto;font-family:var(--body);font-size:13px;font-weight:600;color:var(--muted)}
+.sit .inner{padding:0 14px 14px}
+.bank{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 10px}
+.bank .chipw{cursor:pointer;background:var(--seaSoft)}
+.bq{border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:10px 0;background:var(--bg)}
+.bq.ok{border-color:var(--ok);background:var(--okSoft)}
+.need{display:inline-block;border-radius:999px;padding:0 10px;font-size:13px;font-weight:800;background:var(--tcs);color:var(--tcx);border:1.5px solid var(--tc)}
+.pol{display:inline-block;border-radius:999px;padding:0 9px;font-size:13px;font-weight:800;color:#fff}
+.pol.p{background:var(--ok)}.pol.n{background:var(--bad)}
+.bq .en-q{font-weight:700;font-size:17px;margin:4px 0 0}
+.bq .vi-s{font-size:14px;color:var(--muted)}
+.bq textarea{width:100%;min-height:64px;border-radius:10px;border:1.5px solid var(--line);padding:9px 12px;font:inherit;font-size:17px;background:var(--paper);color:var(--ink);resize:vertical;margin:8px 0}
+.fbox:not(:empty){margin-top:8px}
+.verdict{border-radius:10px;padding:8px 12px;font-weight:700;margin-bottom:6px}
+.verdict.ok{background:var(--okSoft);color:var(--ok)}.verdict.no{background:var(--badSoft);color:var(--bad)}
+.fi{display:flex;gap:8px;align-items:flex-start;padding:6px 10px;border-radius:10px;margin:4px 0;font-size:15px;border:1px solid var(--line);background:var(--paper)}
+.fi.k-err{border-color:var(--bad)}.fi.k-logic{border-color:#8a5cf6;background:var(--ciSoft)}.fi.k-content{border-color:var(--sun);background:var(--sunSoft)}.fi.k-ok{border-color:var(--ok);background:var(--okSoft)}
+.fic{flex:0 0 auto}
+.fixed{margin-top:8px;border:1.5px dashed var(--sea);border-radius:10px;padding:8px 12px;font-size:16px}
+.fixed .fx{margin-top:4px;font-size:18px;font-weight:600}
+.mk-s{color:var(--bad);text-decoration:line-through;font-weight:700}
+.mk-f{color:var(--bad);font-weight:800}
+.trans{margin-top:6px;font-size:15px;color:var(--muted)}
+.model{margin-top:8px;background:var(--seaSoft);border-radius:10px;padding:8px 12px;font-size:16px}
+.needs{list-style:none;padding:0;margin:6px 0}.needs li{padding:3px 0;font-size:15px}
+.dt{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.dt span{border-radius:999px;padding:0 9px;font-size:13px;font-weight:700;background:var(--tcs);color:var(--tcx);border:1.5px solid var(--tc)}
+.pbox{font-size:19px;line-height:1.9;margin:4px 0 6px}
+.ps2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0}
+@media (max-width:640px){.ps2{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div>
+    <h1>Các thì &amp; Thời tiết</h1>
+    <p class="sub">Tenses in Weather Talk · Hiểu thì → Brainstorm → Nói đúng trong tình huống</p>
+    <div class="cue">
+      <b>Bài này giúp em:</b>
+      <ul>
+        <li>① Nắm 9 nhóm thì / cấu trúc (khẳng định ＋, phủ định －, câu hỏi ？) qua ví dụ về thời tiết</li>
+        <li>② Học từ vựng thời tiết và hoạt động (việc làm khi trời đẹp / trời xấu)</li>
+        <li>③ Brainstorm: 8 tình huống, em viết câu theo gợi ý → máy kiểm tra <b>thì, khẳng định/phủ định, ngữ pháp</b></li>
+        <li>④⑤ Trắc nghiệm 2 × 15 câu · ⑥ Đọc to · ⑦ Tự nói theo tình huống · ⑧ Nộp bài</li>
+      </ul>
+    </div>
+  </div>
+  <div class="stamp" aria-hidden="true"><span class="e">🌦</span><span class="t">Tenses</span><span class="s">+ Weather</span></div>
+</header>
+
+<div class="settings">
+  <label>Giọng đọc: <select id="voiceSel"><option>Đang tải giọng…</option></select></label>
+  <label>Tốc độ: <input id="rate" type="range" min="0.6" max="1.15" step="0.05" value="0.9"> <span id="rateV">0.9</span></label>
+</div>
+
+<nav class="tabs" role="tablist">
+  <button class="tab" role="tab" data-p="tense" aria-selected="true">① Các thì</button>
+  <button class="tab" role="tab" data-p="vocab" aria-selected="false">② Từ vựng</button>
+  <button class="tab" role="tab" data-p="brain" aria-selected="false">③ Brainstorm</button>
+  <button class="tab" role="tab" data-p="qa" aria-selected="false">④ Trắc nghiệm A</button>
+  <button class="tab" role="tab" data-p="qb" aria-selected="false">⑤ Trắc nghiệm B</button>
+  <button class="tab" role="tab" data-p="read" aria-selected="false">⑥ Đọc to</button>
+  <button class="tab" role="tab" data-p="free" aria-selected="false">⑦ Tự nói</button>
+  <button class="tab" role="tab" data-p="send" aria-selected="false">📨 Nộp bài</button>
+</nav>
+
+<section class="panel on" id="p-tense">
+  <h2>① Tổng hợp các thì với chủ đề thời tiết</h2>
+  <p class="hint">Bấm 🔊 để nghe từng câu. Mỗi thì có đủ <b>＋ khẳng định</b>, <b>－ phủ định</b>, <b>？ câu hỏi</b>, ví dụ về thời tiết và về hoạt động. Đọc xong bấm <b>✅ Em đã đọc</b>.</p>
+  <div class="card">
+    <h3 style="margin-top:0">🕰 Bản đồ thời gian</h3>
+    <div class="timeline">
+      <div class="tl-col"><div class="tl-h">⏪ Quá khứ</div><div id="tlPast"></div></div>
+      <div class="tl-col"><div class="tl-h">🔗 Từ quá khứ đến nay</div><div id="tlMid"></div></div>
+      <div class="tl-col"><div class="tl-h">⏱ Bây giờ</div><div id="tlNow"></div></div>
+      <div class="tl-col"><div class="tl-h">⏩ Tương lai</div><div id="tlFut"></div></div>
+    </div>
+  </div>
+  <div id="tenseBox"></div>
+  <h3>📊 Bảng so sánh nhanh</h3>
+  <div class="card tbl"><table class="cmp" id="cmpTbl"></table></div>
+</section>
+
+<section class="panel" id="p-vocab">
+  <h2>② Từ vựng thời tiết &amp; hoạt động</h2>
+  <p class="hint">Bấm vào từ để nghe và xem phiên âm, loại từ, nghĩa tiếng Việt. Từ viết tắt: <b>n</b> danh từ · <b>v</b> động từ · <b>adj</b> tính từ.</p>
+  <div class="card wcard" id="wcV"><span class="hint" style="margin:0">👆 Bấm vào một từ bên dưới.</span></div>
+  <div id="vocabBox"></div>
+  <h3>☀️ Thời tiết đẹp: em có thể làm gì?</h3>
+  <div class="frame">When it is sunny, we <b>can / usually / will</b> … &nbsp;·&nbsp; If it is sunny, we <b>will</b> … &nbsp;·&nbsp; Yesterday it was sunny, so we …</div>
+  <div class="phr-grid" id="phGood"></div>
+  <h3>🌧 Thời tiết xấu: em làm gì và không làm được gì?</h3>
+  <div class="frame">When it rains, we <b>don't</b> … &nbsp;·&nbsp; If it rains, we <b>won't</b> … &nbsp;·&nbsp; Yesterday it rained, so we <b>didn't</b> …</div>
+  <div class="phr-grid" id="phBad"></div>
+</section>
+
+<section class="panel" id="p-brain">
+  <h2>③ Brainstorm: viết câu theo tình huống</h2>
+  <p class="hint">Bước 1: bấm vào <b>dấu hiệu thời gian</b> để nhớ thì cần dùng. Bước 2: chọn một tình huống, đọc gợi ý (câu hỏi, khung câu, từ gợi ý), viết câu bằng tiếng Anh rồi bấm <b>✓ Kiểm tra</b>. Máy chỉ ra lỗi bằng màu đỏ, giải thích bằng tiếng Việt, em sửa và kiểm tra lại. Câu đã đúng thì em có thể ghi âm nói lại câu đó.</p>
+  <div class="card">
+    <h3 style="margin-top:0">🧭 Dấu hiệu → thì</h3>
+    <div class="chips" id="sigBox"></div>
+    <div id="sigOut" class="sigout"><span class="hint" style="margin:0">👆 Bấm một dấu hiệu.</span></div>
+  </div>
+  <div id="brainBox"></div>
+</section>
+
+<section class="panel" id="p-qa">
+  <h2>④ Trắc nghiệm A: chọn dạng động từ đúng</h2>
+  <p class="hint">15 câu. Chọn đáp án; sai thì chọn lại. Tab <b>Nộp bài</b> có phần xem lại đúng/sai kèm giải thích.</p>
+  <div id="qaBox"></div>
+</section>
+
+<section class="panel" id="p-qb">
+  <h2>⑤ Trắc nghiệm B: khẳng định – phủ định – nghi vấn</h2>
+  <p class="hint">15 câu về cách chuyển câu sang phủ định, câu hỏi và trả lời ngắn.</p>
+  <div id="qbBox"></div>
+</section>
+
+<section class="panel" id="p-read">
+  <h2>⑥ Đọc to</h2>
+  <p class="hint">Nghe mẫu 🔊 → đọc theo → bấm 🎙 ghi âm. Máy chấm điểm % và chỉ ra từ đọc chưa tốt (đặc biệt <b>not / n't</b>, đuôi <b>-ed, -s</b>). Nghe lại bản của mình, thấy ổn thì bấm 📤 Gửi.</p>
+  <h3>A. Câu mẫu theo từng thì (＋ rồi －)</h3>
+  <div id="readT"></div>
+  <h3>B. Ba đoạn văn ngắn</h3>
+  <div id="readP"></div>
+</section>
+
+<section class="panel" id="p-free">
+  <h2>⑦ Tự nói theo tình huống</h2>
+  <p class="hint">Không có bài mẫu: em tự nói 4–6 câu theo đề. Máy chép lời em nói rồi kiểm tra em đã dùng đủ <b>các thì và cả câu khẳng định lẫn phủ định</b> chưa. (Cần Chrome để máy nghe và kiểm tra.)</p>
+  <div id="freeBox"></div>
+</section>
+
+<section class="panel" id="p-send">
+  <h2>📨 Nộp bài</h2>
+  <ol class="steps">
+    <li>Em ghi họ tên:&nbsp;<input type="text" id="stuName" placeholder="Họ và tên" autocomplete="name"></li>
+    <li>Kiểm tra bảng kết quả bên dưới (còn bản ghi âm chưa gửi thì quay lại gửi).</li>
+    <li><button class="b primary" id="submitBtn" style="font-size:16px;padding:8px 16px">📨 Nộp bài cho thầy/cô</button></li>
+  </ol>
+  <p id="submitMsg" class="tip"></p>
+  <p id="noUrl" class="warn" hidden>⚙️ Trang này chưa được cài link nhận bài.</p>
+  <div class="card"><div id="sumBox"></div></div>
+  <div class="row"><button class="b" id="reviewBtn">🔍 Xem lại bài của em (đúng/sai và giải thích)</button></div>
+  <div id="reviewBox"></div>
+</section>
+
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+<div class="cloud" id="cloud" hidden></div>
+
+<div class="gate" id="gate" hidden>
+  <div class="gate-box">
+    <div style="font-size:42px">🌦🎧</div>
+    <h2 style="margin:4px 0">Chào em!</h2>
+    <p>Em hãy ghi tên để thầy/cô nhận được bài của em.</p>
+    <input type="text" id="gateName" placeholder="Họ và tên" autocomplete="name">
+    <p class="tip">Khi bấm ghi âm, trình duyệt sẽ hỏi quyền micro. Em bấm <b>Cho phép</b>.</p>
+    <button class="b primary" id="gateGo" style="font-size:17px;padding:8px 20px;margin-top:6px">Bắt đầu</button>
+  </div>
+</div>
+
+<script>
+/* ===== DỮ LIỆU BÀI: CÁC THÌ VÀ THỜI TIẾT ===== */
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwnf8X3_Xfk9F_8HQtBwSFU_s28sRjxKb0aFaHCA4ybmMJvgaztBAbdvaFzITdbVXBt/exec';
+const LESSON = 'Tenses and Weather';
+const DICT = {};            // không dùng bấm-tra-từ trong bài này (giữ để hàm ghi âm gợi ý từ không lỗi)
+
+/* ---------- 9 NHÓM THÌ / CẤU TRÚC ---------- */
+const TENSES = [
+ {id:'ps', n:'Present simple', vi:'Hiện tại đơn', e:'🔁',
+  form:{p:'S + V(s/es)', n:'S + do not / does not + V', q:'Do / Does + S + V …?'},
+  use:['Sự thật, quy luật của thời tiết và các mùa','Thói quen: việc em thường làm khi trời nắng, mưa, lạnh…'],
+  sig:'always, usually, often, sometimes, never, every day, in summer, in winter',
+  ex:[
+   ['+','It rains a lot in Hue in October.','Ở Huế, tháng Mười mưa rất nhiều.'],
+   ['-','It doesn\'t snow in Ho Chi Minh City.','Ở TP. Hồ Chí Minh không có tuyết.'],
+   ['?','Does it get cold in Da Lat in December?','Tháng Mười Hai ở Đà Lạt có lạnh không?']],
+  act:[
+   ['+','We usually go swimming when it is hot.','Khi trời nóng, chúng tôi thường đi bơi.'],
+   ['-','I don\'t play football when it rains.','Tôi không chơi bóng đá khi trời mưa.']],
+  note:'He / she / it + động từ thêm -s/-es: <b>It rains</b>, <b>She watches</b> TV. Phủ định dùng <b>doesn\'t + V nguyên mẫu</b> (không thêm -s).',
+  err:['It rain a lot in July.','It rains a lot in July.']},
+ {id:'prc', n:'Present continuous', vi:'Hiện tại tiếp diễn', e:'⏱️',
+  form:{p:'S + am / is / are + V-ing', n:'S + am / is / are + not + V-ing', q:'Am / Is / Are + S + V-ing …?'},
+  use:['Việc đang xảy ra ngay lúc nói','Việc tạm thời quanh thời điểm nói (hôm nay, tuần này)'],
+  sig:'now, right now, at the moment, today, Look!, Listen!',
+  ex:[
+   ['+','It is raining heavily right now.','Bây giờ trời đang mưa to.'],
+   ['-','It isn\'t snowing today.','Hôm nay trời không có tuyết.'],
+   ['?','Is the wind blowing hard now?','Bây giờ gió có đang thổi mạnh không?']],
+  act:[
+   ['+','The children are playing in the rain.','Bọn trẻ đang chơi dưới mưa.'],
+   ['-','I\'m not going out because it is pouring.','Tôi không ra ngoài vì trời đang mưa như trút nước.']],
+  note:'Không dùng thì này với động từ chỉ trạng thái như <b>like, love, want, know</b>: nói <i>I like rain</i>, không nói <i>I am liking rain</i>.',
+  err:['It is rain now.','It is raining now.']},
+ {id:'pa', n:'Past simple', vi:'Quá khứ đơn', e:'⏪',
+  form:{p:'S + V2 / V-ed', n:'S + did not + V (nguyên mẫu)', q:'Did + S + V …?   (động từ be: Was / Were + S …?)'},
+  use:['Việc đã xảy ra và đã kết thúc trong quá khứ','Kể lại thời tiết và hoạt động hôm qua, tuần trước, mùa hè năm ngoái'],
+  sig:'yesterday, last night, last week, last summer, two days ago, in 2023',
+  ex:[
+   ['+','It rained all day yesterday.','Hôm qua trời mưa cả ngày.'],
+   ['-','It didn\'t snow last winter.','Mùa đông năm ngoái không có tuyết.'],
+   ['?','Was it cold this morning?','Sáng nay trời có lạnh không?']],
+  act:[
+   ['+','We stayed at home and watched films.','Chúng tôi ở nhà xem phim.'],
+   ['-','We didn\'t go camping because of the storm.','Vì bão nên chúng tôi không đi cắm trại.']],
+  note:'Sau <b>did / didn\'t</b> dùng động từ nguyên mẫu: <i>didn\'t go</i> (không phải <i>didn\'t went</i>). Một số động từ bất quy tắc: go → went, see → saw, eat → ate, have → had.',
+  err:['We didn\'t went camping.','We didn\'t go camping.']},
+ {id:'pc', n:'Past continuous', vi:'Quá khứ tiếp diễn', e:'🎞️',
+  form:{p:'S + was / were + V-ing', n:'S + was / were + not + V-ing', q:'Was / Were + S + V-ing …?'},
+  use:['Việc đang diễn ra tại một thời điểm trong quá khứ','Việc đang xảy ra thì có việc khác xen vào (when) hoặc hai việc cùng lúc (while)'],
+  sig:'while, when, at 7 pm last night, all morning',
+  ex:[
+   ['+','It was raining when I left home.','Khi tôi rời nhà thì trời đang mưa.'],
+   ['-','The sun wasn\'t shining while we were walking.','Lúc chúng tôi đi bộ thì trời không có nắng.'],
+   ['?','Were you walking in the rain at seven o\'clock?','Lúc bảy giờ bạn có đang đi bộ dưới mưa không?']],
+  act:[
+   ['+','We were having a picnic when it started to rain.','Chúng tôi đang đi picnic thì trời bắt đầu mưa.'],
+   ['-','I wasn\'t wearing a coat when the temperature dropped.','Tôi không mặc áo khoác lúc nhiệt độ giảm.']],
+  note:'Mẫu hay dùng: <b>was/were + V-ing</b> (việc đang diễn ra) + <b>when</b> + <b>V2</b> (việc xen vào): <i>I was walking when it started to rain.</i>',
+  err:['It was rain when I left.','It was raining when I left.']},
+ {id:'pp', n:'Present perfect', vi:'Hiện tại hoàn thành', e:'🧳',
+  form:{p:'S + have / has + V3', n:'S + have / has + not + V3', q:'Have / Has + S + V3 …?'},
+  use:['Kinh nghiệm: đã từng / chưa bao giờ','Việc kéo dài đến bây giờ (for, since)','Kết quả còn ở hiện tại: already, yet, just'],
+  sig:'already, yet, just, ever, never, so far, since, for, this week',
+  ex:[
+   ['+','It has rained for three days.','Trời đã mưa suốt ba ngày.'],
+   ['-','It hasn\'t stopped raining since morning.','Trời vẫn chưa tạnh mưa từ sáng.'],
+   ['?','Have you ever seen snow?','Bạn đã bao giờ thấy tuyết chưa?']],
+  act:[
+   ['+','We have already cancelled the picnic.','Chúng tôi đã hủy buổi picnic rồi.'],
+   ['-','I haven\'t gone swimming this summer.','Hè này tôi chưa đi bơi.']],
+  note:'Có mốc quá khứ rõ ràng (<b>yesterday, last week, in 2023</b>) thì dùng <b>quá khứ đơn</b>, không dùng hiện tại hoàn thành: <i>I saw snow last year.</i>',
+  err:['I have seen snow yesterday.','I saw snow yesterday.']},
+ {id:'will', n:'Future simple (will)', vi:'Tương lai đơn', e:'🔮',
+  form:{p:'S + will + V', n:'S + will not (won\'t) + V', q:'Will + S + V …?'},
+  use:['Dự đoán thời tiết (không có bằng chứng rõ)','Quyết định ngay lúc nói, lời hứa, lời đề nghị'],
+  sig:'tomorrow, next week, tonight, soon, I think, probably, perhaps',
+  ex:[
+   ['+','It will be sunny tomorrow.','Ngày mai trời sẽ nắng.'],
+   ['-','It won\'t rain this weekend.','Cuối tuần này sẽ không mưa.'],
+   ['?','Will it snow tonight?','Tối nay có tuyết không?']],
+  act:[
+   ['+','I think we will stay at home.','Tôi nghĩ chúng ta sẽ ở nhà.'],
+   ['-','I won\'t go out without an umbrella.','Tôi sẽ không ra ngoài khi không mang ô.']],
+  note:'Sau <b>will</b> luôn là động từ nguyên mẫu, không thêm -s, -ing: <i>It will rain</i> (không phải <i>It will rains</i>).',
+  err:['It will rains tomorrow.','It will rain tomorrow.']},
+ {id:'gt', n:'Near future (be going to)', vi:'Tương lai gần', e:'🧭',
+  form:{p:'S + am / is / are + going to + V', n:'S + am / is / are + not + going to + V', q:'Am / Is / Are + S + going to + V …?'},
+  use:['Kế hoạch, dự định đã có từ trước','Dự đoán dựa trên bằng chứng đang thấy (mây đen → sắp mưa)'],
+  sig:'Look at the clouds!, this weekend, tonight, next month, because …',
+  ex:[
+   ['+','Look at those black clouds! It is going to rain.','Nhìn mây đen kìa! Trời sắp mưa.'],
+   ['-','It isn\'t going to be hot tomorrow.','Ngày mai trời sẽ không nóng.'],
+   ['?','Are you going to go camping this weekend?','Cuối tuần này bạn có định đi cắm trại không?']],
+  act:[
+   ['+','We are going to have a barbecue on Saturday.','Thứ Bảy chúng tôi sẽ nướng thịt ngoài trời.'],
+   ['-','We aren\'t going to go to the beach because of the typhoon.','Vì bão nên chúng tôi sẽ không đi biển.']],
+  note:'<b>will</b>: dự đoán / quyết định ngay lúc nói. <b>be going to</b>: kế hoạch có sẵn hoặc có bằng chứng. Đừng quên <b>to</b>: <i>is going to rain</i>.',
+  err:['It is going rain.','It is going to rain.']},
+ {id:'c1', n:'First conditional', vi:'Câu điều kiện loại 1', e:'🔀',
+  form:{p:'If + S + V(s/es), S + will + V', n:'If + S + don\'t / doesn\'t + V, S + won\'t + V', q:'What will you do if + S + V(s/es)?'},
+  use:['Điều kiện có thể xảy ra ở tương lai, kết quả sẽ xảy ra theo','Lên kế hoạch dự phòng cho thời tiết xấu / tốt'],
+  sig:'if, unless, as soon as, when (tương lai)',
+  ex:[
+   ['+','If it rains tomorrow, we will stay at home.','Nếu ngày mai trời mưa thì chúng tôi sẽ ở nhà.'],
+   ['-','If it doesn\'t stop raining, we won\'t go camping.','Nếu trời không tạnh mưa thì chúng tôi sẽ không đi cắm trại.'],
+   ['?','What will you do if it is too hot?','Bạn sẽ làm gì nếu trời quá nóng?']],
+  act:[
+   ['+','If it is sunny, we will fly kites in the park.','Nếu trời nắng, chúng tôi sẽ thả diều ở công viên.'],
+   ['-','If the weather is bad, we won\'t play outside.','Nếu thời tiết xấu, chúng tôi sẽ không chơi ngoài trời.']],
+  note:'Mệnh đề <b>if</b> dùng <b>hiện tại đơn</b>, không dùng <i>will</i>: <i>If it rains</i> (không phải <i>If it will rain</i>).',
+  err:['If it will rain, we will stay at home.','If it rains, we will stay at home.']},
+ {id:'modal', n:'Should / can / must', vi:'Lời khuyên, khả năng, điều cấm', e:'💡',
+  form:{p:'S + should / can / must + V', n:'S + shouldn\'t / can\'t / mustn\'t + V', q:'Should / Can + S + V …?'},
+  use:['Khuyên nên / không nên làm gì khi thời tiết xấu hay tốt','Nói điều có thể làm hoặc không được làm'],
+  sig:'You should …, We can …, You mustn\'t …',
+  ex:[
+   ['+','You should wear a raincoat.','Bạn nên mặc áo mưa.'],
+   ['-','You shouldn\'t swim in a storm.','Bạn không nên bơi khi có bão.'],
+   ['?','Can we play outside today?','Hôm nay chúng ta có thể chơi ngoài trời không?']],
+  act:[
+   ['+','We can have a picnic if it is sunny.','Nếu trời nắng, chúng ta có thể đi picnic.'],
+   ['-','You mustn\'t go out during a thunderstorm.','Bạn không được ra ngoài khi có giông sét.']],
+  note:'Sau should / can / must dùng động từ nguyên mẫu, không có <i>to</i>: <i>You should wear</i> (không phải <i>should to wear</i>).',
+  err:['You should to wear a coat.','You should wear a coat.']}
+];
+
+/* ---------- Dấu hiệu → thì (brainstorm) ---------- */
+const SIGNALS = [
+ ['always / usually / often','ps'],['every day','ps'],['in summer','ps'],
+ ['now','prc'],['right now','prc'],['at the moment','prc'],['Look! Listen!','prc'],
+ ['yesterday','pa'],['last week','pa'],['two days ago','pa'],
+ ['while','pc'],['when (đang… thì…)','pc'],['at 7 pm last night','pc'],
+ ['ever / never','pp'],['already / yet / just','pp'],['since / for','pp'],['so far','pp'],
+ ['tomorrow','will'],['I think… / probably','will'],['tonight','will'],
+ ['Look at the clouds!','gt'],['this weekend (kế hoạch)','gt'],
+ ['if / unless','c1'],
+ ['You should…','modal']
+];
+
+/* ---------- TỪ VỰNG ---------- */
+// [từ, IPA, loại từ, nghĩa, emoji]
+const WORDS = {
+ weather:['/ˈweðə/','n','thời tiết'],sun:['/sʌn/','n','mặt trời'],rain:['/reɪn/','n, v','mưa; trời mưa'],snow:['/snəʊ/','n, v','tuyết; có tuyết'],
+ wind:['/wɪnd/','n','gió'],storm:['/stɔːm/','n','bão, giông'],typhoon:['/taɪˈfuːn/','n','bão nhiệt đới'],thunder:['/ˈθʌndə/','n','sấm'],
+ lightning:['/ˈlaɪtnɪŋ/','n','chớp, tia sét'],cloud:['/klaʊd/','n','mây'],fog:['/fɒɡ/','n','sương mù'],flood:['/flʌd/','n','lũ lụt'],
+ drought:['/draʊt/','n','hạn hán'],heatwave:['/ˈhiːtweɪv/','n','đợt nắng nóng'],temperature:['/ˈtemprətʃə/','n','nhiệt độ'],
+ forecast:['/ˈfɔːkɑːst/','n','dự báo'],rainbow:['/ˈreɪnbəʊ/','n','cầu vồng'],umbrella:['/ʌmˈbrelə/','n','cái ô'],
+ season:['/ˈsiːzn/','n','mùa'],degree:['/dɪˈɡriː/','n','độ'],
+ sunny:['/ˈsʌni/','adj','có nắng'],rainy:['/ˈreɪni/','adj','có mưa'],cloudy:['/ˈklaʊdi/','adj','nhiều mây'],windy:['/ˈwɪndi/','adj','có gió'],
+ stormy:['/ˈstɔːmi/','adj','có bão'],foggy:['/ˈfɒɡi/','adj','có sương mù'],snowy:['/ˈsnəʊi/','adj','có tuyết'],hot:['/hɒt/','adj','nóng'],
+ warm:['/wɔːm/','adj','ấm'],cool:['/kuːl/','adj','mát'],cold:['/kəʊld/','adj','lạnh'],freezing:['/ˈfriːzɪŋ/','adj','lạnh cóng'],
+ humid:['/ˈhjuːmɪd/','adj','ẩm ướt, oi bức'],dry:['/draɪ/','adj','khô'],wet:['/wet/','adj','ướt'],heavy:['/ˈhevi/','adj','nặng hạt, to'],
+ terrible:['/ˈterəbl/','adj','tệ, kinh khủng'],lovely:['/ˈlʌvli/','adj','dễ chịu, tuyệt'],
+ pour:['/pɔː/','v','mưa như trút'],shine:['/ʃaɪn/','v','chiếu sáng'],blow:['/bləʊ/','v','thổi'],freeze:['/friːz/','v','đóng băng'],
+ melt:['/melt/','v','tan chảy'],stop:['/stɒp/','v','dừng, tạnh'],drop:['/drɒp/','v','giảm, rơi'],cancel:['/ˈkænsl/','v','hủy'],
+ expect:['/ɪkˈspekt/','v','mong đợi, dự đoán'],hope:['/həʊp/','v','hy vọng'],
+ happy:['/ˈhæpi/','adj','vui'],relaxed:['/rɪˈlækst/','adj','thư giãn'],bored:['/bɔːd/','adj','chán'],annoyed:['/əˈnɔɪd/','adj','bực mình'],
+ worried:['/ˈwʌrid/','adj','lo lắng'],excited:['/ɪkˈsaɪtɪd/','adj','háo hức'],disappointed:['/ˌdɪsəˈpɔɪntɪd/','adj','thất vọng'],tired:['/ˈtaɪəd/','adj','mệt'],
+ /* thành phần của cụm từ */
+ go:['/ɡəʊ/'],swimming:['/ˈswɪmɪŋ/'],have:['/hæv/'],a:['/ə/'],picnic:['/ˈpɪknɪk/'],camping:['/ˈkæmpɪŋ/'],fly:['/flaɪ/'],kite:['/kaɪt/'],
+ play:['/pleɪ/'],football:['/ˈfʊtbɔːl/'],for:['/fə/'],walk:['/wɔːk/'],ride:['/raɪd/'],bike:['/baɪk/'],to:['/tə/'],the:['/ðə/'],
+ beach:['/biːtʃ/'],barbecue:['/ˈbɑːbɪkjuː/'],hiking:['/ˈhaɪkɪŋ/'],take:['/teɪk/'],photos:['/ˈfəʊtəʊz/'],clothes:['/kləʊðz/'],
+ stay:['/steɪ/'],at:['/ət/'],home:['/həʊm/'],watch:['/wɒtʃ/'],films:['/fɪlmz/'],read:['/riːd/'],book:['/bʊk/'],board:['/bɔːd/'],
+ games:['/ɡeɪmz/'],cook:['/kʊk/'],dinner:['/ˈdɪnə/'],wear:['/weə/'],raincoat:['/ˈreɪnkəʊt/'],trip:['/trɪp/'],get:['/ɡet/'],
+ catch:['/kætʃ/'],be:['/bi/'],stuck:['/stʌk/'],in:['/ɪn/'],traffic:['/ˈtræfɪk/'],wait:['/weɪt/'],delay:['/dɪˈleɪ/'],flight:['/flaɪt/']
+};
+const PHRASES = {
+ good:[['go swimming','đi bơi','🏊'],['have a picnic','đi picnic','🧺'],['go camping','đi cắm trại','⛺'],['fly a kite','thả diều','🪁'],
+       ['play football','chơi bóng đá','⚽'],['go for a walk','đi dạo','🚶'],['ride a bike','đạp xe','🚲'],['go to the beach','đi biển','🏖️'],
+       ['have a barbecue','nướng thịt ngoài trời','🍖'],['go hiking','đi bộ đường dài','🥾'],['take photos','chụp ảnh','📷'],['dry the clothes','phơi quần áo','👕']],
+ bad:[['stay at home','ở nhà','🏠'],['watch films','xem phim','🎬'],['read a book','đọc sách','📖'],['play board games','chơi cờ, trò chơi bàn','🎲'],
+      ['cook dinner','nấu bữa tối','🍲'],['wear a raincoat','mặc áo mưa','🧥'],['cancel the trip','hủy chuyến đi','❌'],['get wet','bị ướt','💦'],
+      ['catch a cold','bị cảm lạnh','🤧'],['be stuck in traffic','bị kẹt xe','🚗'],['wait for the rain to stop','chờ mưa tạnh','⏳'],['delay a flight','hoãn chuyến bay','✈️']]
+};
+const VGROUPS = [
+ {id:'n',t:'🌦 Hiện tượng thời tiết',ws:[['weather','🌦'],['sun','☀️'],['rain','🌧'],['snow','❄️'],['wind','💨'],['storm','⛈'],['typhoon','🌀'],['thunder','🌩'],['lightning','⚡'],['cloud','☁️'],['fog','🌫'],['flood','🌊'],['drought','🏜'],['heatwave','🔥'],['temperature','🌡'],['forecast','📺'],['rainbow','🌈'],['umbrella','☂️'],['season','🍂'],['degree','🔢']]},
+ {id:'a',t:'🌡 Tính từ miêu tả',ws:[['sunny','☀️'],['rainy','🌧'],['cloudy','☁️'],['windy','💨'],['stormy','⛈'],['foggy','🌫'],['snowy','❄️'],['hot','🥵'],['warm','🙂'],['cool','😌'],['cold','🥶'],['freezing','🧊'],['humid','💦'],['dry','🏜'],['wet','💧'],['heavy','⬇️'],['terrible','😖'],['lovely','😍']]},
+ {id:'v',t:'🏃 Động từ về thời tiết',ws:[['pour','🌧'],['shine','☀️'],['blow','💨'],['freeze','🧊'],['melt','🫠'],['stop','🛑'],['drop','📉'],['cancel','❌'],['expect','🔭'],['hope','🤞']]},
+ {id:'f',t:'🙂 Cảm xúc khi gặp thời tiết',ws:[['happy','😀'],['relaxed','😌'],['bored','🥱'],['annoyed','😒'],['worried','😟'],['excited','🤩'],['disappointed','😞'],['tired','😴']]}
+];
+function phraseIpa(p){return p.split(' ').map(w=>(WORDS[w]||['?'])[0].replace(/\//g,'')).join(' ');}
+
+/* ---------- BRAINSTORM: 8 TÌNH HUỐNG ---------- */
+// prompt: [câu hỏi gợi ý, vi, thì, +/-, khung câu, câu mẫu, nghĩa câu mẫu]
+const SITUATIONS = [
+ {id:'s1',e:'☀️',t:'Thời tiết hôm nay',scene:'Em nhìn ra cửa sổ và tả thời tiết lúc này, rồi nói em thường làm gì và không làm gì khi trời như vậy.',
+  bank:['raining','sunny','cloudy','windy','pour','shine','stay at home','read a book','ride a bike'],
+  q:[
+   ['What is the weather like right now?','Bây giờ thời tiết thế nào?','prc','+','It is … -ing  /  It is …','It is raining heavily right now.','Bây giờ trời đang mưa to.'],
+   ['Can you see the sun?','Em có nhìn thấy mặt trời không?','prc','-','No, the sun isn\'t …','No, the sun isn\'t shining and it isn\'t warm today.','Không, mặt trời không chiếu sáng và hôm nay trời không ấm.'],
+   ['What do you usually do on a day like this?','Em thường làm gì vào ngày như vậy?','ps','+','I usually …','I usually stay at home and read a book.','Tôi thường ở nhà đọc sách.'],
+   ['What don\'t you do when it rains?','Em không làm gì khi trời mưa?','ps','-','I don\'t … when it rains.','I don\'t ride my bike when it rains.','Tôi không đạp xe khi trời mưa.']]},
+ {id:'s2',e:'🌧',t:'Thời tiết hôm qua',scene:'Hôm qua thời tiết thế nào, em đã làm gì, không làm được gì, và đang làm gì thì thời tiết thay đổi?',
+  bank:['rained','was cloudy','stayed at home','didn\'t go out','was walking','started to rain'],
+  q:[
+   ['What was the weather like yesterday?','Hôm qua thời tiết thế nào?','pa','+','Yesterday it …','It rained all day and the wind blew strongly.','Trời mưa cả ngày và gió thổi mạnh.'],
+   ['What didn\'t you do because of the weather?','Em đã không làm gì vì thời tiết?','pa','-','I didn\'t … because …','I didn\'t go out because it was too cold.','Tôi không ra ngoài vì trời quá lạnh.'],
+   ['What were you doing when the rain started?','Em đang làm gì khi trời bắt đầu mưa?','pc','+','I was … -ing when …','I was walking home when the rain started.','Tôi đang đi bộ về nhà thì trời bắt đầu mưa.'],
+   ['Was the sun shining at noon?','Buổi trưa mặt trời có chiếu sáng không?','pc','-','No, the sun wasn\'t …','No, the sun wasn\'t shining. It was cloudy.','Không, mặt trời không chiếu sáng. Trời nhiều mây.']]},
+ {id:'s3',e:'📺',t:'Dự báo thời tiết ngày mai',scene:'Em là người dẫn chương trình dự báo thời tiết. Hãy nói trời ngày mai ra sao và em dự định làm gì.',
+  bank:['sunny','warm','windy','tomorrow','forecast','fly a kite','go to the beach'],
+  q:[
+   ['What will the weather be like tomorrow?','Ngày mai thời tiết sẽ thế nào?','will','+','Tomorrow it will be …','It will be sunny and warm tomorrow.','Ngày mai trời sẽ nắng và ấm.'],
+   ['What won\'t happen tomorrow?','Ngày mai điều gì sẽ không xảy ra?','will','-','It won\'t …','It won\'t rain and it won\'t be windy.','Trời sẽ không mưa và cũng không có gió.'],
+   ['What are you going to do tomorrow?','Ngày mai em định làm gì?','gt','+','I am going to …','I am going to fly a kite in the park.','Tôi định thả diều ở công viên.'],
+   ['What aren\'t you going to do?','Em không định làm gì?','gt','-','I\'m not going to …','I\'m not going to stay at home.','Tôi không định ở nhà.']]},
+ {id:'s4',e:'🏕',t:'Kế hoạch cuối tuần và "nếu trời…"',scene:'Cuối tuần em muốn đi chơi. Nói kế hoạch cho cả hai trường hợp: trời đẹp và trời xấu. Dùng If + hiện tại đơn, will + V.',
+  bank:['if','go camping','have a picnic','watch films','stay at home','umbrella','raincoat'],
+  q:[
+   ['What will you do if it is sunny on Saturday?','Nếu thứ Bảy trời nắng, em sẽ làm gì?','c1','+','If it is sunny, we will …','If it is sunny on Saturday, we will go camping.','Nếu thứ Bảy trời nắng, chúng tôi sẽ đi cắm trại.'],
+   ['What won\'t you do if the weather is bad?','Nếu thời tiết xấu, em sẽ không làm gì?','c1','-','If the weather is bad, we won\'t …','If the weather is bad, we won\'t go to the beach.','Nếu thời tiết xấu, chúng tôi sẽ không đi biển.'],
+   ['What will you do if it is very hot?','Nếu trời rất nóng, em sẽ làm gì?','c1','+','If it is very hot, I will …','If it is very hot, I will go swimming.','Nếu trời rất nóng, tôi sẽ đi bơi.'],
+   ['What should we bring?','Chúng ta nên mang theo gì?','modal','+','We should bring …','We should bring an umbrella and a raincoat.','Chúng ta nên mang ô và áo mưa.']]},
+ {id:'s5',e:'🌈',t:'Trải nghiệm với thời tiết',scene:'Em đã từng trải qua (hoặc chưa từng trải qua) những kiểu thời tiết nào? Dùng hiện tại hoàn thành.',
+  bank:['have seen','never','yet','for','since','typhoon','rainbow','snow'],
+  q:[
+   ['What kind of weather have you seen?','Em đã từng thấy kiểu thời tiết nào?','pp','+','I have seen …','I have seen a typhoon and a beautiful rainbow.','Tôi đã từng thấy một cơn bão và một cầu vồng rất đẹp.'],
+   ['What kind of weather haven\'t you seen yet?','Em chưa thấy kiểu thời tiết nào?','pp','-','I haven\'t … yet.','I haven\'t seen snow yet.','Tôi vẫn chưa thấy tuyết.'],
+   ['How long has it been hot or rainy?','Trời nóng hay mưa được bao lâu rồi?','pp','+','It has been … for / since …','It has been hot for a week.','Trời đã nóng được một tuần rồi.'],
+   ['What haven\'t you done this summer?','Hè này em chưa làm gì?','pp','-','I haven\'t … this summer.','I haven\'t gone to the beach this summer.','Hè này tôi chưa đi biển.']]},
+ {id:'s6',e:'🍂',t:'Các mùa ở thành phố của em',scene:'Tả thời tiết từng mùa ở nơi em sống và những việc người ta thường làm hoặc không làm. Dùng hiện tại đơn.',
+  bank:['hot','humid','cool','dry','season','people','go to the beach','have picnics'],
+  q:[
+   ['What is the weather like in summer in your city?','Mùa hè ở thành phố của em thế nào?','ps','+','In summer it is …','It is hot and humid in summer.','Mùa hè trời nóng và oi bức.'],
+   ['What doesn\'t happen in your city?','Điều gì không xảy ra ở thành phố của em?','ps','-','It doesn\'t …','It doesn\'t snow in my city.','Ở thành phố tôi không có tuyết.'],
+   ['What do people do in good weather?','Người ta làm gì khi thời tiết đẹp?','ps','+','People … when …','People go to the beach and have picnics.','Mọi người đi biển và đi picnic.'],
+   ['What don\'t people do in bad weather?','Người ta không làm gì khi thời tiết xấu?','ps','-','People don\'t …','People don\'t go out without an umbrella.','Mọi người không ra ngoài khi không mang ô.']]},
+ {id:'s7',e:'🌩',t:'Cơn bão đang đến!',scene:'Bầu trời tối sầm, gió nổi lên. Tả điều đang xảy ra, điều sắp xảy ra, điều em sẽ không làm, điều không nên làm và lần bão trước.',
+  bank:['storm','thunder','lightning','blow','flood','dark','dangerous','stand under a tree'],
+  q:[
+   ['What is happening outside?','Bên ngoài đang có chuyện gì?','prc','+','The wind is … -ing and …','The wind is blowing hard and the sky is getting dark.','Gió đang thổi mạnh và bầu trời đang tối dần.'],
+   ['Look at the black clouds! What is going to happen?','Nhìn mây đen kìa! Điều gì sắp xảy ra?','gt','+','It is going to …','It is going to rain heavily.','Trời sắp mưa to.'],
+   ['What won\'t you do?','Em sẽ không làm gì?','will','-','I won\'t …','I won\'t go out until the storm stops.','Tôi sẽ không ra ngoài cho đến khi bão tan.'],
+   ['What shouldn\'t we do during a thunderstorm?','Khi có giông sét chúng ta không nên làm gì?','modal','-','We shouldn\'t …','We shouldn\'t stand under a tree during a thunderstorm.','Chúng ta không nên đứng dưới gốc cây khi có giông sét.'],
+   ['What happened the last time a storm came?','Lần trước có bão thì chuyện gì đã xảy ra?','pa','+','A storm … last year.','A storm hit our town last year and the street flooded.','Năm ngoái một cơn bão đổ vào thị trấn và đường bị ngập.']]},
+ {id:'s8',e:'😍',t:'Ngày thời tiết em thích và không thích',scene:'Nói về kiểu thời tiết em yêu thích, không thích, một ngày đẹp trời gần đây, một ngày tệ và ngày lý tưởng trong tương lai.',
+  bank:['love','like','because','happy','tired','lovely','terrible','freezing'],
+  q:[
+   ['What is your favourite weather and why?','Thời tiết em thích nhất là gì, vì sao?','ps','+','I love … because …','I love sunny days because I feel happy and I can play outside.','Tôi thích những ngày nắng vì tôi thấy vui và có thể chơi ngoài trời.'],
+   ['What weather don\'t you like?','Em không thích thời tiết nào?','ps','-','I don\'t like … because …','I don\'t like freezing weather because I feel tired.','Tôi không thích thời tiết lạnh cóng vì tôi thấy mệt.'],
+   ['Describe your last perfect day.','Tả ngày đẹp trời gần nhất của em.','pa','+','Last … was …, so we …','Last Sunday was sunny, so we went to the beach.','Chủ nhật vừa rồi trời nắng nên chúng tôi đi biển.'],
+   ['Describe a bad weather day.','Tả một ngày thời tiết xấu.','pa','-','It wasn\'t a good day. We didn\'t …','It wasn\'t a good day. We didn\'t play football because it rained.','Đó không phải một ngày tốt. Chúng tôi không đá bóng vì trời mưa.'],
+   ['What will your perfect day be like?','Ngày lý tưởng của em sẽ như thế nào?','will','+','It will be … and I will …','It will be warm and sunny, and I will have a picnic.','Trời sẽ ấm và nắng, và tôi sẽ đi picnic.']]}
+];
+
+/* ---------- TRẮC NGHIỆM A (15): chọn dạng động từ ---------- */
+// [câu, [lựa chọn], đáp án, giải thích]
+const QA = [
+ ['Look! It ___ outside now.',['rains','is raining','rained'],1,'<b>Look! / now</b> → việc đang xảy ra: hiện tại tiếp diễn <i>is raining</i>.'],
+ ['It usually ___ a lot in Hue in autumn.',['rains','is raining','will rain'],0,'<b>usually</b> + sự thật theo mùa → hiện tại đơn: <i>rains</i>.'],
+ ['Yesterday it ___ all day, so we stayed at home.',['rains','rained','has rained'],1,'<b>Yesterday</b> → quá khứ đơn: <i>rained</i>.'],
+ ['I ___ TV when the lights went out because of the storm.',['watched','was watching','am watching'],1,'Việc đang diễn ra thì có việc khác xen vào (<b>when</b> + quá khứ đơn) → quá khứ tiếp diễn: <i>was watching</i>.'],
+ ['I ___ snow. I want to see it one day.',['have never seen','never see','am never seeing'],0,'Nói về kinh nghiệm đến nay → hiện tại hoàn thành: <i>have never seen</i>.'],
+ ['The forecast says it ___ sunny tomorrow.',['is','will be','was'],1,'<b>tomorrow</b> + dự báo → tương lai đơn: <i>will be</i>.'],
+ ['Look at those dark clouds! It ___ rain.',['will','is going to','rains'],1,'Có bằng chứng đang thấy (mây đen) → <i>is going to</i> rain.'],
+ ['If it ___ tomorrow, we will cancel the picnic.',['will rain','rains','is raining'],1,'Mệnh đề <b>if</b> dùng hiện tại đơn: <i>If it rains</i>, … will + V.'],
+ ['It ___ in Ho Chi Minh City in winter.',['doesn\'t snow','isn\'t snowing','didn\'t snow'],0,'Sự thật chung → hiện tại đơn phủ định: <i>doesn\'t snow</i>.'],
+ ['We ___ camping last weekend because of the typhoon.',['don\'t go','didn\'t go','haven\'t gone'],1,'<b>last weekend</b> → quá khứ đơn phủ định: <i>didn\'t go</i>.'],
+ ['The sun ___ at the moment. It is cloudy.',['doesn\'t shine','isn\'t shining','won\'t shine'],1,'<b>at the moment</b> → hiện tại tiếp diễn phủ định: <i>isn\'t shining</i>.'],
+ ['While we ___ in the park, it started to rain.',['played','were playing','have played'],1,'<b>While</b> + việc đang diễn ra trong quá khứ → <i>were playing</i>.'],
+ ['I ___ go out if it is too cold.',['won\'t','am not','didn\'t'],0,'Câu điều kiện loại 1: kết quả dùng <i>will / won\'t + V</i>.'],
+ ['Is it hot there? — No, it ___ hot. It is quite cool.',['isn\'t','doesn\'t','wasn\'t'],0,'Hỏi về lúc này với <i>be</i> → trả lời <i>it isn\'t</i> (be + tính từ).'],
+ ['You ___ swim in the sea during a storm. It is dangerous!',['should','shouldn\'t','will'],1,'Lời khuyên không nên làm: <i>shouldn\'t</i> + V.']
+];
+
+/* ---------- TRẮC NGHIỆM B (15): khẳng định – phủ định – nghi vấn ---------- */
+const QB = [
+ ['Chọn câu <b>phủ định</b> của: <i>It is raining.</i>',['It isn\'t raining.','It doesn\'t raining.','It not is raining.'],0,'Phủ định hiện tại tiếp diễn: <i>is + not + V-ing</i>.'],
+ ['Chọn câu <b>phủ định</b> của: <i>It snowed last night.</i>',['It didn\'t snowed last night.','It didn\'t snow last night.','It doesn\'t snow last night.'],1,'Quá khứ đơn phủ định: <i>didn\'t + V nguyên mẫu</i>.'],
+ ['Chọn câu <b>hỏi</b> của: <i>It will rain tonight.</i>',['Will it rain tonight?','Does it will rain tonight?','Will it rains tonight?'],0,'Câu hỏi với will: <i>Will + S + V</i>.'],
+ ['Chọn câu <b>phủ định</b> của: <i>He plays football when it is sunny.</i>',['He doesn\'t plays football when it is sunny.','He doesn\'t play football when it is sunny.','He isn\'t play football when it is sunny.'],1,'Hiện tại đơn, ngôi he: <i>doesn\'t + V</i> (bỏ -s).'],
+ ['Chọn câu <b>hỏi</b> của: <i>They were swimming in the sea.</i>',['Were they swimming in the sea?','Did they swimming in the sea?','Was they swimming in the sea?'],0,'Quá khứ tiếp diễn: <i>Were + they + V-ing</i>.'],
+ ['Chọn câu <b>phủ định</b> của: <i>We have seen a rainbow today.</i>',['We don\'t see a rainbow today.','We haven\'t seen a rainbow today.','We hasn\'t seen a rainbow today.'],1,'Hiện tại hoàn thành: <i>haven\'t + V3</i> (we → have).'],
+ ['Chọn câu <b>hỏi</b> của: <i>It is going to be windy.</i>',['Is it going to be windy?','Does it going to be windy?','Is it going be windy?'],0,'<i>Is + S + going to + V</i>, đừng bỏ <i>to</i>.'],
+ ['Chọn câu <b>phủ định</b> của: <i>We will go out tonight.</i>',['We won\'t go out tonight.','We don\'t will go out tonight.','We will not going out tonight.'],0,'<i>will not (won\'t) + V nguyên mẫu</i>.'],
+ ['Chọn câu <b>đúng</b>:',['If it will rain, we will stay at home.','If it rains, we will stay at home.','If it rained, we will stay at home.'],1,'Câu điều kiện loại 1: <i>If + hiện tại đơn, will + V</i>.'],
+ ['Chọn câu <b>phủ định</b> của: <i>The wind was blowing hard.</i>',['The wind wasn\'t blowing hard.','The wind didn\'t blowing hard.','The wind not was blowing hard.'],0,'Quá khứ tiếp diễn: <i>wasn\'t + V-ing</i>.'],
+ ['Chọn câu <b>hỏi</b> của: <i>It rained a lot yesterday.</i>',['Does it rain a lot yesterday?','Did it rain a lot yesterday?','Did it rained a lot yesterday?'],1,'Quá khứ đơn: <i>Did + S + V nguyên mẫu</i>.'],
+ ['Chọn câu <b>phủ định</b> của: <i>She is going to wear a coat.</i>',['She isn\'t going to wear a coat.','She doesn\'t going to wear a coat.','She isn\'t going wear a coat.'],0,'<i>is not going to + V</i>.'],
+ ['Is it cold today? — Yes, ___',['it is.','it does.','it was.'],0,'Câu hỏi với <i>is</i> → trả lời ngắn <i>Yes, it is.</i>'],
+ ['Did you get wet? — No, ___',['I didn\'t.','I wasn\'t.','I don\'t.'],0,'Câu hỏi với <i>did</i> → trả lời ngắn <i>No, I didn\'t.</i>'],
+ ['Chọn câu <b>phủ định</b> của: <i>It rains a lot here.</i>',['It doesn\'t rains a lot here.','It doesn\'t rain a lot here.','It isn\'t rain a lot here.'],1,'Hiện tại đơn: <i>doesn\'t + V nguyên mẫu</i> (bỏ -s).']
+];
+
+/* ---------- ĐỌC TO ---------- */
+const PASSAGES = [
+ {id:'p1',t:'Bản tin thời tiết hôm nay',tag:'hiện tại + tương lai',text:'Good morning, everyone. Here is the weather report for today. It is cloudy in the north and it is raining in the centre. The wind is blowing hard, so people aren\'t going to the beach. In the south, it isn\'t raining and the sun is shining. Tomorrow it will be warm, but it won\'t be sunny. Don\'t forget your umbrella!'},
+ {id:'p2',t:'Cuối tuần vừa rồi',tag:'quá khứ + hiện tại hoàn thành + tương lai',text:'Last weekend was terrible. It rained all day on Saturday, so we didn\'t go camping. I was reading a book when my friend called me. We watched films and cooked dinner at home. On Sunday the sun came out, but I was too tired to go outside. I haven\'t been to the beach this month, but if it is sunny next weekend, we will go swimming.'},
+ {id:'p3',t:'Thời tiết đẹp và thời tiết xấu',tag:'khẳng định và phủ định',text:'When the weather is good, I go for a walk and I ride my bike. When it is bad, I don\'t go out. I stay at home, read a book and drink hot tea. I love sunny days, but I don\'t like freezing weather. Yesterday it was windy, so I didn\'t fly my kite. Tomorrow I am going to visit my grandmother, and I will take an umbrella.'}
+];
+
+/* ---------- TỰ NÓI (đo thì đã dùng) ---------- */
+const FREE = [
+ {id:'f1',t:'Hôm nay trời thế nào và em đang làm gì?',hint:'It is … now. I am … -ing. The sun isn\'t … I\'m not …',
+  need:[['prc','+','hiện tại tiếp diễn khẳng định (It is raining…)'],['prc','-','hiện tại tiếp diễn phủ định (It isn\'t snowing…)']]},
+ {id:'f2',t:'Kể về thời tiết hôm qua: em đã làm, đã không làm gì và đang làm gì khi thời tiết thay đổi.',hint:'Yesterday it … I … I didn\'t … I was … -ing when …',
+  need:[['pa','+','quá khứ đơn khẳng định (It rained…)'],['pa','-','quá khứ đơn phủ định (I didn\'t go…)'],['pc','+','quá khứ tiếp diễn (I was walking when…)']]},
+ {id:'f3',t:'Nói về thời tiết ngày mai và kế hoạch của em.',hint:'Tomorrow it will be … It won\'t … I am going to …',
+  need:[['will','+','will khẳng định (It will be sunny…)'],['will','-','won\'t (It won\'t rain…)'],['gt','+','be going to (I am going to…)']]},
+ {id:'f4',t:'Nói về mùa em thích: thói quen và trải nghiệm.',hint:'I love … In summer, I usually … I don\'t … I have (never) …',
+  need:[['ps','+','hiện tại đơn khẳng định (I usually go…)'],['ps','-','hiện tại đơn phủ định (I don\'t like…)'],['pp','*','hiện tại hoàn thành (I have seen… / I have never seen…)']]}
+];
+/* ===== HẾT DỮ LIỆU ===== */
+
+/* ================= TIỆN ÍCH ================= */
+const $ = s=>document.querySelector(s);
+function h(tag,attrs={},html){const e=document.createElement(tag);for(const k in attrs){if(k==='class')e.className=attrs[k];else e.setAttribute(k,attrs[k]);}if(html!=null)e.innerHTML=html;return e;}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function plain(html){const d=document.createElement('div');d.innerHTML=html;return d.textContent.trim();}
+function toast(msg,ms=3500){const t=$('#toast');t.textContent=msg;t.style.display='block';clearTimeout(toast._t);toast._t=setTimeout(()=>t.style.display='none',ms);}
+function store(k,v){try{localStorage.setItem('pa-'+LESSON+':'+k,JSON.stringify(v));}catch(e){}}
+function load(k,d){try{const v=localStorage.getItem('pa-'+LESSON+':'+k);return v?JSON.parse(v):d;}catch(e){return d;}}
+function wc(s){return String(s||'').trim().split(/\s+/).filter(Boolean).length;}
+function sentHTML(s){return s.replace(/\{([^|}]+)\|(\w+)\}/g,(m,w,c)=>`<span class="sw c-${c}">${w}<small>${SND[c]}</small></span>`);}
+function sentPlain(s){return s.replace(/\{([^|}]+)\|(\w+)\}/g,'$1');}
+function dictLine(w){const e=DICT[w];return e?`<b>${w}</b> <span class="ipa">${e[1]}</span> <span class="pos">${e[0]}</span> ${e[2]}`+(e[3]?` <span class="tag c-${e[3]}">${SND[e[3]]}</span>`:''):`<b>${w}</b>`;}
+
+/* ================= CHUẨN HOÁ & CHẤM ================= */
+const CONTR={"i'd":"i would","i'm":"i am","it's":"it is","don't":"do not","can't":"cannot","i'll":"i will"};
+const NUM={"1":"one","2":"two","3":"three","4":"four","5":"five","6":"six","7":"seven","8":"eight","9":"nine","10":"ten"};
+const ALIAS={ok:"okay",tee:"t",favourite:"favorite"};
+function normWord(w){
+  w=w.toLowerCase().replace(/[’`]/g,"'").replace(/[^a-z0-9']/g,'');
+  if(!w)return[];
+  if(CONTR[w])return CONTR[w].split(' ');
+  if(NUM[w])return[NUM[w]];
+  if(ALIAS[w])return ALIAS[w].split(' ');
+  w=w.replace(/'/g,'');
+  return w?[w]:[];
+}
+function tokenize(text){
+  const disp=text.replace(/—/g,' — ').split(/\s+/).filter(Boolean);
+  const toks=[];
+  disp.forEach((d,i)=>{d.split(/[-—]/).forEach(p=>normWord(p).forEach(t=>toks.push({t,i})));});
+  return {disp,toks};
+}
+function spokenTokens(text){const out=[];String(text).replace(/[-—]/g,' ').split(/\s+/).forEach(w=>normWord(w).forEach(t=>out.push(t)));return out;}
+function compare(target,spoken){
+  const {disp,toks}=tokenize(target);
+  const sp=spokenTokens(spoken||'');
+  const n=toks.length,m=sp.length;
+  const L=Array.from({length:n+1},()=>new Uint16Array(m+1));
+  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)L[i][j]=toks[i].t===sp[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  const matched=new Array(n).fill(false);let i=0,j=0;
+  while(i<n&&j<m){if(toks[i].t===sp[j]){matched[i]=true;i++;j++;}else if(L[i+1][j]>=L[i][j+1])i++;else j++;}
+  const dispOk=disp.map(()=>true),dispHas=disp.map(()=>false);
+  toks.forEach((tk,k)=>{dispHas[tk.i]=true;if(!matched[k])dispOk[tk.i]=false;});
+  const got=m?matched.filter(Boolean).length:0;
+  const score=n?Math.round(got/n*100):0;
+  const missed=[];
+  const html=disp.map((d,k)=>{
+    if(!dispHas[k])return esc(d);
+    if(dispOk[k])return `<span class="w-ok">${esc(d)}</span>`;
+    const clean=d.replace(/[^A-Za-z'’-]/g,'');missed.push(clean);
+    return `<button class="w-no" data-say="${esc(clean)}" title="Bấm để nghe từ này">${esc(d)}</button>`;
+  }).join(' ');
+  return {score,html,missed:[...new Set(missed.map(x=>x.toLowerCase()))]};
+}
+
+/* ================= GIỌNG ĐỌC ================= */
+let VOICES=[],EN_VOICE=null;
+const synth=window.speechSynthesis;
+function rankVoice(v){
+  if(!/^en/i.test(v.lang))return -1;let s=0;const n=v.name;
+  if(/en[-_](US|GB)/i.test(v.lang))s+=10;
+  if(/Natural|Neural|Online|Premium|Enhanced/i.test(n))s+=30;
+  if(/Google/i.test(n))s+=18;
+  if(/Samantha|Ava|Allison|Serena|Daniel|Karen|Moira|Aria|Jenny|Guy|Libby|Sonia|Emma|Brian|Ryan/i.test(n))s+=15;
+  if(/Fred|Albert|Bad News|Bells|Boing|Bubbles|Cellos|Jester|Organ|Trinoids|Whisper|Zarvox|Wobble|Superstar|Junior|Ralph|Kathy|Grandma|Grandpa|Rocko|Shelley|Flo|Eddy|Reed|Sandy/i.test(n))s-=40;
+  return s;
+}
+function loadVoices(){
+  if(!synth)return;
+  VOICES=synth.getVoices();
+  const en=VOICES.filter(v=>rankVoice(v)>=0).sort((a,b)=>rankVoice(b)-rankVoice(a));
+  const sel=$('#voiceSel');const saved=load('voice',null);
+  if(!en.length){sel.innerHTML='<option>Không có giọng tiếng Anh</option>';return;}
+  sel.innerHTML=en.map((v,i)=>`<option value="${i}">${esc(v.name)} (${v.lang})</option>`).join('');
+  let idx=0;if(saved){const k=en.findIndex(v=>v.name===saved);if(k>=0)idx=k;}
+  sel.value=idx;EN_VOICE=en[idx];
+  sel.onchange=()=>{EN_VOICE=en[+sel.value];store('voice',EN_VOICE.name);speak('Hello! Let us practise the sounds together.');};
+}
+if(synth){loadVoices();synth.onvoiceschanged=loadVoices;}
+function rate(){return +$('#rate').value;}
+$('#rate').value=load('rate',0.9);$('#rateV').textContent=$('#rate').value;
+$('#rate').oninput=e=>{$('#rateV').textContent=e.target.value;store('rate',+e.target.value);};
+function speak(text,{slow=false,onend}={}){
+  if(!synth){toast('Trình duyệt này không đọc được âm thanh. Hãy dùng Chrome hoặc Safari.');return;}
+  synth.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang=EN_VOICE?EN_VOICE.lang:'en-US';if(EN_VOICE)u.voice=EN_VOICE;
+  u.rate=slow?Math.max(0.5,rate()*0.65):rate();u.pitch=1;
+  if(onend)u.onend=onend;
+  setTimeout(()=>synth.speak(u),40);
+}
+function speakSeq(list,{onDone}={}){
+  if(!synth)return;synth.cancel();let i=0;const token=Symbol();speakSeq.cur=token;
+  const next=()=>{if(speakSeq.cur!==token)return;if(i>=list.length){onDone&&onDone();return;}
+    const u=new SpeechSynthesisUtterance(list[i++]);u.lang=EN_VOICE?EN_VOICE.lang:'en-US';if(EN_VOICE)u.voice=EN_VOICE;u.rate=rate();
+    u.onend=()=>setTimeout(next,220);u.onerror=()=>{onDone&&onDone();};synth.speak(u);};
+  setTimeout(next,40);
+}
+function stopSpeak(){speakSeq.cur=null;synth&&synth.cancel();}
+document.addEventListener('click',e=>{
+  const s=e.target.closest('[data-say]');if(s){speak(s.dataset.say,{slow:true});return;}
+  const p=e.target.closest('[data-hear]');if(p){speak(p.dataset.hear);}
+});
+
+/* ================= GHI ÂM & CHẤM % ================= */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const RESULTS=load('results',{});
+const BLOBS={};
+let STREAM=null,ACTIVE=null;
+async function getStream(){if(STREAM&&STREAM.active)return STREAM;STREAM=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});return STREAM;}
+function pickMime(){if(!window.MediaRecorder)return'';for(const m of['audio/webm;codecs=opus','audio/mp4','audio/webm','audio/ogg'])if(MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m))return m;return'';}
+async function startRec(ctx){
+  if(ACTIVE){const same=ACTIVE.ctx===ctx;stopRec();if(same)return;}
+  stopSpeak();
+  if(!navigator.mediaDevices||!window.MediaRecorder){ctx.ui.msg('Trình duyệt này chưa ghi âm được. Hãy mở bài bằng Chrome (máy tính/Android) hoặc Safari (iPhone).');return;}
+  let s;try{s=await getStream();}catch(e){ctx.ui.msg('Chưa mở được micro. Bấm vào biểu tượng 🔒 trên thanh địa chỉ → cho phép Micro, rồi thử lại.');return;}
+  const mime=pickMime();let mr;try{const o={audioBitsPerSecond:48000};if(mime)o.mimeType=mime;mr=new MediaRecorder(s,o);}catch(e){mr=new MediaRecorder(s);}
+  const st={ctx,mr,chunks:[],finals:[],interim:'',t0:Date.now(),stopping:false,mrDone:false,recDone:!SR};
+  mr.ondataavailable=e=>{if(e.data&&e.data.size)st.chunks.push(e.data);};
+  mr.onstop=()=>{st.blob=new Blob(st.chunks,{type:mr.mimeType||'audio/webm'});st.mrDone=true;finish(st);};
+  if(SR){
+    const r=new SR();r.lang='en-US';r.continuous=true;r.interimResults=true;r.maxAlternatives=1;
+    r.onresult=e=>{let inter='';for(let i=e.resultIndex;i<e.results.length;i++){const res=e.results[i];if(res.isFinal)st.finals.push(res[0].transcript);else inter+=res[0].transcript;}st.interim=inter;ctx.ui.live((st.finals.join(' ')+' '+inter).trim());};
+    r.onerror=e=>{if(['not-allowed','service-not-allowed','network','audio-capture','language-not-supported'].includes(e.error))st.srFail=true;};
+    r.onend=()=>{if(!st.stopping&&!st.srFail){try{r.start();}catch(_){}}else{st.recDone=true;finish(st);}};
+    st.r=r;try{r.start();}catch(_){st.srFail=true;st.recDone=true;}
+  }
+  mr.start();ACTIVE=st;ctx.ui.setRec(true);
+  st.tick=setInterval(()=>{const sec=(Date.now()-st.t0)/1000;ctx.ui.tick(sec);if(sec>=ctx.maxSec)stopRec();},250);
+}
+function stopRec(){
+  const st=ACTIVE;if(!st)return;ACTIVE=null;st.stopping=true;clearInterval(st.tick);st.dur=(Date.now()-st.t0)/1000;
+  st.ctx.ui.setRec(false);st.ctx.ui.live('Đang chấm…');
+  try{st.mr.stop();}catch(_){}
+  if(st.r&&!st.recDone){try{st.r.stop();}catch(_){}setTimeout(()=>{st.recDone=true;finish(st);},2500);}
+}
+function finish(st){
+  if(st.done||!st.mrDone||!st.recDone)return;st.done=true;
+  const c=st.ctx;const transcript=(st.finals.join(' ')+' '+(st.interim||'')).trim();
+  BLOBS[c.key]=st.blob;
+  const useSR=SR&&!st.srFail;
+  const r={label:c.label,target:c.target,transcript,dur:Math.round(st.dur*10)/10,score:null,t:Date.now()};
+  if(useSR&&c.target)r.score=compare(c.target,transcript).score;
+  RESULTS[c.key]=r;store('results',RESULTS);
+  c.ui.done(r,useSR);
+}
+
+function practice({key,label,target,speakText,maxSec=25}){
+  const el=h('div',{class:'pr'});
+  el.innerHTML=`<div class="pr-btns">
+    <button class="b" data-a="model">🔊 Nghe mẫu</button>
+    <button class="b" data-a="slow">🐢 Chậm</button>
+    <button class="b rec" data-a="rec">🎙 Ghi âm</button>
+    <button class="b" data-a="play" disabled>▶ Nghe lại</button>
+    <button class="b" data-a="cmp" disabled>🔁 So sánh</button>
+    <button class="b primary" data-a="send" hidden>📤 Gửi bản ghi này cho thầy/cô</button>
+    <span class="timer"></span><span class="cl"></span></div><div class="live"></div><div class="res"></div>`;
+  const q=s=>el.querySelector(s);
+  const clEl=q('.cl'),sendB=q('[data-a=send]'),recB=q('[data-a=rec]'),playB=q('[data-a=play]'),cmpB=q('[data-a=cmp]'),timer=q('.timer'),live=q('.live'),res=q('.res');
+  let audio=null;
+  const ctx={key,label,target,maxSec,ui:{
+    setRec(on){recB.classList.toggle('on',on);recB.innerHTML=on?'■ Dừng':'🎙 Ghi âm';if(on){res.innerHTML='';live.textContent=SR?'Đang nghe em đọc…':'Đang ghi âm…';}else timer.textContent='';},
+    tick(sec){timer.textContent=Math.floor(sec)+'s / '+maxSec+'s';},
+    live(t){live.textContent=t;},
+    msg(t){live.textContent='';res.innerHTML=`<div class="tip">⚠️ ${esc(t)}</div>`;},
+    done(r,useSR){live.textContent='';showResult(r,useSR);enable();},
+    cloud(state){clEl.className='cl '+(state==='ok'?'sent-ok':state==='bad'?'sent-bad':'sent-wait');clEl.textContent=state==='ok'?'✅ Đã gửi thầy/cô':state==='bad'?'⚠️ Chưa gửi được, đang thử lại…':'☁️ Đang gửi…';if(state==='ok')sendB.hidden=true;}
+  }};
+  function enable(){const has=!!BLOBS[key];playB.disabled=!has;cmpB.disabled=!has;sendB.hidden=!has||!!(RESULTS[key]&&RESULTS[key].sent);if(has){clEl.className='cl sent-wait';clEl.textContent='Nghe lại – thấy ổn thì bấm 📤 Gửi. Chưa ổn thì ghi âm lại.';}}
+  function getAudio(){if(!BLOBS[key])return null;if(audio&&audio._blob===BLOBS[key])return audio;audio=new Audio(URL.createObjectURL(BLOBS[key]));audio._blob=BLOBS[key];return audio;}
+  function showResult(r,useSR){
+    if(useSR&&r.score!=null){
+      const c=compare(target,r.transcript);
+      const cls=c.score>=85?'hi':c.score>=60?'mid':'lo';
+      const msg=c.score>=85?'Rất tốt! Nghe lại bản của em để so sánh với bản mẫu.':c.score>=60?'Khá rồi. Bấm vào các từ màu đỏ để nghe lại, rồi đọc lại nhé.':'Nghe mẫu chậm 🐢 2–3 lần, đọc từng cụm rồi ghi âm lại nhé.';
+      let fixes='';
+      if(c.missed.length){
+        fixes='<div class="fixlist">'+c.missed.slice(0,8).map(w=>{const e=DICT[w.toLowerCase()];return `<button class="fix" data-say="${esc(w)}">🔊 ${esc(w)} ${e?'<span class="ipa">'+e[1]+'</span>':''}</button>`;}).join('')+'</div>';
+        if(c.missed.some(w=>/^(not|no|never)$|n't$|nt$/i.test(w)))fixes+='<div class="tip">💡 Chú ý từ phủ định <b>not / n\'t</b> (doesn\'t, isn\'t, won\'t…): đọc rõ để người nghe biết câu là <b>phủ định</b>.</div>';
+        else if(c.missed.some(w=>/(ed|s|ing)$/i.test(w)))fixes+='<div class="tip">💡 Chú ý đuôi động từ <b>-ed, -s/-es, -ing</b>: mỗi đuôi báo hiệu một thì khác nhau.</div>';
+      }
+      if(!r.transcript)fixes='<div class="tip">Máy chưa nghe được em đọc gì. Hãy nói to, rõ và gần micro hơn.</div>';
+      res.innerHTML=`<span class="score ${cls}">${c.score}%</span>${msg}<div class="diff">${c.html}</div>${r.transcript?'<div class="tip">Máy nghe được: <i>'+esc(r.transcript)+'</i></div>':''}${fixes}`;
+    }else{
+      res.innerHTML=`<div class="tip">Đã ghi âm (${r.dur}s). Bấm "So sánh" để nghe mẫu rồi nghe bản của em. Máy này chưa tự chấm điểm (hãy dùng Chrome để được chấm %). Em tự chấm:</div>
+      <div class="selfrate"><button class="b" data-r="1">😕 Chưa giống</button><button class="b" data-r="2">🙂 Khá giống</button><button class="b" data-r="3">😃 Rất giống</button></div>`;
+      res.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{RESULTS[key].self=+b.dataset.r;store('results',RESULTS);res.querySelectorAll('[data-r]').forEach(x=>x.classList.toggle('primary',x===b));});
+    }
+  }
+  const say=()=>speakText||target;
+  el.addEventListener('click',e=>{
+    const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
+    if(a==='send'){if(!BLOBS[key])return;if(!stuName()){toast('Em ghi tên trước nhé (tab Nộp bài).');return;}enqueueUpload(key,BLOBS[key],RESULTS[key],ctx.ui.cloud);}
+    if(a==='model'){const s=say();Array.isArray(s)?speakSeq(s):speak(s);}
+    if(a==='slow'){const s=say();speak(Array.isArray(s)?s.join(' '):s,{slow:true});}
+    if(a==='rec')startRec(ctx);
+    if(a==='play'){const au=getAudio();if(au){stopSpeak();au.currentTime=0;au.play();}}
+    if(a==='cmp'){const au=getAudio();if(!au)return;const after=()=>{au.currentTime=0;au.play();};const s=say();
+      if(Array.isArray(s))speakSeq(s,{onDone:after});else speak(s,{onend:()=>setTimeout(after,300)});}
+  });
+  if(RESULTS[key]&&RESULTS[key].score!=null&&SR){showResult(RESULTS[key],true);}
+  return el;
+}
+
+/* ================= TRẮC NGHIỆM ================= */
+const QS=load('q',{});
+const SETS={};
+function quizSet(id,box,name,items){
+  const root=$(box);root.innerHTML='';
+  const st=QS[id]||(QS[id]={});
+  const head=h('div',{class:'card setscore'});root.appendChild(head);
+  const total=items.length;
+  const score=()=>items.filter((it,i)=>st[i]&&st[i].first===it.a).length;
+  const upd=()=>{head.innerHTML=`Điểm (tính lần chọn đầu): <b>${score()}/${total}</b> · đã làm ${Object.keys(st).length}/${total}`;};
+  items.forEach((it,i)=>{
+    const c=h('div',{class:'q'});
+    c.innerHTML=`<div class="qt"><span class="qn">${i+1}</span><div>${it.q}</div></div><div class="opts">${it.o.map((o,k)=>`<button class="b opt" data-k="${k}">${o}</button>`).join('')}</div><div class="fb"></div>`;
+    const fb=c.querySelector('.fb'),opts=[...c.querySelectorAll('.opt')];
+    function paint(){
+      c.classList.remove('right','wrong');opts.forEach(b=>b.classList.remove('right','wrong'));
+      const s=st[i];if(!s){fb.innerHTML='';return;}
+      if(s.last===it.a){opts[s.last].classList.add('right');c.classList.add('right');fb.innerHTML='✅ <b>Đúng!</b> '+it.x+(it.reveal?`<div class="rv">${it.reveal}</div>`:'');}
+      else{opts[s.last].classList.add('wrong');c.classList.add('wrong');fb.innerHTML='❌ Chưa đúng. Chọn lại nhé.';}
+    }
+    opts.forEach((b,k)=>b.onclick=()=>{
+      if(st[i]&&st[i].last===it.a)return;
+      if(!st[i])st[i]={first:k};st[i].last=k;store('q',QS);paint();upd();
+      if(k===it.a&&it.sayOnRight)speak(it.sayOnRight);
+    });
+    paint();root.appendChild(c);
+  });
+  upd();
+  SETS[id]={name,total,score,done:()=>Object.keys(st).length,
+    rows:()=>items.map((it,i)=>{const s=st[i];return {part:name,question:`${i+1}. `+(it.qt||plain(it.q)),answer:s?plain(it.o[s.first]):'(chưa làm)',correct:plain(it.o[it.a]),result:s?(s.first===it.a?'Đúng':'Sai'+(s.last===it.a?' (sau đó chọn lại đúng)':'')):'Chưa làm',x:it.x};})};
+}
+
+/* ================= NHẬN DIỆN THÌ & SỬA LỖI CÂU ================= */
+const TN = {ps:'Present simple',prc:'Present continuous',pa:'Past simple',pc:'Past continuous',pp:'Present perfect',will:'Future (will)',gt:'Be going to',c1:'First conditional',modal:'Should / can / must'};
+const TVI = {ps:'hiện tại đơn',prc:'hiện tại tiếp diễn',pa:'quá khứ đơn',pc:'quá khứ tiếp diễn',pp:'hiện tại hoàn thành',will:'tương lai (will)',gt:'tương lai gần (be going to)',c1:'câu điều kiện loại 1',modal:'should / can / must'};
+const IRR_PAST = new Set('went saw ate had came got took made ran rode flew wore drank felt met sat stood thought told said knew gave found left bought brought taught caught began hit slept spent swam sang wrote heard lost kept sold sent built fell froze blew grew drew shone became woke understood did was were'.split(' ').filter(w=>!['did','was','were'].includes(w)));
+const IRR_PP = new Set('been gone seen eaten had come gotten taken made run ridden flown worn drunk felt met sat stood thought told said known given found left bought brought taught caught begun hit slept spent swum sung written heard lost kept sold sent built fallen frozen blown grown drawn shone become woken understood done put cut let set read'.split(' '));
+const IRR_BASE = {went:'go',saw:'see',ate:'eat',had:'have',came:'come',got:'get',took:'take',made:'make',ran:'run',rode:'ride',flew:'fly',wore:'wear',drank:'drink',felt:'feel',met:'meet',sat:'sit',stood:'stand',thought:'think',told:'tell',said:'say',knew:'know',gave:'give',found:'find',left:'leave',bought:'buy',brought:'bring',taught:'teach',caught:'catch',began:'begin',slept:'sleep',spent:'spend',swam:'swim',sang:'sing',wrote:'write',heard:'hear',lost:'lose',kept:'keep',sold:'sell',sent:'send',built:'build',fell:'fall',froze:'freeze',blew:'blow',grew:'grow',drew:'draw',shone:'shine',became:'become',woke:'wake',gone:'go',seen:'see',eaten:'eat',taken:'take',ridden:'ride',flown:'fly',worn:'wear',drunk:'drink',known:'know',given:'give',written:'write',frozen:'freeze',blown:'blow',fallen:'fall',begun:'begin',swum:'swim',done:'do'};
+const NOT_ED = new Set('need bed red speed seed feed weed hundred indeed breed proceed succeed exceed bleed'.split(' '));
+const ADJ_ING = new Set('boring interesting exciting amazing freezing annoying relaxing tiring surprising disappointing worrying lightning morning evening nothing something anything everything thing spring king ring wedding clothing building ceiling during bring sing'.split(' '));
+const ADJ_PREV = new Set('am is are be been feel feels felt get gets got so very too really quite look looks a an the me us him her them'.split(' '));
+const BASEV = new Set('rain snow shine blow pour freeze melt stop drop cancel expect hope go play stay like love hate watch read ride take wear get feel enjoy prefer cook drink eat swim walk fly wait think want need bring sleep relax visit look see hear start make meet come stand sit help dry wash buy have do be use carry fall hit hurt rise turn begin finish miss'.split(' '));
+const SUBJ3 = new Set(['it','he','she']);
+const AUX = new Set('will won\'t do does did don\'t doesn\'t didn\'t can could should must may might shall would to let help make can\'t shouldn\'t mustn\'t watch watched see saw hear heard feel felt'.split(' '));
+const ADVS = new Set('always usually often sometimes never rarely also still just probably already ever'.split(' '));
+function ingOf(v){
+  if(/^(shine|ride|take|make|come|have|freeze|hope|leave|write|use|dance)$/.test(v))return v.slice(0,-1)+'ing';
+  if(/^(swim|get|run|sit|stop|plan|drop|begin|hit)$/.test(v))return v+v.slice(-1)+'ing';
+  return v+'ing';
+}
+function s3Of(v){
+  if(v==='have')return 'has';if(v==='be')return 'is';if(v==='do')return 'does';
+  if(/(s|x|z|ch|sh|o)$/.test(v))return v+'es';
+  if(/[^aeiou]y$/.test(v))return v.slice(0,-1)+'ies';
+  return v+'s';
+}
+function baseOf(w){
+  if(BASEV.has(w))return null;               // đã là nguyên mẫu
+  if(IRR_BASE[w]&&BASEV.has(IRR_BASE[w]))return IRR_BASE[w];
+  const c=[];
+  if(/ies$/.test(w))c.push(w.slice(0,-3)+'y');
+  if(/es$/.test(w))c.push(w.slice(0,-2));
+  if(/s$/.test(w))c.push(w.slice(0,-1));
+  if(/ied$/.test(w))c.push(w.slice(0,-3)+'y');
+  if(/ed$/.test(w)){c.push(w.slice(0,-2));c.push(w.slice(0,-1));c.push(w.slice(0,-3));}
+  if(/ing$/.test(w)){const b=w.slice(0,-3);c.push(b);c.push(b+'e');c.push(b.slice(0,-1));}
+  return c.find(x=>BASEV.has(x))||null;
+}
+function norm(raw){
+  let t=' '+String(raw).toLowerCase().replace(/[’`]/g,"'")+' ';
+  t=t.replace(/\bwon't\b/g,'will not').replace(/\bcan't\b/g,'can not').replace(/\bcannot\b/g,'can not').replace(/\bi'm\b/g,'i am')
+   .replace(/\b(it|he|she|that|there|what|who|here)'s\s+(been|gone|seen|done|had|already|just|ever|\w+ed)\b/g,'$1 has $2')
+   .replace(/\b(it|he|she|that|there|what|who|here)'s\b/g,'$1 is')
+   .replace(/n't\b/g,' not').replace(/'re\b/g,' are').replace(/'ll\b/g,' will').replace(/'ve\b/g,' have').replace(/'m\b/g,' am').replace(/'d\b/g,' would')
+   .replace(/[.,!?;:()"]/g,' | ').replace(/\s+/g,' ');
+  return t;
+}
+function detect(raw){
+  const t0=norm(raw);let t=t0;const out=[];
+  const isPP=w=>/ed$/.test(w)&&!NOT_ED.has(w)||IRR_PP.has(w);
+  const take=(re,fn)=>{t=t.replace(re,(...a)=>{const r=fn(...a);if(!r)return a[0];out.push({t:r[0],p:r[1]});return ' ## ';});};
+  const neg=s=>/not|never/.test(s||'')?'-':'+';
+  const NOTGO='school|the|a|an|my|our|his|her|their|your|bed|work|some|this|that|home';
+  take(new RegExp('\\b(?:am|is|are)(?: (not|never))? going to (?!(?:'+NOTGO+')\\b)\\w+','g'),(m,n)=>['gt',neg(n)]);
+  take(new RegExp('\\b(?:am|is|are) \\w+ going to (?!(?:'+NOTGO+')\\b)\\w+','g'),()=>['gt','+']);
+  take(/\bwill(?: (not|never))?(?: (?:also|probably|definitely|certainly|still|just))? \w+/g,(m,n)=>['will',neg(n)]);
+  const ingOK=w=>/ing$/.test(w)&&!ADJ_ING.has(w);
+  take(/\b(?:was|were)(?: (not|never))? (?:\w+ly )?(\w+)/g,(m,n,w)=>ingOK(w)?['pc',neg(n)]:null);
+  take(/\b(?:was|were) (?:it|he|she|i|you|we|they|the \w+) (\w+)/g,(m,w)=>ingOK(w)?['pc','+']:null);
+  take(/\b(?:am|is|are)(?: (not|never))? (?:\w+ly )?(\w+)/g,(m,n,w)=>ingOK(w)?['prc',neg(n)]:null);
+  take(/\b(?:am|is|are) (?:it|he|she|i|you|we|they|the \w+) (\w+)/g,(m,w)=>ingOK(w)?['prc','+']:null);
+  take(/\b(?:have|has)((?: (?:not|never|already|just|ever|always|really|also))*) (\w+)/g,(m,a,w)=>isPP(w)?['pp',neg(a)]:null);
+  take(/\b(?:have|has) (?:i|you|we|they|he|she|it|the \w+|\w+) ((?:(?:ever|already|just|not|never) )*)(\w+)/g,(m,a,w)=>isPP(w)?['pp',neg(a)]:null);
+  take(/\bdid(?: (not|never))? \w+/g,(m,n)=>['pa',neg(n)]);
+  take(/\b(?:was|were)(?: (not|never))?\b/g,(m,n)=>['pa',neg(n)]);
+  take(/\b(?:should|must|can|could|may|might|shall)(?: (not|never))? \w+/g,(m,n)=>['modal',neg(n)]);
+  take(/\b(?:do|does)(?: (not|never))? \w+/g,(m,n)=>['ps',neg(n)]);
+  take(/\b(?:am|is|are)(?: (not|never))?\b/g,(m,n)=>['ps',neg(n)]);
+  take(/\b(?:have|has)(?: (not))? (?!to\b)\w+/g,(m,n)=>['ps',neg(n)]);
+  // quá khứ thường / bất quy tắc
+  const toks=t.split(' ').filter(Boolean);
+  toks.forEach((w,i)=>{
+    const prev=toks[i-1]||'',pp=toks[i-2]||'';
+    const past=IRR_PAST.has(w)||(/ed$/.test(w)&&w.length>3&&!NOT_ED.has(w)&&!ADJ_PREV.has(prev)&&!ADJ_PREV.has(pp+'')&&prev!=='##');
+    if(past&&w!=='#'&&w!=='##')out.push({t:'pa',p:prev==='never'?'-':'+'});
+  });
+  // hiện tại đơn với động từ thường
+  const V3=w=>{const b=baseOf(w);return b&&BASEV.has(b)&&!/ing$|ed$/.test(w)&&!IRR_BASE[w];};
+  take(/\b(?:it|he|she)(?: (always|usually|often|sometimes|never|rarely))? (\w+)/g,(m,a,w)=>V3(w)?['ps',a==='never'?'-':'+']:null);
+  take(/\b(?:i|you|we|they|people|children|kids|friends|students)(?: (always|usually|often|sometimes|never|rarely))? (\w+)/g,(m,a,w)=>BASEV.has(w)&&w!=='be'?['ps',a==='never'?'-':'+']:null);
+  if(/\b(if|unless)\b/.test(t0)&&out.some(x=>x.t==='will'))out.push({t:'c1',p:/\b(not|never)\b/.test(t0)?'-':'+'});
+  return out;
+}
+function hasTense(text,tense,pol){
+  const d=detect(text);
+  if(tense==='c1')return d.some(x=>x.t==='c1');
+  return d.some(x=>x.t===tense&&x.p===pol);
+}
+
+/* ---------- SỬA LỖI NGỮ PHÁP (mức token) ---------- */
+function tokenize2(text){return String(text).match(/[A-Za-z']+|[0-9]+|[^A-Za-z0-9'\s]/g)||[];}
+function keepCase(o,n){return o[0]&&o[0]!==o[0].toLowerCase()?n[0].toUpperCase()+n.slice(1):n;}
+function grammar(text,tgt){
+  const tk=tokenize2(text),lw=tk.map(x=>x.toLowerCase());
+  const ops=new Array(tk.length).fill(null);   // {rep:'..'|'' (xoá), pre:'..'}
+  const msgs=[];
+  const isW=i=>i>=0&&i<tk.length&&/^[a-z']+$/.test(lw[i]);
+  const setOp=(i,o,msg)=>{if(!ops[i]){ops[i]=o;msgs.push(msg);}};
+  for(let i=0;i<tk.length;i++){
+    const w=lw[i];if(!isW(i))continue;
+    let j=i+1;while(isW(j)&&ADVS.has(lw[j]))j++;
+    const nx=lw[j],nx1=isW(j+1)?lw[j+1]:'';
+    // 1. it/he/she + động từ nguyên mẫu (thiếu -s)
+    if(SUBJ3.has(w)&&isW(j)&&BASEV.has(nx)&&!['be','have','do'].includes(nx)&&!AUX.has(lw[i-1]||'')){
+      if(tgt==='prc'||NOW_SIG.test(text))setOp(j,{rep:'is '+ingOf(nx)},`<b>${tk[i]} ${nx}</b> → việc đang xảy ra: <b>is + V-ing</b> → <b>is ${ingOf(nx)}</b>.`);
+      else setOp(j,{rep:keepCase(tk[j],s3Of(nx))},`<b>${tk[i]} ${nx}</b> → ngôi he/she/it ở hiện tại đơn: động từ thêm <b>-s/-es</b> → <b>${s3Of(nx)}</b>.`);
+    }
+    if(/^(i|you|we|they)$/.test(w)&&isW(j)&&BASEV.has(nx)&&!['be','have','do'].includes(nx)&&!AUX.has(lw[i-1]||'')&&(tgt==='prc'||NOW_SIG.test(text))&&!/^(usually|always|often|sometimes|never|rarely)$/.test(lw[i+1]||'')){
+      setOp(j,{rep:(w==='i'?'am ':'are ')+ingOf(nx)},`<b>${tk[i]} ${nx}</b> → việc đang xảy ra lúc nói: <b>${w==='i'?'am':'are'} + V-ing</b> → <b>${w==='i'?'am':'are'} ${ingOf(nx)}</b>.`);
+    }
+    // 2. trợ động từ / modal / to + dạng sai
+    if(AUX.has(w)||w==='not'&&AUX.has(lw[i-1]||'')){
+      let k=i+1;if(lw[k]==='not'||lw[k]==='never')k++;
+      const wd=lw[k];
+      if(isW(k)&&wd&&!(w==='to'&&/ing$/.test(wd)&&/^(go|goes|went|going|gone)$/.test(lw[i-1]||''))){const b=baseOf(wd);
+        if(b&&!(w==='to'&&!/^(rain|snow|shine|blow|pour|go|play|stay|swim|walk|wear|take|get|watch|read|ride|cook|eat|drink|fly|wait|visit|relax)$/.test(b)))
+          setOp(k,{rep:keepCase(tk[k],b)},`Sau <b>${tk[i]}</b> dùng động từ <b>nguyên mẫu</b>: <b>${wd}</b> → <b>${b}</b>.`);
+      }
+      if(isW(k)&&lw[k]==='to'&&/^(will|can|could|should|must|may|might|shall|won't|can't|shouldn't|mustn't)$/.test(w)){
+        setOp(k,{rep:''},`Sau <b>${tk[i]}</b> không có <b>to</b>.`);
+      }
+    }
+    // 3. do/does với chủ ngữ
+    if(/^(he|she|it)$/.test(w)&&/^(don't|do)$/.test(lw[i+1]||''))setOp(i+1,{rep:keepCase(tk[i+1],lw[i+1]==='do'?'does':'doesn\'t')},`<b>${tk[i]}</b> đi với <b>doesn't / does</b>.`);
+    if(/^(i|you|we|they)$/.test(w)&&/^(doesn't|does)$/.test(lw[i+1]||''))setOp(i+1,{rep:keepCase(tk[i+1],lw[i+1]==='does'?'do':'don\'t')},`<b>${tk[i]}</b> đi với <b>don't / do</b>.`);
+    // 4. chia động từ be
+    const be=lw[i+1];
+    if(w==='i'&&/^(is|are)$/.test(be||''))setOp(i+1,{rep:'am'},'<b>I</b> đi với <b>am</b>.');
+    if(/^(he|she|it|weather|wind|sun)$/.test(w)&&/^(are|am)$/.test(be||''))setOp(i+1,{rep:'is'},`<b>${tk[i]}</b> đi với <b>is</b>.`);
+    if(/^(you|we|they)$/.test(w)&&/^(is|am)$/.test(be||''))setOp(i+1,{rep:'are'},`<b>${tk[i]}</b> đi với <b>are</b>.`);
+    if(/^(you|we|they)$/.test(w)&&be==='was')setOp(i+1,{rep:'were'},`<b>${tk[i]}</b> đi với <b>were</b>.`);
+    // 5. be + động từ nguyên mẫu / danh từ thời tiết thiếu -y
+    if(/^(am|is|are|was|were)$/.test(w)&&lw[i-1]!=='there'&&lw[i-1]!=='here'){
+      let k=i+1;if(lw[k]==='not')k++;
+      const wd=lw[k];
+      const ADJ_OK=/^(dry|hurt|turn|miss)$/;
+      if(isW(k)&&BASEV.has(wd)&&!ADJ_OK.test(wd)&&!['be','have','do','go','get','look','see','use','like','help','love','hate','want','need','enjoy','prefer'].includes(wd)||(isW(k)&&['go','get'].includes(wd)&&false)){
+        setOp(k,{rep:keepCase(tk[k],ingOf(wd))},`<b>${tk[i]} ${wd}</b> → sau be cần <b>V-ing</b> (đang xảy ra): <b>${ingOf(wd)}</b>. Muốn tả trạng thái thì dùng tính từ (rainy, snowy).`);
+      }else if(isW(k)&&{sun:'sunny',cloud:'cloudy',wind:'windy',storm:'stormy',fog:'foggy'}[wd]){
+        const a={sun:'sunny',cloud:'cloudy',wind:'windy',storm:'stormy',fog:'foggy'}[wd];
+        setOp(k,{rep:a},`<b>${wd}</b> là danh từ; sau be cần tính từ: <b>${a}</b>.`);
+      }
+      if(/^weather$/.test(lw[i-1]||'')&&isW(k)&&/^(raining|snowing)$/.test(wd)){
+        setOp(i-1,{rep:(i-1===0||(lw[i-2]==='the'&&i-2===0))?'It':'it'},'Không nói <b>the weather is raining</b>; nói <b>It is raining</b> hoặc <b>The weather is rainy</b>.');
+        if(lw[i-2]==='the'&&!ops[i-2])ops[i-2]={rep:''};
+      }
+    }
+    // 5b. be not + động từ thường (cần do/does)
+    {const DO=/^(like|love|hate|want|need|enjoy|prefer|have|know)$/;
+     const PERS=/^(i|you|we|they|he|she)$/.test(lw[i-1]||'');
+     if(PERS&&/^(am|is|are)$/.test(w)&&lw[i+1]==='not'&&DO.test(lw[i+2]||'')){setOp(i,{rep:w==='is'?'does':'do'},`Với động từ thường dùng <b>${w==='is'?'doesn\'t':'don\'t'} + V</b>, không dùng <b>${w} not + V</b>.`);}
+     if(PERS&&/^(isn't|aren't)$/.test(w)&&DO.test(lw[i+1]||'')){setOp(i,{rep:w==='isn\'t'?'doesn\'t':'don\'t'},`Với động từ thường dùng <b>${w==='isn\'t'?'doesn\'t':'don\'t'} + V</b>.`);}
+     if(w==="i'm"&&lw[i+1]==='not'&&DO.test(lw[i+2]||'')){setOp(i,{rep:'I'},'Với động từ thường dùng <b>I don\'t + V</b>.');ops[i+1]={rep:'don\'t'};}
+    }
+    // 6. be going + động từ (thiếu to)
+    if(w==='going'&&/^(am|is|are|was|were)$/.test(lw[i-1]||'')&&isW(i+1)&&BASEV.has(lw[i+1])&&lw[i+1]!=='to')
+      setOp(i,{rep:tk[i]+' to'},'<b>be going to + V</b>: thiếu <b>to</b>.');
+    // 7. cụm từ hay sai
+    if(/^(go|goes|went|going|gone)$/.test(w)&&lw[i+1]==='to'&&/^(swimming|camping|hiking|shopping|fishing|skiing|jogging)$/.test(lw[i+2]||''))
+      setOp(i+1,{rep:''},`<b>${w} ${lw[i+2]}</b> không có <b>to</b>.`);
+    if(/^(go|goes|went|going)$/.test(w)&&lw[i+1]==='to'&&(lw[i+2]==='picnic'||(lw[i+2]==='a'&&lw[i+3]==='picnic')||(lw[i+2]==='the'&&lw[i+3]==='picnic')))
+      {const pk=lw[i+2]==='picnic';setOp(i,{rep:keepCase(tk[i],w==='went'?'had':w==='goes'?'has':w==='going'?'having':'have')},'Nói <b>have a picnic</b> (hoặc <b>go on a picnic</b>), không nói go to picnic.');ops[i+1]={rep:pk?'a':''};}
+    if(/^(play|plays|played|playing)$/.test(w)&&/^(swimming|camping|hiking|shopping)$/.test(lw[i+1]||''))
+      setOp(i,{rep:keepCase(tk[i],{play:'go',plays:'goes',played:'went',playing:'going'}[w])},`Dùng <b>go ${lw[i+1]}</b>, không dùng play.`);
+    if(w==='in'&&lw[i+1]==='home'&&/^(stay|stayed|stays|staying)$/.test(lw[i-1]||''))setOp(i,{rep:keepCase(tk[i],'at')},'<b>stay at home</b>.');
+    if(w==='in'&&lw[i+1]==='the'&&lw[i+2]==='weekend')setOp(i,{rep:keepCase(tk[i],'at')},'<b>at the weekend</b>.');
+    if(/^(raining|snowing|pouring|rains|snows|rained|snowed|rain|snow|pour)$/.test(w)&&/^(heavy|strong|big)$/.test(lw[i+1]||''))setOp(i+1,{rep:'heavily'},'Bổ nghĩa cho động từ dùng trạng từ: <b>heavily</b>.');
+    if(/^(strong|big)$/.test(w)&&/^(rain|snow)$/.test(lw[i+1]||''))setOp(i,{rep:keepCase(tk[i],'heavy')},'<b>heavy rain / heavy snow</b>.');
+    if(w==='very'&&{rain:1,snow:1,sun:1,cloud:1,wind:1}[lw[i+1]])setOp(i+1,{rep:{rain:'rainy',snow:'snowy',sun:'sunny',cloud:'cloudy',wind:'windy'}[lw[i+1]]},'<b>very</b> + tính từ: rainy, snowy, sunny…');
+  }
+  // 8. If + will trong mệnh đề if
+  for(let i=0;i<tk.length;i++){
+    if(lw[i]!=='if')continue;
+    let k=i+1;while(k<tk.length&&tk[k]!==','&&lw[k]!=='will'&&lw[k]!=='won\'t')k++;
+    if(k<tk.length&&(lw[k]==='will'||lw[k]==='won\'t')&&tk[k-1]!==','){
+      const subj=lw[i+1];const s3=SUBJ3.has(subj)||(/^(the|this)$/.test(subj)&&!/s$/.test(lw[i+2]||''));
+      let v=k+1,neg=false;if(lw[v]==='not'){neg=true;v++;}
+      if(lw[k]==='won\'t')neg=true;
+      if(isW(v)&&BASEV.has(lw[v])){
+        const vb=lw[v];
+        if(neg){setOp(k,{rep:s3?'doesn\'t':'don\'t'},'Mệnh đề <b>if</b> dùng hiện tại đơn, không dùng will.');if(lw[k+1]==='not')ops[k+1]={rep:''};}
+        else{setOp(k,{rep:''},'Mệnh đề <b>if</b> dùng hiện tại đơn, không dùng will.');if(!ops[v])ops[v]={rep:vb==='be'?(s3?'is':subj==='i'?'am':'are'):keepCase(tk[v],s3?s3Of(vb):vb)};}
+      }
+    }
+  }
+  return {tk,ops,msgs};
+}
+function joinTokens(arr){
+  let s='';
+  arr.forEach((t,i)=>{if(!t&&t!=='')return;if(i===0||/^[,.!?;:)]$/.test(t)||!t)s+=t;else s+=(s&&!/[(]$/.test(s)?' ':'')+t;});
+  return s.replace(/\s+/g,' ').trim();
+}
+function escT(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function markup(text,tgt){
+  const g=grammar(text,tgt);const o=[],f=[];
+  g.tk.forEach((t,i)=>{
+    const op=g.ops[i];
+    if(!op){o.push(escT(t));f.push(escT(t));return;}
+    o.push(`<span class="mk-s">${escT(t)}</span>`);
+    if(op.rep)f.push(`<span class="mk-f">${escT(op.rep)}</span>`);
+  });
+  const fixedPlain=joinTokens(g.tk.map((t,i)=>g.ops[i]?g.ops[i].rep:t));
+  return {orig:joinTokens(o),fixed:joinTokens(f),fixedPlain,msgs:g.msgs,changed:g.msgs.length>0};
+}
+const PAST_SIG=/\b(yesterday|last (?:night|week|weekend|month|year|summer|winter|spring|autumn|sunday|monday|tuesday|wednesday|thursday|friday|saturday)|\w+ ago|in (?:19|20)\d\d)\b/i;
+const FUT_SIG=/\b(tomorrow|next (?:week|weekend|month|year|summer|winter|sunday|monday|saturday)|tonight|soon)\b/i;
+const NOW_SIG=/\b(right now|at the moment|now)\b/i;
+function analyzeSentence(text,target){
+  const items=[];const raw=String(text||'').trim();
+  const words=(raw.match(/[A-Za-z']+/g)||[]);
+  if(words.length<3){return {ok:false,items:[{k:'content',m:'Câu còn ngắn. Hãy viết một câu đầy đủ (chủ ngữ + động từ + thông tin về thời tiết hoặc hoạt động).'}],mk:null,tenses:[]};}
+  const mk=markup(raw,target&&target[0]);
+  mk.msgs.forEach(m=>items.push({k:'err',m}));
+  const d=detect(raw);const tset=[...new Set(d.map(x=>x.t))];
+  if(PAST_SIG.test(raw)&&!tset.some(x=>x==='pa'||x==='pc'))items.push({k:'logic',m:'Câu có mốc thời gian <b>trong quá khứ</b> (yesterday, last…, ago) nên cần dùng <b>quá khứ đơn / quá khứ tiếp diễn</b>.'});
+  else if(PAST_SIG.test(raw)&&tset.includes('pp'))items.push({k:'logic',m:'Có mốc quá khứ rõ ràng (yesterday, last…, ago) thì dùng <b>quá khứ đơn</b>, không dùng hiện tại hoàn thành.'});
+  if(FUT_SIG.test(raw)&&tset.length&&tset.every(x=>['pa','pc','pp'].includes(x)))items.push({k:'logic',m:'Câu nói về <b>tương lai</b> (tomorrow, next…, tonight) nên dùng <b>will / be going to</b>.'});
+  if(NOW_SIG.test(raw)&&!/\b(not now|until now)\b/i.test(raw)&&!tset.includes('prc')&&tset.includes('ps')&&d.some(x=>x.t==='ps')&&/\b(rain|snow|shine|blow|play|go|stay|watch|read)s?\b/i.test(raw)&&!/\b(usually|always|often|every)\b/i.test(raw))
+    items.push({k:'logic',m:'<b>now / at the moment</b> → việc đang xảy ra, dùng <b>hiện tại tiếp diễn</b> (is raining…).'});
+  if(!/^[A-Z]/.test(raw))items.push({k:'content',m:'Nhớ viết hoa chữ cái đầu câu.'});
+  if(!/[.!?]$/.test(raw))items.push({k:'content',m:'Nhớ có dấu chấm (.) cuối câu.'});
+  let tenseOk=true,tmsg='';const sigN=items.length;
+  if(target){
+    const [tn,pol]=target;
+    const hit=hasTense(raw,tn,pol);
+    if(!hit){
+      tenseOk=false;for(let q=items.length-1;q>=0;q--)if(items[q].k==='logic'&&q<sigN)items.splice(q,1);
+      const same=tset.includes(tn);
+      const polName=pol==='+'?'khẳng định':'phủ định';
+      if(same)items.push({k:'logic',m:`Em đã dùng đúng thì <b>${TVI[tn]}</b>, nhưng đề cần câu <b>${polName}</b>.`});
+      else if(tset.length)items.push({k:'logic',m:`Câu của em đang dùng: <b>${tset.map(x=>TVI[x]).join(', ')}</b>. Đề này cần <b>${TVI[tn]}</b> (${polName}).`});
+      else items.push({k:'logic',m:`Máy chưa nhận ra cấu trúc thì. Đề này cần <b>${TVI[tn]}</b> (${polName}). Xem khung gợi ý nhé.`});
+    }
+  }
+  const bad=items.some(x=>x.k==='err'||x.k==='logic');
+  if(!bad)items.unshift({k:'ok',m:'Câu của em đúng thì, đúng ngữ pháp. Rất tốt!'+(items.length?' (còn vài lưu ý nhỏ bên dưới)':'')});
+  return {ok:!bad,items,mk,tenses:tset,tenseOk};
+}
+/* tự nói: kiểm tra từng yêu cầu */
+function analyzeSpeech(text,need){
+  const d=detect(text);
+  return need.map(([tn,pol,label])=>({label,ok:tn==='c1'?d.some(x=>x.t==='c1'):d.some(x=>x.t===tn&&(pol==='*'||x.p===pol))}));
+}
+
+
+/* ================= GIAO DIỆN BÀI CÁC THÌ & THỜI TIẾT ================= */
+Object.assign(CONTR,{"doesn't":"does not","isn't":"is not","aren't":"are not","wasn't":"was not","weren't":"were not","haven't":"have not","hasn't":"has not","didn't":"did not","won't":"will not","shouldn't":"should not","mustn't":"must not","we'll":"we will","it'll":"it will","you're":"you are","we're":"we are","they're":"they are","he's":"he is","she's":"she is","that's":"that is","what's":"what is","there's":"there is","let's":"let us","couldn't":"could not","wouldn't":"would not"});
+const TID = Object.fromEntries(TENSES.map(t=>[t.id,t]));
+const KIND = {'+':['p','＋'],'-':['n','－'],'?':['qq','？']};
+function speakBtn(txt){return `<button class="b" data-hear="${esc(txt)}" style="padding:1px 9px" aria-label="Nghe">🔊</button>`;}
+
+/* ---------- ① CÁC THÌ ---------- */
+const TREAD = load('tread',{});
+function buildTenses(){
+  const place={tlPast:['pa','pc'],tlMid:['pp'],tlNow:['ps','prc'],tlFut:['will','gt','c1']};
+  Object.entries(place).forEach(([id,list])=>{
+    $('#'+id).innerHTML=list.map(k=>`<button class="tl-chip tc-${k}" data-go="${k}">${TID[k].n}<small>${TID[k].vi}</small></button>`).join('');
+  });
+  document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{const el=$('#tc-'+b.dataset.go);el&&el.scrollIntoView({behavior:'smooth',block:'start'});});
+  const box=$('#tenseBox');box.innerHTML='';
+  TENSES.forEach((t,i)=>{
+    const ex=r=>`<div class="exl"><span class="kk ${KIND[r[0]][0]}">${KIND[r[0]][1]}</span><div class="tx"><div class="en">${esc(r[1])}</div><div class="vn">${esc(r[2])}</div></div>${speakBtn(r[1])}</div>`;
+    const c=h('article',{class:`tcard tc-${t.id}`,id:'tc-'+t.id});
+    c.innerHTML=`<header><span style="font-size:28px">${t.e}</span><h3>${i+1}. ${t.n}</h3><span class="vi-t">${t.vi}</span></header>
+    <div class="body">
+      <div class="forms"><div class="fm p"><small>＋ KHẲNG ĐỊNH</small>${esc(t.form.p)}</div><div class="fm n"><small>－ PHỦ ĐỊNH</small>${esc(t.form.n)}</div><div class="fm qq"><small>？ CÂU HỎI</small>${esc(t.form.q)}</div></div>
+      <div class="subh">Dùng khi nào?</div><ul>${t.use.map(u=>`<li>${u}</li>`).join('')}</ul>
+      <div class="sigline"><b>Dấu hiệu:</b> ${t.sig.split(', ').map(s=>`<span class="chipw">${esc(s)}</span>`).join(' ')}</div>
+      <div class="subh">🌦 Nói về thời tiết</div>${t.ex.map(ex).join('')}
+      <div class="subh">🏃 Nói về hoạt động</div>${t.act.map(ex).join('')}
+      <div class="mbox" style="margin-top:8px">📝 <b>Lưu ý:</b> ${t.note}</div>
+      <div class="mist">❌ <s>${esc(t.err[0])}</s> &nbsp; ✅ <b class="g">${esc(t.err[1])}</b></div>
+      <div class="rd"><label><input type="checkbox" ${TREAD[t.id]?'checked':''}> ✅ Em đã đọc phần này</label></div>
+    </div>`;
+    c.querySelector('.rd input').onchange=e=>{TREAD[t.id]=e.target.checked;store('tread',TREAD);};
+    box.appendChild(c);
+  });
+  $('#cmpTbl').innerHTML='<tr><th>Thì</th><th>Khẳng định ＋</th><th>Phủ định －</th><th>Dấu hiệu</th></tr>'+TENSES.map(t=>`<tr class="tc-${t.id}"><td>${t.n}<br><small style="font-weight:500;color:var(--muted)">${t.vi}</small></td><td>${esc(t.form.p)}</td><td>${esc(t.form.n)}</td><td>${esc(t.sig)}</td></tr>`).join('');
+}
+
+/* ---------- ② TỪ VỰNG ---------- */
+function showVocab(w,em){
+  const e=WORDS[w];
+  $('#wcV').innerHTML=`<div class="wc-top"><span class="em">${em||''}</span><span class="wc-w">${esc(w)}</span><span class="ipa">${e[0]}</span><span class="pos">${esc(e[1])}</span><button class="b" data-hear="${esc(w)}" style="padding:2px 10px">🔊</button><button class="b" data-say="${esc(w)}" style="padding:2px 10px">🐢</button></div><div class="wc-vi">${esc(e[2])}</div>`;
+  speak(w);
+}
+function buildVocab(){
+  const box=$('#vocabBox');box.innerHTML='';
+  VGROUPS.forEach(g=>{
+    const d=h('div',{class:'vgrp'});
+    d.innerHTML=`<h3>${g.t}</h3><div class="chips">${g.ws.map(([w,em])=>`<button class="vw" data-w="${w}" data-em="${em}">${em} ${w}</button>`).join('')}</div>`;
+    box.appendChild(d);
+  });
+  box.addEventListener('click',e=>{const b=e.target.closest('.vw');if(!b)return;box.querySelectorAll('.vw.on').forEach(x=>x.classList.remove('on'));b.classList.add('on');showVocab(b.dataset.w,b.dataset.em);});
+  const ph=(id,list)=>{$(id).innerHTML=list.map(([p,vi,em])=>`<button class="phr" data-hear="${esc(p)}"><span class="em">${em}</span><span><b>${esc(p)}</b> <span class="ipa">/${phraseIpa(p)}/</span><br><span class="vn">${esc(vi)}</span></span></button>`).join('');};
+  ph('#phGood',PHRASES.good);ph('#phBad',PHRASES.bad);
+}
+
+/* ---------- ③ BRAINSTORM ---------- */
+const BS = load('bs',{});
+const TRC = load('trc',{});
+async function viTranslate(en){
+  if(TRC[en])return TRC[en];
+  const r=await fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(en)+'&langpair=en|vi');
+  const j=await r.json();const v=j&&j.responseData&&j.responseData.translatedText;
+  if(!v||/MYMEMORY|INVALID|QUERY LENGTH/i.test(v))throw new Error('x');
+  TRC[en]=v;store('trc',TRC);return v;
+}
+function buildSignals(){
+  const sb=$('#sigBox');
+  sb.innerHTML=SIGNALS.map(([s,k],i)=>`<button class="sg tc-${k}" data-i="${i}">${esc(s)}</button>`).join('');
+  sb.onclick=e=>{
+    const b=e.target.closest('.sg');if(!b)return;
+    sb.querySelectorAll('.sg.on').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+    const [s,k]=SIGNALS[+b.dataset.i];const t=TID[k];
+    const ex=t.ex[0];
+    $('#sigOut').innerHTML=`<div class="tc-${k}"><span class="need">${t.n} · ${t.vi}</span></div>
+      <div class="fm p" style="margin-top:6px;display:inline-block"><small>＋</small>${esc(t.form.p)}</div> <div class="fm n" style="margin-top:6px;display:inline-block"><small>－</small>${esc(t.form.n)}</div>
+      <div class="exl"><span class="kk p">＋</span><div class="tx"><div class="en">${esc(ex[1])}</div><div class="vn">${esc(ex[2])}</div></div>${speakBtn(ex[1])}</div>
+      <div class="exl"><span class="kk n">－</span><div class="tx"><div class="en">${esc(t.act[1][1])}</div><div class="vn">${esc(t.act[1][2])}</div></div>${speakBtn(t.act[1][1])}</div>`;
+  };
+}
+function bsCount(){let n=0,tot=0;SITUATIONS.forEach(s=>s.q.forEach((p,i)=>{tot++;if(BS[s.id+'-'+i]&&BS[s.id+'-'+i].ok)n++;}));return {n,tot};}
+function renderFb(box,res,text){
+  const icon={err:'❌',logic:'🧠',content:'📝',ok:'✅'};
+  let html=`<div class="verdict ${res.ok?'ok':'no'}">${res.ok?'✅ Đúng thì và đúng ngữ pháp':'⚠️ Cần sửa lại'}</div>`;
+  html+=res.items.map(it=>`<div class="fi k-${it.k}"><span class="fic">${icon[it.k]}</span><div>${it.m}</div></div>`).join('');
+  if(res.tenses&&res.tenses.length)html+=`<div class="dt">${res.tenses.map(t=>`<span class="tc-${t}">${TN[t]}</span>`).join('')}</div>`;
+  if(res.mk&&res.mk.changed){
+    html+=`<div class="fixed">Câu của em: ${res.mk.orig}<div class="fx">Sửa thành: ${res.mk.fixed}</div><div class="row" style="margin-top:6px"><button class="b" data-tr="${esc(res.mk.fixedPlain)}">🌐 Nghĩa tiếng Việt</button>${speakBtn(res.mk.fixedPlain)}</div><div class="trans"></div></div>`;
+  }else if(res.ok){
+    html+=`<div class="row" style="margin-top:6px"><button class="b" data-tr="${esc(text)}">🌐 Nghĩa tiếng Việt</button>${speakBtn(text)}</div><div class="trans"></div>`;
+  }
+  box.innerHTML=html;
+  box.querySelectorAll('[data-tr]').forEach(b=>b.onclick=async()=>{
+    const out=b.closest('.fixed,.fbox').querySelector('.trans');out.textContent='Đang dịch…';
+    try{out.innerHTML='🇻🇳 '+esc(await viTranslate(b.dataset.tr));}catch(e){out.textContent='Chưa dịch được (mạng yếu). Em thử lại sau nhé.';}
+  });
+}
+function buildBrain(){
+  buildSignals();
+  const root=$('#brainBox');root.innerHTML='';
+  SITUATIONS.forEach((s,si)=>{
+    const d=h('details',{class:'sit'});if(si===0)d.open=true;
+    const prog=()=>s.q.filter((p,i)=>BS[s.id+'-'+i]&&BS[s.id+'-'+i].ok).length;
+    d.innerHTML=`<summary><span style="font-size:26px">${s.e}</span> Tình huống ${si+1}: ${esc(s.t)} <span class="prog" data-prog>${prog()}/${s.q.length} câu đúng</span></summary>
+      <div class="inner"><p class="hint" style="margin-top:0">${esc(s.scene)}</p>
+      <div class="bank">${s.bank.map(w=>`<span class="chipw" data-hear="${esc(w)}">🔊 ${esc(w)}</span>`).join('')}</div><div class="qs"></div></div>`;
+    const qs=d.querySelector('.qs');
+    s.q.forEach((p,i)=>{
+      const [q,vi,tn,pol,frame,model,mvi]=p;const k=s.id+'-'+i;
+      const st=BS[k]||(BS[k]={text:'',ok:false,tries:0});
+      const c=h('div',{class:`bq tc-${tn}`+(st.ok?' ok':'')});
+      c.innerHTML=`<div><span class="need">${TID[tn].n}</span> <span class="pol ${pol==='+'?'p':'n'}">${pol==='+'?'＋ khẳng định':'－ phủ định'}</span></div>
+        <div class="en-q">${i+1}. ${esc(q)} ${speakBtn(q)}</div><div class="vi-s">${esc(vi)}</div>
+        <div class="frame">💬 ${esc(frame)}</div>
+        <textarea placeholder="Viết câu trả lời bằng tiếng Anh…" rows="2" aria-label="Câu trả lời">${esc(st.text||'')}</textarea>
+        <div class="row"><button class="b primary" data-a="chk">✓ Kiểm tra</button><button class="b" data-a="mdl">💡 Câu mẫu</button></div>
+        <div class="fbox"></div><div class="mdl"></div><div class="spk"></div>`;
+      const ta=c.querySelector('textarea'),fb=c.querySelector('.fbox'),md=c.querySelector('.mdl'),spk=c.querySelector('.spk');
+      const showSpeak=()=>{spk.innerHTML='';if(st.ok&&st.text){const pk='bs_'+s.id+'_'+i;spk.appendChild(h('div',{class:'tip'},'🎙 Em nói to câu vừa viết (ghi âm, nghe lại, gửi thầy/cô):'));spk.appendChild(practice({key:pk,label:'Nói câu của em – '+s.t+' '+(i+1),target:st.text,maxSec:20}));}};
+      ta.oninput=()=>{st.text=ta.value;store('bs',BS);};
+      c.querySelector('[data-a=chk]').onclick=()=>{
+        const text=ta.value.trim();st.text=text;
+        if(!text){fb.innerHTML='<div class="fi k-content"><span class="fic">📝</span><div>Em hãy viết câu trả lời trước nhé.</div></div>';return;}
+        const res=analyzeSentence(text,[tn,pol]);st.tries++;
+        const was=st.ok;st.ok=res.ok;st.res=undefined;store('bs',BS);
+        renderFb(fb,res,text);c.classList.toggle('ok',st.ok);
+        d.querySelector('[data-prog]').textContent=prog()+'/'+s.q.length+' câu đúng';
+        if(st.ok&&!was)showSpeak();
+        if(!st.ok)spk.innerHTML='';
+      };
+      c.querySelector('[data-a=mdl]').onclick=()=>{
+        st.peek=true;store('bs',BS);
+        md.innerHTML=`<div class="model">💡 <b>Câu mẫu:</b> ${esc(model)} ${speakBtn(model)}<div class="vn" style="color:var(--muted);font-size:14px">${esc(mvi)}</div></div>`;
+      };
+      if(st.ok&&st.text){const r=analyzeSentence(st.text,[tn,pol]);renderFb(fb,r,st.text);showSpeak();}
+      qs.appendChild(c);
+    });
+    root.appendChild(d);
+  });
+}
+
+/* ---------- ④⑤ TRẮC NGHIỆM ---------- */
+function seeded(n){let x=n*9301+49297;return()=>{x=(x*9301+49297)%233280;return x/233280;};}
+function shuffleQ(list,salt){
+  return list.map(([q,o,a,x],i)=>{
+    const idx=o.map((_,k)=>k);const r=seeded(i*7+salt);
+    for(let k=idx.length-1;k>0;k--){const j=Math.floor(r()*(k+1));[idx[k],idx[j]]=[idx[j],idx[k]];}
+    return {q,qt:plain(q),o:idx.map(k=>esc(o[k])),a:idx.indexOf(a),x};
+  });
+}
+function buildQuizzes(){
+  quizSet('qa','#qaBox','④ Trắc nghiệm A: dạng động từ',shuffleQ(QA,3));
+  quizSet('qb','#qbBox','⑤ Trắc nghiệm B: ＋ － ？',shuffleQ(QB,11));
+}
+
+/* ---------- ⑥ ĐỌC TO ---------- */
+function buildRead(){
+  const rt=$('#readT');rt.innerHTML='';
+  TENSES.forEach((t,i)=>{
+    const p=t.ex[0][1],n=t.ex[1][1];
+    const c=h('div',{class:`card tc-${t.id}`});
+    c.innerHTML=`<h3 style="margin:0 0 6px;color:var(--tcx)">${t.e} ${t.n}</h3>
+      <div class="ps2"><div class="fm p"><small>＋</small>${esc(p)}</div><div class="fm n"><small>－</small>${esc(n)}</div></div>`;
+    c.appendChild(practice({key:'t'+i,label:'Đọc câu mẫu – '+t.n,target:p+' '+n,speakText:[p,n],maxSec:25}));
+    rt.appendChild(c);
+  });
+  const rp=$('#readP');rp.innerHTML='';
+  PASSAGES.forEach((p,i)=>{
+    const c=h('div',{class:'card'});
+    c.innerHTML=`<h3 style="margin:0">${i+1}. ${esc(p.t)} <span class="chipw">${esc(p.tag)}</span></h3><div class="pbox">${esc(p.text)}</div>`;
+    c.appendChild(practice({key:'p'+i,label:'Đọc đoạn – '+p.t,target:p.text,maxSec:70}));
+    rp.appendChild(c);
+  });
+}
+
+/* ---------- ⑦ TỰ NÓI ---------- */
+function freeSpeak(f,i){
+  const key='f'+i;
+  const el=h('div',{class:'card'});
+  el.innerHTML=`<h3 style="margin:0 0 4px">${i+1}. ${esc(f.t)}</h3><div class="frame">💬 ${esc(f.hint)}</div>
+   <div class="subh">Trong bài nói cần có:</div><ul class="needs">${f.need.map(n=>`<li>⬜ ${esc(n[2])}</li>`).join('')}</ul>
+   <div class="pr-btns"><button class="b rec" data-a="rec">🎙 Bắt đầu nói</button><button class="b" data-a="play" disabled>▶ Nghe lại</button><button class="b primary" data-a="send" hidden>📤 Gửi bản ghi này cho thầy/cô</button><span class="timer"></span><span class="cl"></span></div><div class="live"></div><div class="res"></div>`;
+  const q=s=>el.querySelector(s);
+  const recB=q('[data-a=rec]'),playB=q('[data-a=play]'),sendB=q('[data-a=send]'),timer=q('.timer'),live=q('.live'),res=q('.res'),clEl=q('.cl');
+  const maxSec=70;let audio=null;
+  function show(r){
+    const chk=analyzeSpeech(r.transcript||'',f.need);
+    const ok=chk.filter(x=>x.ok).length;
+    r.chk=chk.map(x=>x.ok);r.chkText=`dùng đủ ${ok}/${chk.length} cấu trúc`;store('results',RESULTS);
+    const det=[...new Set(detect(r.transcript||'').map(x=>x.t))];
+    const ul=el.querySelector('.needs');ul.innerHTML=chk.map(x=>`<li>${x.ok?'✅':'❌'} ${esc(x.label)}</li>`).join('');
+    res.innerHTML=r.transcript
+      ?`<div class="verdict ${ok===chk.length?'ok':'no'}">${ok===chk.length?'🎉 Em đã dùng đủ các cấu trúc yêu cầu!':`Em dùng được ${ok}/${chk.length} cấu trúc. Hãy nói lại và thêm phần còn thiếu (❌).`}</div>
+         <div class="tip">Máy nghe được: <i>${esc(r.transcript)}</i></div>
+         ${det.length?`<div class="dt">${det.map(t=>`<span class="tc-${t}">${TN[t]}</span>`).join('')}</div>`:''}
+         <div class="tip">💡 Nếu máy nghe sai từ em đã nói đúng, em vẫn có thể gửi bản ghi để thầy/cô nghe.</div>`
+      :'<div class="tip">Máy chưa nghe được em nói gì. Hãy nói to, rõ và gần micro hơn.</div>';
+  }
+  const ctx={key,label:'Tự nói – '+f.t,target:'',maxSec,ui:{
+    setRec(on){recB.classList.toggle('on',on);recB.innerHTML=on?'■ Dừng':'🎙 Bắt đầu nói';if(on){res.innerHTML='';live.textContent=SR?'Đang nghe em nói…':'Đang ghi âm…';}else timer.textContent='';},
+    tick(sec){timer.textContent=Math.floor(sec)+'s / '+maxSec+'s';},
+    live(t){live.textContent=t;},
+    msg(t){live.textContent='';res.innerHTML=`<div class="tip">⚠️ ${esc(t)}</div>`;},
+    done(r,useSR){live.textContent='';
+      if(useSR)show(r);else res.innerHTML='<div class="tip">Đã ghi âm. Máy này chưa tự kiểm tra được (hãy dùng Chrome). Em vẫn gửi bản ghi để thầy/cô nghe nhé.</div>';
+      enable();},
+    cloud(state){clEl.className='cl '+(state==='ok'?'sent-ok':state==='bad'?'sent-bad':'sent-wait');clEl.textContent=state==='ok'?'✅ Đã gửi thầy/cô':state==='bad'?'⚠️ Chưa gửi được, đang thử lại…':'☁️ Đang gửi…';if(state==='ok')sendB.hidden=true;}
+  }};
+  function enable(){const has=!!BLOBS[key];playB.disabled=!has;sendB.hidden=!has||!!(RESULTS[key]&&RESULTS[key].sent);if(has){clEl.className='cl sent-wait';clEl.textContent='Nghe lại – thấy ổn thì bấm 📤 Gửi. Chưa ổn thì nói lại.';}}
+  el.addEventListener('click',e=>{
+    const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
+    if(a==='rec')startRec(ctx);
+    if(a==='play'&&BLOBS[key]){if(!audio||audio._b!==BLOBS[key]){audio=new Audio(URL.createObjectURL(BLOBS[key]));audio._b=BLOBS[key];}stopSpeak();audio.currentTime=0;audio.play();}
+    if(a==='send'){if(!BLOBS[key])return;if(!stuName()){toast('Em ghi tên trước nhé (tab Nộp bài).');return;}RESULTS[key].label='Tự nói – '+f.t+' ('+(RESULTS[key].chkText||'')+')';enqueueUpload(key,BLOBS[key],RESULTS[key],ctx.ui.cloud);}
+  });
+  if(RESULTS[key]&&RESULTS[key].chk&&SR)show(RESULTS[key]);
+  return el;
+}
+function buildFree(){const b=$('#freeBox');b.innerHTML='';FREE.forEach((f,i)=>b.appendChild(freeSpeak(f,i)));}
+
+/* ---------- TỔNG KẾT & XEM LẠI ---------- */
+const QUIZ_IDS=['qa','qb'];
+function recKeys(){return Object.keys(RESULTS);}
+function recStats(){const ks=recKeys();const sc=ks.map(k=>RESULTS[k].score).filter(x=>x!=null);
+  return{n:ks.length,sent:ks.filter(k=>RESULTS[k].sent).length,avg:sc.length?Math.round(sc.reduce((a,b)=>a+b,0)/sc.length):null};}
+function recPart(k){return /^t\d/.test(k)?'⑥A Đọc câu mẫu':/^p\d/.test(k)?'⑥B Đọc đoạn văn':/^f\d/.test(k)?'⑦ Tự nói':'③ Nói lại câu của em';}
+function recRows(){return recKeys().map(k=>{const r=RESULTS[k];return {part:recPart(k)+' (ghi âm)',question:r.label,answer:r.transcript||'(máy chưa nghe được)',correct:r.target||'(tự nói)',result:(r.score!=null?r.score+'%':(r.chkText||(r.self?'tự chấm '+r.self+'/3':'không chấm')))+(r.sent?' · đã gửi':' · CHƯA gửi'),x:''};});}
+function bsRows(){const rows=[];SITUATIONS.forEach((s,si)=>s.q.forEach((p,i)=>{const st=BS[s.id+'-'+i];
+  rows.push({part:'③ Brainstorm',question:`TH${si+1}.${i+1} ${p[0]} [${TVI[p[2]]}, ${p[3]==='+'?'khẳng định':'phủ định'}]`,answer:st&&st.text?st.text:'(chưa viết)',correct:p[5],result:!st||!st.text?'Chưa làm':st.ok?'Đúng':'Chưa đạt',x:p[6]});}));return rows;}
+function setLine(id){const s=SETS[id];return s.done()?`${s.score()}/${s.total}`+(s.done()<s.total?` (làm ${s.done()}/${s.total})`:''):'chưa làm';}
+function renderSummary(){
+  const c=recStats();const unsent=c.n-c.sent;const b=bsCount();const rd=TENSES.filter(t=>TREAD[t.id]).length;
+  $('#sumBox').innerHTML=`<div class="tbl"><table class="sum"><tr><th>Phần</th><th>Kết quả</th></tr>
+   <tr><td>① Đã đọc các thì</td><td>${rd}/${TENSES.length}</td></tr>
+   <tr><td>③ Brainstorm (câu đúng)</td><td>${b.n}/${b.tot}</td></tr>
+   ${QUIZ_IDS.map(id=>`<tr><td>${SETS[id].name}</td><td>${setLine(id)}</td></tr>`).join('')}
+   <tr><td>⑥⑦ Ghi âm</td><td>${c.n} bản đã ghi · đã gửi ${c.sent}${c.avg!=null?' · điểm phát âm trung bình '+c.avg+'%':''}</td></tr></table></div>
+   ${unsent>0?`<p class="warn">⚠️ Em còn <b>${unsent}</b> bản ghi âm chưa gửi. Vào tab ③ / ⑥ / ⑦, nghe lại rồi bấm <b>📤 Gửi bản ghi này</b>.</p>`:''}`;
+}
+function allRows(){return [...bsRows(),...QUIZ_IDS.flatMap(id=>SETS[id].rows()),...recRows()];}
+function buildSummary(){
+  const c=recStats();const b=bsCount();
+  return {summary:{recordings:c.sent,avg:c.avg,
+    full:'Brainstorm đúng '+b.n+'/'+b.tot,
+    writes:'Đã đọc '+TENSES.filter(t=>TREAD[t.id]).length+'/'+TENSES.length+' thì',
+    quiz:QUIZ_IDS.map(id=>SETS[id].name.slice(2)+' '+setLine(id)).join(' · ')},
+    details:allRows().map(r=>({part:r.part,question:r.question,answer:r.answer,correct:r.correct,result:r.result}))};
+}
+$('#reviewBtn').onclick=()=>{
+  const box=$('#reviewBox');
+  if(box.innerHTML){box.innerHTML='';$('#reviewBtn').textContent='🔍 Xem lại bài của em (đúng/sai và giải thích)';return;}
+  $('#reviewBtn').textContent='🙈 Ẩn phần xem lại';
+  let html='',cur='';
+  allRows().forEach(r=>{
+    if(r.part!==cur){cur=r.part;html+=`<h3>${esc(cur)}</h3>`;}
+    if(r.result==='Chưa làm'){html+=`<div class="rv-item"><b>${esc(r.question)}</b><br>Chưa làm.</div>`;return;}
+    if(/ghi âm\)$/.test(r.part)){html+=`<div class="rv-item"><b>${esc(r.question)}</b> · ${esc(r.result)}<br>Mẫu/đề: ${esc(r.correct)}<br>Máy nghe được: <i>${esc(r.answer)}</i></div>`;return;}
+    if(r.part==='③ Brainstorm'){
+      const ok=r.result==='Đúng';
+      html+=ok?`<div class="rv-item ok">✅ <b>${esc(r.question)}</b><br>Em viết: ${esc(r.answer)}</div>`
+        :`<div class="rv-item no">❌ <b>${esc(r.question)}</b><br>Em viết: <b>${esc(r.answer)}</b><br>Câu mẫu: <b>${esc(r.correct)}</b><br>${esc(r.x)}</div>`;
+      return;
+    }
+    const ok=r.result.startsWith('Đúng');
+    html+=ok?`<div class="rv-item ok">✅ <b>${esc(r.question)}</b><br>Em chọn: ${esc(r.answer)} · đúng</div>`
+      :`<div class="rv-item no">❌ <b>${esc(r.question)}</b><br>Em chọn lần đầu: <b>${esc(r.answer)}</b><br>Đáp án đúng: <b>${esc(r.correct)}</b>${r.x?'<br>'+r.x:''}</div>`;
+  });
+  box.innerHTML=html;
+};
+
+/* ================= GỬI BÀI ================= */
+const HAS_URL=/^https:\/\/script\.google(usercontent)?\.com\//.test(SCRIPT_URL);
+if(!HAS_URL)$('#noUrl').hidden=false;
+function stuName(){return ($('#stuName').value||load('name','')).trim();}
+function fileBase(key){
+  let m;
+  if(m=key.match(/^t(\d+)$/))return 'DocCauMau_Thi_'+String(+m[1]+1).padStart(2,'0');
+  if(m=key.match(/^p(\d+)$/))return 'DocDoan_'+String(+m[1]+1).padStart(2,'0');
+  if(m=key.match(/^f(\d+)$/))return 'TuNoi_'+String(+m[1]+1).padStart(2,'0');
+  if(m=key.match(/^bs_(s\d+)_(\d+)$/))return 'NoiCau_'+m[1]+'_'+String(+m[2]+1).padStart(2,'0');
+  return 'x_'+key;
+}
+async function toMp3(blob){
+  if(!window.lamejs)return null;
+  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
+  const ac=new AC();
+  try{
+    const buf=await new Promise((res,rej)=>{blob.arrayBuffer().then(ab=>ac.decodeAudioData(ab,res,rej)).catch(rej);});
+    const rt=22050;const len=Math.ceil(buf.duration*rt);
+    const off=new OfflineAudioContext(1,len,rt);const src=off.createBufferSource();src.buffer=buf;src.connect(off.destination);src.start();
+    const out=await off.startRendering();const f=out.getChannelData(0);
+    const pcm=new Int16Array(f.length);for(let i=0;i<f.length;i++){const v=Math.max(-1,Math.min(1,f[i]));pcm[i]=v<0?v*0x8000:v*0x7FFF;}
+    const enc=new lamejs.Mp3Encoder(1,rt,48);const parts=[];
+    for(let i=0;i<pcm.length;i+=1152){const b=enc.encodeBuffer(pcm.subarray(i,i+1152));if(b.length)parts.push(new Uint8Array(b));}
+    const e=enc.flush();if(e.length)parts.push(new Uint8Array(e));
+    return new Blob(parts,{type:'audio/mpeg'});
+  }catch(err){return null;}finally{try{ac.close();}catch(_){}}
+}
+function b64(blob){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(blob);});}
+async function postJSON(obj){
+  const body=JSON.stringify(obj);
+  try{
+    const r=await fetch(SCRIPT_URL,{method:'POST',body,headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow'});
+    const j=await r.json();if(!j.ok)throw new Error(j.error||'fail');return j;
+  }catch(err){
+    if(err instanceof TypeError){
+      await fetch(SCRIPT_URL,{method:'POST',body,mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'}});return {ok:true};
+    }
+    throw err;
+  }
+}
+const QUEUE=[];let BUSY=false;const UI_CB={};
+function updateCloud(){const el=$('#cloud');const n=QUEUE.length+(BUSY?1:0);
+  if(n){el.hidden=false;el.textContent='☁️ Đang gửi '+n+' bản ghi âm cho thầy/cô…';}
+  else if(updateCloud.sent){el.hidden=false;el.textContent='✅ Đã gửi '+updateCloud.sent+' bản ghi âm';}
+  else el.hidden=true;}
+updateCloud.sent=0;
+function enqueueUpload(key,blob,r,cb){
+  if(!HAS_URL)return;
+  UI_CB[key]=cb;cb&&cb('wait');
+  const i=QUEUE.findIndex(q=>q.key===key);const job={key,blob,r,tries:0};
+  if(i>=0)QUEUE[i]=job;else QUEUE.push(job);
+  updateCloud();runQueue();
+}
+async function runQueue(){
+  if(BUSY||!QUEUE.length)return;BUSY=true;const job=QUEUE.shift();updateCloud();
+  const cb=UI_CB[job.key];
+  try{
+    let blob=await toMp3(job.blob),ext='mp3',mime='audio/mpeg';
+    if(!blob){blob=job.blob;mime=(blob.type||'audio/webm').split(';')[0];ext=mime.includes('mp4')?'m4a':mime.includes('ogg')?'ogg':'webm';}
+    await postJSON({type:'audio',name:stuName()||'Không tên',lesson:LESSON,file:fileBase(job.key)+'.'+ext,mime,label:job.r.label,target:job.r.target,transcript:job.r.transcript,score:job.r.score,dur:job.r.dur,audio:await b64(blob)});
+    RESULTS[job.key].sent=true;store('results',RESULTS);updateCloud.sent++;cb&&cb('ok');
+  }catch(err){
+    job.tries++;cb&&cb('bad');
+    if(job.tries<6){setTimeout(()=>{if(!QUEUE.some(q=>q.key===job.key))QUEUE.push(job);updateCloud();runQueue();},Math.min(30000,2000*2**job.tries));}
+  }finally{BUSY=false;updateCloud();runQueue();}
+}
+async function sendSummary(){
+  const msg=$('#submitMsg');
+  if(!HAS_URL){msg.textContent='⚙️ Trang chưa được thầy/cô cài link nhận bài.';return;}
+  const name=stuName();if(!name){toast('Em ghi tên trước nhé.');$('#stuName').focus();return;}
+  const btn=$('#submitBtn');btn.disabled=true;btn.textContent='Đang gửi…';
+  try{
+    await postJSON(Object.assign({type:'submit',name,lesson:LESSON,link:location.href},buildSummary()));
+    const pending=QUEUE.length+(BUSY?1:0);
+    msg.innerHTML='✅ <b>Đã nộp bài!</b> Thầy/cô đã nhận được bài của em.'+(pending?' (Còn '+pending+' bản ghi âm đang gửi, em đợi một chút trước khi đóng trang.)':'');
+    toast('✅ Đã nộp bài cho thầy/cô!',5000);
+  }catch(e){msg.textContent='⚠️ Chưa gửi được (mạng yếu?). Em bấm nộp lại nhé.';}
+  finally{btn.disabled=false;btn.textContent='📨 Nộp bài cho thầy/cô';}
+}
+$('#submitBtn').onclick=sendSummary;
+
+
+/* ================= TAB & KHỞI TẠO ================= */
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  stopSpeak();
+  document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===t));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='p-'+t.dataset.p));
+  if(t.dataset.p==='send'){renderSummary();$('#reviewBox').innerHTML='';$('#reviewBtn').textContent='🔍 Xem lại bài của em (đúng/sai và giải thích)';}
+  window.scrollTo({top:0});
+});
+buildTenses();buildVocab();buildBrain();buildQuizzes();buildRead();buildFree();
+(function(){
+  const g=$('#gate'),inp=$('#gateName');
+  if(!load('name',''))g.hidden=false;else $('#stuName').value=load('name','');
+  const go=()=>{const v=inp.value.trim();if(!v){inp.focus();return;}store('name',v);$('#stuName').value=v;g.hidden=true;};
+  $('#gateGo').onclick=go;inp.onkeydown=e=>{if(e.key==='Enter')go();};
+  $('#stuName').addEventListener('change',()=>{const v=$('#stuName').value.trim();if(v)store('name',v);else $('#stuName').value=load('name','');});
+})();
+if(!SR){setTimeout(()=>toast('Máy này ghi âm được nhưng chưa tự chấm phát âm. Dùng Chrome để được chấm %.',6000),1500);}
+window.addEventListener('beforeunload',e=>{if(QUEUE.length||BUSY||ACTIVE){e.preventDefault();e.returnValue='';}});
+
+</script>
+</body>
+</html>
