@@ -114,6 +114,11 @@ audio { max-width: 100%; height: 36px; }
 .okrow:last-child { border-bottom: 0; }
 .scn { background: var(--soft); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; }
 .wc { font-size: .8rem; color: var(--muted); }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; margin-bottom: 8px; }
+.pair.head { font-weight: 600; color: var(--muted); font-size: .9rem; margin-bottom: 6px; }
+.vibox { background: var(--soft); border-radius: 10px; padding: 10px 12px; white-space: pre-line; min-height: 84px; }
+.pair textarea { min-height: 150px; }
+@media (max-width: 620px) { .pair { grid-template-columns: 1fr; } .pair.head { display: none; } .pair textarea { min-height: 110px; } }
 @media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
 </style>
 </head>
@@ -139,7 +144,7 @@ audio { max-width: 100%; height: 36px; }
     <button role="tab" id="tab-quiz" data-tab="quiz" aria-selected="false">2. Điền từ</button>
     <button role="tab" id="tab-build" data-tab="build" aria-selected="false">3. Sắp xếp câu</button>
     <button role="tab" id="tab-write" data-tab="write" aria-selected="false">4. Viết email</button>
-    <button role="tab" id="tab-doctor" data-tab="doctor" aria-selected="false">5. Nói với bác sĩ</button>
+    <button role="tab" id="tab-advice" data-tab="advice" aria-selected="false">5. Cho lời khuyên</button>
     <button role="tab" id="tab-dialog" data-tab="dialog" aria-selected="false">6. Đọc hội thoại</button>
     <button role="tab" id="tab-submit" data-tab="submit" aria-selected="false">7. Nộp bài</button>
   </div>
@@ -402,17 +407,45 @@ function renderBuild() {
       B.result === true ? h("button", { class: "btn primary", type: "button", onclick: () => { B.i++; setupBuildItem(); renderBuild(); } }, B.i + 1 < B.list.length ? "Câu tiếp" : "Xem kết quả") : null)));
 }
 
-/* ---------- 4. Guided email writing ---------- */
+/* ---------- 4. Email: Vietnamese on the left, student's English translation on the right ---------- */
+const EMAIL = {
+  A2: {
+    subjectVi: "Thông báo sức khỏe: Cảm lạnh và cúm khi giao mùa",
+    subjectEn: "Health Notice: Colds and Flu in the Changing Weather",
+    paras: [
+      { vi: "Kính gửi phụ huynh và học sinh,\n\nThời tiết đang thay đổi. Buổi sáng trời lạnh và buổi chiều trời nóng. Nhiều người đang bị ốm vì cảm lạnh và cúm.",
+        en: "Dear Parents and Students,\n\nThe weather is changing now. It is cold in the morning and hot in the afternoon. Many people are sick with colds and flu." },
+      { vi: "Các triệu chứng thường gặp là sốt, ho, đau họng và sổ mũi.",
+        en: "Common symptoms are a fever, a cough, a sore throat and a runny nose." },
+      { vi: "Hãy rửa tay thường xuyên, đeo khẩu trang và uống nhiều nước. Nếu bị ốm, các em nên ở nhà. Nếu sốt cao, hãy đi khám bác sĩ.",
+        en: "Please wash your hands often, wear a mask and drink a lot of water. You should stay at home if you are sick. Please see a doctor if you have a high fever." },
+      { vi: "Cảm ơn sự giúp đỡ của quý vị.\n\nTrân trọng,\n[Tên của bạn]",
+        en: "Thank you for your help.\n\nBest regards,\n[Your Name]" }
+    ]
+  },
+  B1: {
+    subjectVi: "Thông báo sức khỏe: Các bệnh theo mùa khi thời tiết thay đổi",
+    subjectEn: "Health Notice: Seasonal Illnesses During the Weather Change",
+    paras: [
+      { vi: "Kính gửi phụ huynh và học sinh,\n\nTôi viết thư này để thông báo về tình hình sức khỏe hiện nay. Khi thời tiết thay đổi, số ca cảm lạnh và cúm đã tăng lên. Sự thay đổi nhiệt độ đột ngột có thể làm suy yếu hệ miễn dịch, và virus lây lan dễ dàng ở những nơi đông người.",
+        en: "Dear Parents and Students,\n\nI am writing to inform you about the current health situation. As the weather is changing, cases of colds and flu have increased. Sudden changes in temperature can weaken our immune system, and viruses spread easily in crowded places." },
+      { vi: "Các triệu chứng thường gặp gồm ho dai dẳng, nghẹt mũi, đau mỏi cơ và chán ăn.",
+        en: "Common symptoms include a persistent cough, a blocked nose, muscle aches and loss of appetite." },
+      { vi: "Điều quan trọng là rửa tay thường xuyên và tránh nơi đông người. Tôi đặc biệt khuyên các em ăn uống cân bằng và giữ nhà cửa thông thoáng. Nếu triệu chứng nặng hơn, hãy tìm đến sự trợ giúp y tế.",
+        en: "It is important to wash your hands regularly and avoid crowded places. I strongly recommend that you eat a balanced diet and keep your home well ventilated. If the symptoms get worse, seek medical help." },
+      { vi: "Cảm ơn sự hợp tác của quý vị.\n\nTrân trọng,\n[Tên của bạn]",
+        en: "Thank you for your cooperation.\n\nKind regards,\n[Your Name]" }
+    ]
+  }
+};
 const draftKey = () => "gm_draft_" + S.level;
 function loadDraft() { try { const d = JSON.parse(localStorage.getItem(draftKey()) || "null"); if (d && d.steps && d.steps.length === 4) return d; } catch (e) {} return { subject: "", steps: ["", "", "", ""] }; }
 function saveDraft(d) { try { localStorage.setItem(draftKey(), JSON.stringify(d)); } catch (e) {} }
 
 function renderWrite() {
   const root = $("#panel"); root.replaceChildren();
-  const draft = loadDraft(), list = lv();
-  const areas = [];
+  const draft = loadDraft(), list = lv(), E = EMAIL[S.level];
   const statsBox = h("div", { class: "stats", "aria-live": "polite" });
-
   const fullText = () => draft.steps.map(s => s.trim()).filter(Boolean).join("\n\n");
   const update = () => {
     saveDraft(draft);
@@ -420,28 +453,32 @@ function renderWrite() {
     const used = list.filter(p => t.includes(keyOf(p)));
     statsBox.replaceChildren(
       h("div", { class: "prog" }, h("span", null, n + "/" + tgt + " từ"), h("div", { class: "bar" }, h("i", { style: "width:" + Math.min(100, Math.round(n / tgt * 100)) + "%" }))),
-      h("div", { class: "mini", style: "margin-top:8px" }, "Cụm đã dùng: " + used.length + "/" + list.length + (n >= tgt ? " · Đủ độ dài, hãy kiểm tra lại ngữ pháp rồi sao chép." : "")),
+      h("div", { class: "mini", style: "margin-top:8px" }, "Cụm đã dùng: " + used.length + "/" + list.length + (n >= tgt ? " · Đủ độ dài, hãy kiểm tra lại ngữ pháp rồi sang mục 7 để nộp." : "")),
       h("details", { style: "margin-top:8px;padding:6px 10px" }, h("summary", null, "Danh sách cụm cần dùng"),
         h("div", { class: "chips", style: "max-height:30vh;overflow-y:auto" }, list.map(p => h("span", { class: "chip" + (used.includes(p) ? " used" : "") }, p.en.replace(/…/g, "").trim())))));
   };
 
-  root.append(h("div", { class: "step" },
-    h("h3", null, "Tiêu đề email (Subject)"),
-    h("input", { type: "text", id: "subj", placeholder: S.level === "A2" ? "Health Notice: Colds and Flu" : "Health Notice: Seasonal Illnesses During the Weather Change", value: draft.subject, oninput: e => { draft.subject = e.target.value; saveDraft(draft); } })));
+  root.append(h("div", { class: "scn" },
+    h("strong", null, "Nhiệm vụ: "), "đọc email tiếng Việt ở cột bên trái, rồi dịch sang tiếng Anh ở cột bên phải. Dịch theo ý, không dịch từng chữ.",
+    h("div", { class: "vi" }, "Dưới mỗi đoạn có các cụm gợi ý. Chạm vào cụm để chèn vào bài dịch.")));
+  root.append(h("div", { class: "pair head" }, h("span", null, "🇻🇳 Email tiếng Việt"), h("span", null, "🇬🇧 Em dịch sang tiếng Anh")));
 
-  STEPS.forEach((st, i) => {
-    const starters = list.filter(p => st.groups.includes(p.group));
-    const ta = h("textarea", { id: "step" + i, rows: "3", "aria-label": st.title, oninput: e => { draft.steps[i] = e.target.value; update(); } });
-    ta.value = draft.steps[i]; areas.push(ta);
-    root.append(h("div", { class: "step" },
-      h("h3", null, (i + 1) + ". " + st.title),
-      h("p", null, st.tip + " Chạm vào cụm gợi ý để chèn vào bài."),
-      h("div", { class: "chips" }, starters.map(p => h("button", { class: "chip", type: "button", onclick: () => {
+  root.append(h("div", { class: "pair" },
+    h("div", { class: "vibox" }, h("strong", null, "Tiêu đề: "), E.subjectVi),
+    h("input", { type: "text", id: "subj", "aria-label": "Tiêu đề tiếng Anh", placeholder: "Subject…", value: draft.subject, oninput: e => { draft.subject = e.target.value; saveDraft(draft); } })));
+
+  E.paras.forEach((para, i) => {
+    const st = STEPS[i], starters = list.filter(p => st.groups.includes(p.group));
+    const ta = h("textarea", { id: "step" + i, rows: "6", "aria-label": "Bản dịch đoạn " + (i + 1), oninput: e => { draft.steps[i] = e.target.value; update(); } });
+    ta.value = draft.steps[i];
+    root.append(h("div", { class: "step", style: "margin-top:16px" },
+      h("div", { class: "pair" }, h("div", { class: "vibox" }, para.vi), ta),
+      h("div", { class: "chips", style: "margin-top:8px" }, starters.map(p => h("button", { class: "chip", type: "button", onclick: () => {
         const add = p.en.replace(/…/g, "").replace(/\s+([,.])/g, "$1").trim() + " ";
         ta.value = ta.value + (ta.value && !/\s$/.test(ta.value) ? " " : "") + add;
         draft.steps[i] = ta.value; ta.focus(); update();
-      } }, p.en.replace(/…/g, "…")))),
-      ta));
+      } }, p.en))),
+      h("details", { style: "margin-top:8px" }, h("summary", null, "Xem câu mẫu của đoạn " + (i + 1)), h("pre", null, para.en))));
   });
 
   const out = h("textarea", { id: "outbox", rows: "8", readonly: "", "aria-label": "Email hoàn chỉnh" });
@@ -452,10 +489,9 @@ function renderWrite() {
       out.hidden = false; out.focus(); out.select();
       try { navigator.clipboard.writeText(out.value).then(() => { msg.textContent = "Đã sao chép email."; }, () => { msg.textContent = "Hãy chọn và sao chép nội dung bên dưới."; }); } catch (e) { msg.textContent = "Hãy chọn và sao chép nội dung bên dưới."; }
     } }, "Sao chép email"),
-    h("button", { class: "btn", type: "button", onclick: () => { if (!fullText() && !draft.subject) return; draft.subject = ""; draft.steps = ["", "", "", ""]; saveDraft(draft); renderWrite(); } }, "Xóa bài viết"),
+    h("button", { class: "btn", type: "button", onclick: () => { if (!fullText() && !draft.subject) return; draft.subject = ""; draft.steps = ["", "", "", ""]; saveDraft(draft); renderWrite(); } }, "Xóa bài dịch"),
     msg));
   out.hidden = true; root.append(out);
-  root.append(h("details", null, h("summary", null, "Xem bài mẫu (" + S.level + ")"), h("pre", null, MODEL[S.level])));
   root.append(statsBox);
   update();
 }
@@ -477,98 +513,74 @@ const loadScores = () => { try { return JSON.parse(localStorage.getItem("gm_scor
 const saveScore = (kind, s, t) => { try { const a = loadScores(); a[S.level] = a[S.level] || {}; a[S.level][kind] = [s, t]; localStorage.setItem("gm_scores", JSON.stringify(a)); } catch (e) {} };
 const blobToB64 = blob => new Promise((res, rej) => { const f = new FileReader(); f.onload = () => res(String(f.result).split(",")[1]); f.onerror = rej; f.readAsDataURL(blob); });
 
-/* ---------- 5. Brainstorm: tell the doctor what is wrong (4 sentences) ---------- */
-const DOC_OPT = {
-  have: [["headache","a headache"],["fever","a fever"],["sore throat","a sore throat"],["cough","a cough"],["runny nose","a runny nose"],["stomachache","a stomachache"]],
-  feel: [["tired","tired"],["dizzy","dizzy"],["sick","sick"]],
-  when: [["yesterday","yesterday"],["two days ago","two days ago"],["last week","last week"]],
-  did:  [["took medicine","took some medicine"],["drank water","drank a lot of water"],["rested","rested at home"]],
-  want: {
-    A2: [["advice","What should I do?"],["medicine","Can I have some medicine?"],["checkup","Can you check me, please?"]],
-    B1: [["advice","Could you tell me what I should do?"],["medicine","Could you prescribe some medicine?"],["checkup","Could you examine me, please?"]]
-  }
+/* ---------- 5. Give advice to other people (3 sentences per situation) ---------- */
+const ADV_SIT = [
+  { vi: "Bạn của em bị đau họng. Em khuyên bạn thế nào?",
+    hints: [["drink warm water","uống nước ấm"],["honey","mật ong"],["cold drinks","đồ uống lạnh"],["rest your voice","nghỉ giọng"],["see a doctor","đi khám bác sĩ"]],
+    A2: ["You should drink warm water.", "You shouldn't drink cold drinks.", "Please see a doctor if it hurts for three days."],
+    B1: ["I strongly recommend that you drink warm water with honey.", "Make sure you avoid cold drinks and rest your voice.", "If the pain gets worse or lasts more than three days, seek medical help."] },
+  { vi: "Em trai em bị đau đầu và sốt. Em khuyên em ấy thế nào?",
+    hints: [["rest","nghỉ ngơi"],["take medicine","uống thuốc"],["drink plenty of water","uống nhiều nước"],["stay at home","ở nhà"],["fever","sốt"]],
+    A2: ["You should rest and take some medicine.", "You shouldn't go to school today.", "Please see a doctor if you have a fever for more than three days."],
+    B1: ["I strongly recommend that you rest at home and drink plenty of water.", "It is important to take medicine to lower the fever.", "If the fever lasts for more than three days, please see a doctor."] },
+  { vi: "Một bạn cùng lớp bị ho và sổ mũi. Em khuyên bạn ấy thế nào?",
+    hints: [["wear a mask","đeo khẩu trang"],["stay at home","ở nhà"],["crowded places","nơi đông người"],["wash your hands","rửa tay"],["keep warm","giữ ấm"]],
+    A2: ["You should wear a mask and stay at home.", "You shouldn't go to crowded places.", "Take care of yourself and get well soon."],
+    B1: ["I strongly recommend that you wear a mask and stay at home.", "It is important to wash your hands often to limit the spread of illness.", "If your cough gets worse, seek medical help."] },
+  { vi: "Bà em bị đau bụng. Em khuyên bà thế nào?",
+    hints: [["light food","đồ ăn nhẹ"],["porridge","cháo"],["spicy food","đồ ăn cay"],["warm water","nước ấm"],["pain","cơn đau"]],
+    A2: ["You should eat light food, like porridge.", "You shouldn't eat spicy food.", "Please see a doctor if the pain is bad."],
+    B1: ["I strongly recommend that you eat light food, such as porridge, and drink warm water.", "Make sure you avoid spicy and oily food.", "If she has a high fever or severe pain, take her to the hospital."] },
+  { vi: "Bạn em hay thức khuya và cảm thấy mệt, chóng mặt. Em khuyên bạn thế nào?",
+    hints: [["sleep well","ngủ đủ giấc"],["stay up late","thức khuya"],["healthy food","đồ ăn lành mạnh"],["balanced diet","chế độ ăn cân bằng"],["dizzy","chóng mặt"]],
+    A2: ["You should sleep well and eat healthy food.", "You shouldn't stay up late.", "Take care of yourself."],
+    B1: ["I strongly recommend that you go to bed earlier and sleep at least eight hours.", "It is important to eat a balanced diet and drink enough water.", "If you still feel dizzy, please see a doctor."] }
+];
+const ADV_FRAME = {
+  A2: ["You should … (Bạn nên…)", "You shouldn't … (Bạn không nên…)", "Please see a doctor if … / Take care of yourself. / Get well soon."],
+  B1: ["I strongly recommend that you … / It is important to …", "Make sure you … / Avoid …", "If the symptoms get worse, … / Please let me know if …"]
 };
-const DOC_Q = {
-  A2: [
-    ["Câu 1: Bạn bị làm sao?", "I have … / I feel …"],
-    ["Câu 2: Bắt đầu từ khi nào?", "It started … ago."],
-    ["Câu 3: Bạn đã làm gì?", "I took some medicine. / I rested."],
-    ["Câu 4: Bạn nhờ bác sĩ giúp gì?", "What should I do?"]
-  ],
-  B1: [
-    ["Câu 1: Bạn bị làm sao?", "I'm not feeling well. I have … and I feel …"],
-    ["Câu 2: Bắt đầu từ khi nào?", "The symptoms started … and they are getting worse."],
-    ["Câu 3: Bạn đã làm gì?", "I … but I don't feel better."],
-    ["Câu 4: Bạn nhờ bác sĩ giúp gì?", "Could you tell me what I should do?"]
-  ]
-};
-const joinList = a => a.length < 2 ? (a[0] || "") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1];
-const docKey = () => "gm_doc_" + S.level;
-const blankDoc = () => ({ sel: { have: [], feel: [], when: "", did: [], want: "advice" }, s: ["", "", "", ""] });
-function loadDoc() { try { const d = JSON.parse(localStorage.getItem(docKey()) || "null"); if (d && d.sel && d.s && d.s.length === 4) return d; } catch (e) {} return blankDoc(); }
-function docSuggest(d) {
-  const L = S.level, o = DOC_OPT, sel = d.sel;
-  const map = (arr, list) => arr.map(k => (list.find(x => x[0] === k) || [])[1]).filter(Boolean);
-  const haves = map(sel.have, o.have), feels = map(sel.feel, o.feel), dids = map(sel.did, o.did);
-  const when = (o.when.find(x => x[0] === sel.when) || [])[1];
-  const want = (o.want[L].find(x => x[0] === sel.want) || [])[1];
-  const s1 = [];
-  if (L === "B1" && (haves.length || feels.length)) s1.push("I'm not feeling well.");
-  if (haves.length) s1.push("I have " + joinList(haves) + ".");
-  if (feels.length) s1.push("I feel " + joinList(feels) + ".");
-  const s2 = when ? (L === "A2" ? "It started " + when + "." : "The symptoms started " + when + ", and they are getting worse.") : "";
-  const s3 = dids.length ? (L === "A2" ? "I " + joinList(dids) + "." : "I " + joinList(dids) + ", but I don't feel better.") : "";
-  return [s1.join(" "), s2, s3, want || ""];
-}
-function renderDoctor() {
+const advKey = () => "gm_adv_" + S.level;
+function loadAdv() { try { const d = JSON.parse(localStorage.getItem(advKey()) || "null"); if (d && d.s && d.s.length === ADV_SIT.length && d.s.every(a => a.length === 3)) return d; } catch (e) {} return { s: ADV_SIT.map(() => ["", "", ""]) }; }
+let advFocus = null;
+function renderAdvice() {
   const root = $("#panel"); root.replaceChildren();
-  const d = loadDoc(), L = S.level;
-  const save = () => { try { localStorage.setItem(docKey(), JSON.stringify(d)); } catch (e) {} };
+  const d = loadAdv(), L = S.level;
+  const save = () => { try { localStorage.setItem(advKey(), JSON.stringify(d)); } catch (e) {} };
+  const insert = text => {
+    const target = advFocus && document.body.contains(advFocus) ? advFocus : root.querySelector("textarea");
+    if (!target) return;
+    target.value = target.value + (target.value && !/\s$/.test(target.value) ? " " : "") + text + " ";
+    target.dispatchEvent(new Event("input")); target.focus();
+  };
   root.append(h("div", { class: "scn" },
-    h("strong", null, "Tình huống: "), "Em không khỏe và đến gặp bác sĩ. Em hãy viết 4 câu để nói với bác sĩ em bị làm sao.",
-    h("div", { class: "vi" }, "Bước 1: brainstorm bằng cách chạm các ô gợi ý. Bước 2: bấm “Tạo câu gợi ý”. Bước 3: sửa lại 4 câu cho đúng ý của em.")));
+    h("strong", null, "Cho lời khuyên. "), "Mỗi tình huống, em viết 3 câu khuyên người đó. Hãy dùng các cụm “You should…”, “You shouldn't…” và lời khuyên đi khám bác sĩ khi cần.",
+    h("div", { class: "vi" }, "Chạm vào ô câu em muốn viết, rồi chạm cụm gợi ý để chèn vào.")));
+  const ph = lv().filter(p => p.group === "advice");
+  root.append(h("div", { class: "step" },
+    h("h3", null, "Cụm khuyên dùng"),
+    h("div", { class: "chips" }, ph.map(p => h("button", { class: "chip", type: "button", onclick: () => insert(p.en.replace(/…/g, "").replace(/\s+([,.])/g, "$1").trim()) }, p.en)))));
 
-  const chipGroup = (title, key, list, multi) => h("div", { class: "step" },
-    h("h3", null, title),
-    h("div", { class: "chips" }, list.map(([k, label]) => {
-      const on = multi ? d.sel[key].includes(k) : d.sel[key] === k;
-      return h("button", { class: "chip", type: "button", "aria-pressed": on, onclick: () => {
-        if (multi) { const a = d.sel[key], i = a.indexOf(k); if (i >= 0) a.splice(i, 1); else a.push(k); }
-        else d.sel[key] = d.sel[key] === k ? "" : k;
-        save(); renderDoctor();
-      } }, label);
-    })));
-  root.append(
-    chipGroup("Em bị gì? (chọn nhiều)", "have", DOC_OPT.have, true),
-    chipGroup("Em cảm thấy thế nào? (chọn nhiều)", "feel", DOC_OPT.feel, true),
-    chipGroup("Bắt đầu từ khi nào?", "when", DOC_OPT.when, false),
-    chipGroup("Em đã làm gì? (chọn nhiều)", "did", DOC_OPT.did, true),
-    chipGroup("Em muốn bác sĩ giúp gì?", "want", DOC_OPT.want[L], false));
-
-  root.append(h("div", { class: "row" },
-    h("button", { class: "btn primary", type: "button", onclick: () => {
-      const sug = docSuggest(d); let n = 0;
-      sug.forEach((t, i) => { if (t && !d.s[i].trim()) { d.s[i] = t; n++; } });
-      save(); renderDoctor();
-      toast(n ? "Đã điền câu gợi ý vào các ô còn trống. Hãy sửa lại cho đúng ý của em." : "Các ô đã có chữ, hãy xóa ô cần làm lại.");
-    } }, "Tạo câu gợi ý"),
-    h("button", { class: "btn", type: "button", onclick: () => { const keep = d.sel; Object.assign(d, blankDoc()); d.sel = keep; save(); renderDoctor(); } }, "Xóa 4 câu")));
-
-  const phrases = lv().filter(p => p.group === "doctor");
-  DOC_Q[L].forEach(([title, frame], i) => {
-    const wc = h("span", { class: "wc" });
-    const ta = h("textarea", { id: "doc" + i, rows: "2", "aria-label": title, oninput: e => { d.s[i] = e.target.value; save(); wc.textContent = words(e.target.value) + " từ"; } });
-    ta.value = d.s[i]; wc.textContent = words(d.s[i]) + " từ";
-    root.append(h("div", { class: "step", style: "margin-top:18px" },
-      h("h3", null, title),
-      h("p", null, "Mẫu câu: " + frame),
-      i === 3 ? h("div", { class: "chips" }, phrases.map(p => h("button", { class: "chip", type: "button", onclick: () => {
-        ta.value = (ta.value ? ta.value + " " : "") + p.en.replace(/…/g, "").trim(); d.s[i] = ta.value; save(); ta.focus(); wc.textContent = words(ta.value) + " từ";
-      } }, p.en))) : null,
-      ta, wc));
+  ADV_SIT.forEach((sit, si) => {
+    const card = h("div", { class: "panel", style: "margin-bottom:16px" });
+    card.append(h("div", { class: "spk" }, "Tình huống " + (si + 1) + "/" + ADV_SIT.length),
+      h("p", { class: "q", style: "margin:4px 0 8px" }, sit.vi),
+      h("div", { class: "chips" }, sit.hints.map(([en, vi]) => h("button", { class: "chip", type: "button", title: vi, onclick: () => insert(en) }, en + " · " + vi))));
+    for (let j = 0; j < 3; j++) {
+      const wc = h("span", { class: "wc" }), id = "adv" + si + "_" + j;
+      const ta = h("textarea", { id, rows: "2", "aria-label": "Tình huống " + (si + 1) + ", câu " + (j + 1),
+        onfocus: e => { advFocus = e.target; },
+        oninput: e => { d.s[si][j] = e.target.value; save(); wc.textContent = words(e.target.value) + " từ"; } });
+      ta.value = d.s[si][j]; wc.textContent = words(ta.value) + " từ";
+      card.append(h("div", { class: "step", style: "margin:10px 0 0" },
+        h("h3", { style: "font-size:1rem" }, "Câu " + (j + 1)),
+        h("p", null, "Mẫu câu: " + ADV_FRAME[L][j]), ta, wc));
+    }
+    card.append(h("details", null, h("summary", null, "Xem câu mẫu"), h("pre", null, sit[L].map((x, k) => (k + 1) + ". " + x).join("\n"))));
+    root.append(card);
   });
   root.append(h("div", { class: "row" },
-    h("button", { class: "btn", type: "button", onclick: () => speak(d.s.filter(Boolean).join(" ")) }, "🔊 Nghe 4 câu của em"),
+    h("button", { class: "btn", type: "button", onclick: () => { if (d.s.every(a => a.every(x => !x.trim()))) return; d.s = ADV_SIT.map(() => ["", "", ""]); save(); renderAdvice(); } }, "Xóa tất cả"),
     h("span", { class: "mini" }, "Bài được lưu tự động. Sang mục 7 để nộp.")));
 }
 
@@ -685,31 +697,32 @@ function renderDialog() {
 
 /* ---------- 7. Submit to the teacher ---------- */
 function collect() {
-  const L = S.level, list = lv(), sc = (loadScores()[L] || {});
+  const L = S.level, list = lv(), sc = (loadScores()[L] || {}), E = EMAIL[L];
   const nk = list.filter(p => known.has(pid(p))).length;
-  const d = loadDoc(), em = loadDraft();
+  const adv = loadAdv(), em = loadDraft();
   const text = em.steps.map(s => s.trim()).filter(Boolean).join("\n\n"), nw = words(text), tgt = TARGET[L];
   const used = list.filter(p => norm(text).includes(keyOf(p))).length;
-  const filled = d.s.filter(s => s.trim()).length;
+  const advTotal = ADV_SIT.length, advDone = adv.s.filter(a => a.every(x => x.trim())).length;
   const recKeys = Object.keys(REC).filter(k => k.startsWith(L + "|"));
   const sent = recKeys.filter(k => REC[k].sent).length;
   const warn = [];
   if (!sc.quiz) warn.push("Em chưa làm xong vòng Điền từ.");
   if (!sc.build) warn.push("Em chưa làm xong vòng Sắp xếp câu.");
-  if (nw < tgt) warn.push("Email mới có " + nw + " từ (mục tiêu " + tgt + " từ).");
-  if (filled < 4) warn.push("Em mới viết " + filled + "/4 câu nói với bác sĩ.");
+  if (nw < tgt) warn.push("Bài dịch email mới có " + nw + " từ (mục tiêu " + tgt + " từ).");
+  if (advDone < advTotal) warn.push("Em mới hoàn thành " + advDone + "/" + advTotal + " tình huống cho lời khuyên.");
   if (!recKeys.length) warn.push("Em chưa ghi âm hội thoại.");
   else if (sent < recKeys.length) warn.push("Còn " + (recKeys.length - sent) + " bản ghi âm chưa gửi (vào mục 6 bấm “Gửi cho cô”).");
   const fmt = a => a ? a[0] + "/" + a[1] : "chưa làm";
   const rows = [
     { part: "Thẻ ghi nhớ", question: "Số cụm đã nhớ (" + L + ")", answer: nk + "/" + list.length, correct: "", result: "" },
     { part: "Điền từ", question: "Điểm vòng gần nhất", answer: fmt(sc.quiz), correct: "", result: "" },
-    { part: "Sắp xếp câu", question: "Điểm vòng gần nhất", answer: fmt(sc.build), correct: "", result: "" }
+    { part: "Sắp xếp câu", question: "Điểm vòng gần nhất", answer: fmt(sc.build), correct: "", result: "" },
+    { part: "Dịch email · tiêu đề", question: E.subjectVi, answer: em.subject, correct: E.subjectEn, result: "" }
   ];
-  DOC_Q[L].forEach(([t, frame], i) => rows.push({ part: "Nói với bác sĩ " + (i + 1), question: t.replace(/^Câu \d+: /, "") + " [" + frame + "]", answer: d.s[i], correct: "", result: words(d.s[i]) + " từ" }));
-  rows.push({ part: "Viết email", question: "Tiêu đề: " + (em.subject || "(trống)"), answer: text, correct: "", result: nw + " từ · " + used + "/" + list.length + " cụm" });
+  E.paras.forEach((p, i) => rows.push({ part: "Dịch email · đoạn " + (i + 1), question: p.vi, answer: em.steps[i], correct: p.en, result: words(em.steps[i]) + " từ" }));
+  ADV_SIT.forEach((s, i) => rows.push({ part: "Lời khuyên " + (i + 1), question: s.vi, answer: adv.s[i].map((x, j) => (j + 1) + ". " + x).join("\n"), correct: s[L].map((x, j) => (j + 1) + ". " + x).join("\n"), result: adv.s[i].filter(x => x.trim()).length + "/3 câu" }));
   recKeys.forEach(k => { const r = REC[k]; rows.push({ part: "Ghi âm hội thoại", question: k.replace(L + "|", ""), answer: r.sent ? "đã gửi" : "CHƯA gửi", correct: r.target, result: (r.score != null ? "Phát âm ~" + r.score + "% · " : "") + (r.transcript || "") }); });
-  return { warn, rows, nk, total: list.length, sc, nw, tgt, used, filled, recKeys, sent };
+  return { warn, rows, nk, total: list.length, sc, nw, tgt, used, advDone, advTotal, recKeys, sent };
 }
 function renderSubmit() {
   const root = $("#panel"); root.replaceChildren();
@@ -720,8 +733,8 @@ function renderSubmit() {
     row("Thẻ đã nhớ", c.nk + "/" + c.total),
     row("Điền từ", fmt(c.sc.quiz)),
     row("Sắp xếp câu", fmt(c.sc.build)),
-    row("Email", c.nw + "/" + c.tgt + " từ · " + c.used + " cụm"),
-    row("Nói với bác sĩ", c.filled + "/4 câu"),
+    row("Dịch email", c.nw + "/" + c.tgt + " từ · " + c.used + " cụm"),
+    row("Cho lời khuyên", c.advDone + "/" + c.advTotal + " tình huống"),
     row("Ghi âm đã gửi", c.sent + "/" + c.recKeys.length + " bản")));
   const status = h("div", { class: "fb", "aria-live": "polite" });
   if (c.warn.length && S.warned) root.append(h("div", { class: "panel", style: "margin-top:14px" }, h("strong", null, "Em còn thiếu:"), h("ul", { class: "warnlist" }, c.warn.map(w => h("li", null, w))), h("p", { class: "mini", style: "margin:0" }, "Em có thể quay lại hoàn thành, hoặc vẫn nộp bài như hiện tại.")));
@@ -736,7 +749,7 @@ function renderSubmit() {
         gram: "Điền từ " + fmt(c.sc.quiz),
         ctx: "Sắp xếp câu " + fmt(c.sc.build),
         rec: c.sent + "/" + c.recKeys.length + " bản ghi",
-        para: "Email " + c.nw + " từ · " + c.used + "/" + c.total + " cụm · Bác sĩ " + c.filled + "/4 câu" + (ignored ? " · CHƯA ĐỦ, đã bỏ qua cảnh báo" : ""),
+        para: "Dịch email " + c.nw + " từ · " + c.used + "/" + c.total + " cụm · Lời khuyên " + c.advDone + "/" + c.advTotal + (ignored ? " · CHƯA ĐỦ, đã bỏ qua cảnh báo" : ""),
         feedback: ignored ? "Thiếu: " + c.warn.join(" ") : "Đã hoàn thành đủ các phần."
       }, details: c.rows });
       status.className = "fb good"; status.textContent = "Đã nộp bài cho cô. Cảm ơn " + getName() + "!"; S.warned = false;
@@ -749,7 +762,7 @@ function renderSubmit() {
 /* ---------- wiring ---------- */
 function render() {
   renderHeader();
-  ({ cards: renderCards, quiz: renderQuiz, build: renderBuild, write: renderWrite, doctor: renderDoctor, dialog: renderDialog, submit: renderSubmit })[S.tab]();
+  ({ cards: renderCards, quiz: renderQuiz, build: renderBuild, write: renderWrite, advice: renderAdvice, dialog: renderDialog, submit: renderSubmit })[S.tab]();
 }
 document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => { S.tab = b.dataset.tab; S.flip = false; render(); }));
 const setLevel = l => { S.level = l; S.group = "all"; S.idx = 0; S.flip = false; S.quiz = null; S.build = null; try { localStorage.setItem("gm_level", l); } catch (e) {} render(); };
