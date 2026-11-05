@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Giao Mùa Writing Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: one narrow column, a level switch and progress on top, four practice modes as tabs below. */
+:root {
+  --bg: #f3f7f6;
+  --surface: #ffffff;
+  --ink: #14282b;
+  --muted: #566b6e;
+  --line: #d4e1df;
+  --accent: #0e7c7b;
+  --accent-ink: #ffffff;
+  --soft: #e1f0ee;
+  --warm: #c8531f;
+  --good: #1b7f45;
+  --bad: #b83227;
+  --font-display: 'Bricolage Grotesque', 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-body: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1b1d; --surface: #172a2d; --ink: #e6f1ef; --muted: #9bb2b4; --line: #27403f;
+    --accent: #4cc3bd; --accent-ink: #06201f; --soft: #1d3a3b; --warm: #f0925f; --good: #5dd28c; --bad: #ff8a7a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1b1d; --surface: #172a2d; --ink: #e6f1ef; --muted: #9bb2b4; --line: #27403f;
+  --accent: #4cc3bd; --accent-ink: #06201f; --soft: #1d3a3b; --warm: #f0925f; --good: #5dd28c; --bad: #ff8a7a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); line-height: 1.55; font-size: 16px; }
+.wrap { max-width: 820px; margin: 0 auto; padding: 24px 16px 64px; }
+header { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between; }
+h1 { font-family: var(--font-display); font-size: clamp(1.7rem, 5vw, 2.3rem); line-height: 1.1; margin: 0; text-wrap: balance; }
+h1 span { color: var(--warm); }
+.sub { color: var(--muted); margin: 6px 0 0; max-width: 56ch; }
+.seg { display: inline-flex; border: 1.5px solid var(--accent); border-radius: 10px; overflow: hidden; }
+.seg button { border: 0; background: transparent; color: var(--accent); font: inherit; font-weight: 600; padding: 8px 18px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.prog { display: flex; align-items: center; gap: 12px; font-size: .9rem; color: var(--muted); }
+.bar { flex: 1; height: 8px; background: var(--soft); border-radius: 99px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--accent); border-radius: 99px; transition: width .3s; }
+.tabs { display: flex; gap: 4px; border-bottom: 1.5px solid var(--line); margin-bottom: 20px; overflow-x: auto; }
+.tabs button { border: 0; background: transparent; color: var(--muted); font: inherit; font-weight: 500; padding: 10px 14px; cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -1.5px; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--warm); font-weight: 600; }
+button:focus-visible, [tabindex]:focus-visible, textarea:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.chip { border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: .88rem; padding: 5px 12px; border-radius: 99px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.chip.used { background: var(--soft); border-color: var(--good); color: var(--good); font-weight: 600; }
+.chip.known::after { content: " ✓"; }
+.card { background: var(--surface); border: 1.5px solid var(--line); border-radius: 16px; padding: 28px 22px; min-height: 230px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 10px; cursor: pointer; width: 100%; font: inherit; color: inherit; }
+.card .tag { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--warm); font-weight: 600; }
+.card .big { font-family: var(--font-display); font-size: clamp(1.5rem, 5vw, 2.1rem); line-height: 1.2; text-wrap: balance; }
+.card .ex { color: var(--muted); font-style: italic; max-width: 46ch; }
+.card .hint { color: var(--muted); font-size: .85rem; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
+.row.spread { justify-content: space-between; }
+.btn { border: 1.5px solid var(--accent); background: transparent; color: var(--accent); font: inherit; font-weight: 600; padding: 9px 18px; border-radius: 10px; cursor: pointer; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.warm { border-color: var(--warm); color: var(--warm); }
+.btn:disabled { opacity: .45; cursor: default; }
+.mini { font-size: .88rem; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.panel { background: var(--surface); border: 1.5px solid var(--line); border-radius: 16px; padding: 22px; }
+.q { font-size: 1.2rem; margin: 6px 0 4px; text-wrap: balance; }
+.opts { display: grid; gap: 10px; margin: 16px 0; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.opt { border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; padding: 12px 14px; border-radius: 10px; text-align: left; cursor: pointer; }
+.opt.good { border-color: var(--good); background: var(--soft); color: var(--good); font-weight: 600; }
+.opt.bad { border-color: var(--bad); color: var(--bad); }
+.fb { min-height: 1.5em; font-weight: 600; }
+.fb.good { color: var(--good); } .fb.bad { color: var(--bad); }
+.answer { min-height: 62px; border: 1.5px dashed var(--line); border-radius: 12px; padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; align-items: center; }
+.word { border: 1.5px solid var(--accent); background: var(--surface); color: var(--ink); font: inherit; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+.word[disabled] { visibility: hidden; }
+.step { margin-bottom: 18px; }
+.step h3 { font-family: var(--font-display); font-size: 1.1rem; margin: 0 0 2px; }
+.step p { margin: 0 0 8px; color: var(--muted); font-size: .92rem; }
+textarea { width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; resize: vertical; min-height: 84px; }
+input[type="text"] { width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px; padding: 9px 12px; }
+.stats { position: sticky; bottom: 0; background: var(--surface); border: 1.5px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-top: 14px; }
+.stats .chips { margin: 10px 0 0; }
+details { margin-top: 14px; border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 14px; background: var(--surface); }
+summary { cursor: pointer; font-weight: 600; }
+pre { white-space: pre-wrap; font-family: var(--font-body); margin: 10px 0 0; }
+.empty { text-align: center; color: var(--muted); padding: 30px 10px; }
+
+.gate { position: fixed; inset: 0; background: rgba(10,25,27,.6); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 50; }
+.gate[hidden] { display: none; }
+.gate-box { background: var(--surface); border-radius: 16px; padding: 24px; max-width: 420px; width: 100%; display: grid; gap: 12px; }
+.gate-box h2 { font-family: var(--font-display); margin: 0; }
+.gate-box p { margin: 0; color: var(--muted); }
+.toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; max-width: 92vw; z-index: 60; opacity: 0; pointer-events: none; transition: opacity .2s; }
+.toast.show { opacity: 1; }
+.line { border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; background: var(--surface); display: grid; gap: 6px; margin-bottom: 10px; }
+.line.mine { border-color: var(--accent); background: var(--soft); }
+.spk { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--warm); font-weight: 600; }
+.vi { color: var(--muted); font-size: .9rem; }
+.recbox { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+audio { max-width: 100%; height: 36px; }
+.warnlist { margin: 8px 0; padding-left: 20px; color: var(--bad); }
+.okrow { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.okrow:last-child { border-bottom: 0; }
+.scn { background: var(--soft); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; }
+.wc { font-size: .8rem; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="top">
+      <div>
+        <h1>Giao Mùa <span>Writing Lab</span></h1>
+        <p class="sub">Luyện cách diễn đạt về cúm, cảm lạnh khi thời tiết thay đổi. Mỗi ngày 10 phút: học 5 thẻ, làm 1 vòng điền từ, rồi viết một đoạn email.</p>
+      </div>
+      <div class="seg" role="group" aria-label="Chọn trình độ">
+        <button id="lvA2" type="button" aria-pressed="true">A2</button>
+        <button id="lvB1" type="button" aria-pressed="false">B1</button>
+      </div>
+    </div>
+    <div class="prog"><span id="progText">Đã nhớ 0/0 cụm</span><div class="bar"><i id="progBar" style="width:0%"></i></div></div>
+    <div class="mini"><span id="whoText"></span><button class="chip" id="rename" type="button">Đổi tên</button></div>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Chế độ luyện tập">
+    <button role="tab" id="tab-cards" data-tab="cards" aria-selected="true">1. Thẻ ghi nhớ</button>
+    <button role="tab" id="tab-quiz" data-tab="quiz" aria-selected="false">2. Điền từ</button>
+    <button role="tab" id="tab-build" data-tab="build" aria-selected="false">3. Sắp xếp câu</button>
+    <button role="tab" id="tab-write" data-tab="write" aria-selected="false">4. Viết email</button>
+    <button role="tab" id="tab-doctor" data-tab="doctor" aria-selected="false">5. Nói với bác sĩ</button>
+    <button role="tab" id="tab-dialog" data-tab="dialog" aria-selected="false">6. Đọc hội thoại</button>
+    <button role="tab" id="tab-submit" data-tab="submit" aria-selected="false">7. Nộp bài</button>
+  </div>
+
+  <main id="panel" role="tabpanel"></main>
+</div>
+
+<div id="gate" class="gate" hidden>
+  <div class="gate-box" role="dialog" aria-modal="true" aria-labelledby="gt">
+    <h2 id="gt">Chào em!</h2>
+    <p>Em hãy nhập họ tên để cô nhận được bài của em.</p>
+    <input type="text" id="gname" placeholder="Họ và tên" autocomplete="name" aria-label="Họ và tên">
+    <button class="btn primary" id="gok" type="button">Bắt đầu</button>
+  </div>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+const GROUPS = { weather: "Thời tiết", symptoms: "Triệu chứng", prevent: "Phòng bệnh", advice: "Lời khuyên", open: "Mở thư", close: "Kết thư", doctor: "Khám bệnh" };
+
+// [group, level, english, vietnamese, example sentence, optional match key]
+const RAW = [
+  ["weather","A2","The weather is changing.","Thời tiết đang thay đổi.","The weather is changing, so be careful.","weather is changing"],
+  ["weather","A2","It is cold in the morning and hot in the afternoon.","Buổi sáng lạnh và buổi chiều nóng.","It is cold in the morning and hot in the afternoon.","cold in the morning"],
+  ["weather","A2","Many people are sick.","Nhiều người đang bị ốm.","Many people are sick with colds and flu.","are sick"],
+  ["weather","B1","Sudden changes in temperature","Sự thay đổi nhiệt độ đột ngột","Sudden changes in temperature can weaken our immune system.","changes in temperature"],
+  ["weather","B1","Cases of colds and flu have increased.","Số ca cảm lạnh và cúm đã tăng.","Cases of colds and flu have increased this week.","have increased"],
+  ["weather","B1","Viruses spread easily","Virus lây lan dễ dàng","Viruses spread easily in crowded places.","spread easily"],
+
+  ["symptoms","A2","fever","sốt","I have a fever and I feel hot."],
+  ["symptoms","A2","cough","ho","She has a bad cough."],
+  ["symptoms","A2","sore throat","đau họng","He has a sore throat, so he can't talk much."],
+  ["symptoms","A2","runny nose","sổ mũi","My little brother has a runny nose."],
+  ["symptoms","A2","headache","đau đầu","I took a rest because I had a headache."],
+  ["symptoms","A2","feel tired","cảm thấy mệt","I feel tired in the morning.","tired"],
+  ["symptoms","A2","stomachache","đau bụng","I have a stomachache and I feel sick."],
+  ["symptoms","B1","persistent cough","ho dai dẳng","A persistent cough can last for many days."],
+  ["symptoms","B1","blocked nose","nghẹt mũi","A blocked nose makes it hard to sleep."],
+  ["symptoms","B1","muscle aches","đau mỏi cơ","Flu often causes fever and muscle aches."],
+  ["symptoms","B1","loss of appetite","chán ăn","Loss of appetite is a common symptom."],
+  ["symptoms","B1","chills","ớn lạnh","Fever and chills are signs of the flu."],
+  ["symptoms","B1","shortness of breath","khó thở","Shortness of breath is a serious symptom."],
+  ["symptoms","B1","feel dizzy","chóng mặt","I feel dizzy when I stand up.","dizzy"],
+
+  ["prevent","A2","wash my hands often","rửa tay thường xuyên","I wash my hands often with soap and water.","wash"],
+  ["prevent","A2","wear a mask","đeo khẩu trang","Please wear a mask in crowded places."],
+  ["prevent","A2","wear warm clothes","mặc quần áo ấm","Wear warm clothes in the morning."],
+  ["prevent","A2","drink a lot of water","uống nhiều nước","You should drink a lot of water every day."],
+  ["prevent","A2","sleep well","ngủ đủ giấc","Eat healthy food and sleep well."],
+  ["prevent","A2","stay at home","ở nhà","If you are sick, stay at home and rest."],
+  ["prevent","B1","boost your immunity","tăng cường miễn dịch","Fruit and vegetables help boost your immunity."],
+  ["prevent","B1","well ventilated","thông thoáng","Keep your home clean and well ventilated."],
+  ["prevent","B1","avoid crowded places","tránh nơi đông người","It is better to avoid crowded places when you feel unwell."],
+  ["prevent","B1","a balanced diet","chế độ ăn cân bằng","A balanced diet keeps your body strong."],
+  ["prevent","B1","limit the spread","hạn chế sự lây lan","Wearing a mask helps limit the spread of illness."],
+  ["prevent","B1","avoid sharing","tránh dùng chung","Avoid sharing drinks or personal items."],
+
+  ["advice","A2","You should…","Bạn nên…","You should rest and drink warm water.","should"],
+  ["advice","A2","You shouldn't…","Bạn không nên…","You shouldn't go out in the cold.","shouldn't"],
+  ["advice","A2","Please see a doctor.","Hãy đi khám bác sĩ.","If you have a high fever, please see a doctor.","see a doctor"],
+  ["advice","A2","Take care of yourself.","Hãy giữ gìn sức khỏe.","Take care of yourself and get some rest.","take care"],
+  ["advice","A2","Get well soon.","Chúc bạn mau khỏi.","I hope you get well soon.","get well"],
+  ["advice","B1","I strongly recommend that you…","Tôi đặc biệt khuyên bạn…","I strongly recommend that you stay at home.","recommend"],
+  ["advice","B1","It is important to…","Điều quan trọng là…","It is important to wash your hands regularly.","it is important"],
+  ["advice","B1","Make sure you…","Hãy chắc chắn rằng bạn…","Make sure you drink enough water.","make sure"],
+  ["advice","B1","seek medical help","tìm đến sự trợ giúp y tế","Seek medical help if the symptoms get worse."],
+  ["advice","B1","If the symptoms get worse…","Nếu triệu chứng nặng hơn…","If the symptoms get worse, call a doctor.","get worse"],
+
+  ["open","A2","Dear Parents and Students,","Kính gửi phụ huynh và học sinh,","Dear Parents and Students, I hope you are well."],
+  ["open","A2","I am writing to tell you about…","Tôi viết thư này để thông báo về…","I am writing to tell you about the weather.","writing to tell you"],
+  ["open","A2","I hope you are well.","Tôi hy vọng bạn khỏe.","I hope you are well and happy.","hope you are well"],
+  ["open","B1","I am writing to inform you about…","Tôi viết thư này để thông báo về…","I am writing to inform you about the current health situation.","writing to inform you"],
+  ["open","B1","I would like to update you on…","Tôi muốn cập nhật cho bạn về…","I would like to update you on the situation in our area.","update you on"],
+  ["open","B1","As the weather is changing…","Khi thời tiết đang thay đổi…","As the weather is changing, more people are catching colds.","as the weather is changing"],
+
+  ["close","A2","Please tell your teacher.","Hãy báo cho giáo viên.","If you are sick, please tell your teacher.","tell your teacher"],
+  ["close","A2","Thank you for your help.","Cảm ơn sự giúp đỡ của bạn.","Thank you for your help.","thank you"],
+  ["close","A2","Best regards,","Trân trọng,","Best regards, Ms. Linh","best regards"],
+  ["close","B1","Thank you for your cooperation.","Cảm ơn sự hợp tác của bạn.","Thank you for your cooperation.","cooperation"],
+  ["close","B1","Please let me know if you have any questions.","Hãy cho tôi biết nếu bạn có câu hỏi.","Please let me know if you have any questions.","let me know"],
+  ["close","B1","Kind regards,","Trân trọng,","Kind regards, Mr. Hung","kind regards"],
+
+  ["doctor","A2","I don't feel well.","Tôi cảm thấy không khỏe.","I don't feel well, so I want to see a doctor.","don't feel well"],
+  ["doctor","A2","It started two days ago.","Nó bắt đầu từ hai ngày trước.","It started two days ago.","started"],
+  ["doctor","A2","I took some medicine.","Tôi đã uống thuốc.","I took some medicine and rested.","took some medicine"],
+  ["doctor","A2","What should I do?","Tôi nên làm gì?","Doctor, what should I do?","what should i do"],
+  ["doctor","A2","Thank you, doctor.","Cảm ơn bác sĩ.","Thank you, doctor.","thank you, doctor"],
+  ["doctor","B1","I've had … for …","Tôi bị … được … rồi","I've had a cough for three days.","i've had"],
+  ["doctor","B1","The symptoms are getting worse.","Triệu chứng đang nặng hơn.","The symptoms are getting worse every day.","getting worse"],
+  ["doctor","B1","It hurts when I…","Tôi bị đau khi…","It hurts when I swallow.","it hurts"],
+  ["doctor","B1","Could you tell me what I should do?","Bác sĩ có thể cho tôi biết tôi nên làm gì không?","Could you tell me what I should do?","what i should do"],
+  ["doctor","B1","Have you taken any medicine?","Bạn đã uống thuốc gì chưa?","Have you taken any medicine today?","taken any medicine"]
+];
+const ITEMS = RAW.map(a => ({ group: a[0], level: a[1], en: a[2], vi: a[3], ex: a[4], k: a[5] }));
+
+const STEPS = [
+  { title: "Mở thư", groups: ["open", "weather"], tip: "Chào người nhận, nói mục đích viết thư và nhắc thời tiết đang thay đổi." },
+  { title: "Triệu chứng", groups: ["symptoms"], tip: "Kể ít nhất 3 triệu chứng thường gặp." },
+  { title: "Phòng bệnh và lời khuyên", groups: ["prevent", "advice"], tip: "Đưa ra ít nhất 3 cách phòng bệnh và nói khi nào cần gặp bác sĩ." },
+  { title: "Kết thư", groups: ["close"], tip: "Cảm ơn người đọc và ký tên." }
+];
+const TARGET = { A2: 60, B1: 120 };
+const MODEL = {
+  A2: "Dear Parents and Students,\n\nThe weather is changing now. It is cold in the morning and hot in the afternoon. Many people are sick with colds and flu.\n\nCommon symptoms are a fever, a cough, a sore throat and a runny nose.\n\nPlease wash your hands often, wear a mask and drink a lot of water. You should stay at home if you are sick. Please see a doctor if you have a high fever.\n\nThank you for your help.\n\nBest regards,\n[Your Name]",
+  B1: "Dear Parents and Students,\n\nI am writing to inform you about the current health situation. As the weather is changing, cases of colds and flu have increased. Sudden changes in temperature can weaken our immune system, and viruses spread easily in crowded places.\n\nCommon symptoms include a persistent cough, a blocked nose, muscle aches and loss of appetite.\n\nIt is important to wash your hands regularly and avoid crowded places. I strongly recommend that you eat a balanced diet and keep your home well ventilated. If the symptoms get worse, seek medical help.\n\nThank you for your cooperation.\n\nKind regards,\n[Your Name]"
+};
+
+const $ = s => document.querySelector(s);
+const h = (tag, props = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) e.setAttribute(k, v);
+  }
+  kids.flat().forEach(c => { if (c !== null && c !== undefined && c !== false) e.append(c); });
+  return e;
+};
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const norm = s => s.toLowerCase().replace(/[’‘]/g, "'");
+const pid = p => p.level + "|" + p.en;
+const keyOf = p => norm(p.k || p.en.replace(/…|[,.?]/g, "")).trim();
+const speak = t => { try { const u = new SpeechSynthesisUtterance(t.replace(/…/g, "")); u.lang = "en-US"; u.rate = 0.9; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {} };
+const words = t => t.trim().split(/\s+/).filter(Boolean).length;
+
+const S = { role: "P", warned: false, level: "A2", tab: "cards", group: "all", onlyNew: false, idx: 0, flip: false, quiz: null, build: null };
+let known = new Set();
+try { known = new Set(JSON.parse(localStorage.getItem("gm_known") || "[]")); S.level = localStorage.getItem("gm_level") || "A2"; } catch (e) {}
+const saveKnown = () => { try { localStorage.setItem("gm_known", JSON.stringify([...known])); } catch (e) {} };
+const lv = () => ITEMS.filter(p => p.level === S.level);
+
+function renderHeader() {
+  $("#lvA2").setAttribute("aria-pressed", S.level === "A2");
+  $("#lvB1").setAttribute("aria-pressed", S.level === "B1");
+  const list = lv(), n = list.filter(p => known.has(pid(p))).length;
+  $("#progText").textContent = "Đã nhớ " + n + "/" + list.length + " cụm (" + S.level + ")";
+  $("#progBar").style.width = Math.round(n / list.length * 100) + "%";
+  document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === S.tab));
+}
+
+/* ---------- 1. Flashcards ---------- */
+function renderCards() {
+  const root = $("#panel"); root.replaceChildren();
+  const gs = ["all", ...Object.keys(GROUPS).filter(g => lv().some(p => p.group === g))];
+  root.append(h("div", { class: "chips" }, gs.map(g => h("button", {
+    class: "chip", type: "button", "aria-pressed": S.group === g,
+    onclick: () => { S.group = g; S.idx = 0; S.flip = false; renderCards(); }
+  }, g === "all" ? "Tất cả" : GROUPS[g]))));
+
+  let list = lv().filter(p => S.group === "all" || p.group === S.group);
+  if (S.onlyNew) list = list.filter(p => !known.has(pid(p)));
+  if (S.idx >= list.length) S.idx = 0;
+
+  root.append(h("label", { class: "mini" },
+    h("input", { type: "checkbox", id: "onlyNew", checked: S.onlyNew ? "" : null, onchange: e => { S.onlyNew = e.target.checked; S.idx = 0; S.flip = false; renderCards(); } }),
+    "Chỉ ôn thẻ chưa nhớ"));
+
+  if (!list.length) { root.append(h("div", { class: "empty" }, "Bạn đã nhớ hết các thẻ trong nhóm này. Hãy sang phần Điền từ để kiểm tra lại.")); return; }
+  const p = list[S.idx];
+  const front = [h("span", { class: "tag" }, GROUPS[p.group]), h("div", { class: "big" }, p.en), h("div", { class: "hint" }, "Chạm vào thẻ để xem nghĩa và ví dụ")];
+  const back = [h("span", { class: "tag" }, "Nghĩa"), h("div", { class: "big" }, p.vi), h("div", { class: "ex" }, "“" + p.ex + "”")];
+  root.append(h("div", { style: "margin-top:12px" },
+    h("button", { class: "card", type: "button", "aria-label": "Thẻ " + (S.idx + 1) + " trên " + list.length + ". Chạm để lật.", onclick: () => { S.flip = !S.flip; renderCards(); } }, S.flip ? back : front)));
+
+  const mark = (ok) => {
+    if (ok) known.add(pid(p)); else known.delete(pid(p));
+    saveKnown(); S.flip = false;
+    if (ok && S.onlyNew) { /* list shrinks, keep index */ } else S.idx = (S.idx + 1) % list.length;
+    renderHeader(); renderCards();
+  };
+  root.append(h("div", { class: "row spread" },
+    h("span", { class: "mini" }, (S.idx + 1) + "/" + list.length + (known.has(pid(p)) ? " · đã nhớ ✓" : "")),
+    h("div", { class: "row", style: "margin:0" },
+      h("button", { class: "btn", type: "button", onclick: () => speak(p.en) }, "🔊 Nghe"),
+      h("button", { class: "btn warm", type: "button", onclick: () => mark(false) }, "Chưa nhớ"),
+      h("button", { class: "btn primary", type: "button", onclick: () => mark(true) }, "Đã nhớ"))));
+}
+
+/* ---------- 2. Gap-fill quiz ---------- */
+const plain = p => !/[.…?,]$/.test(p.en);
+function newQuiz() {
+  const pool = lv().filter(p => plain(p));
+  const cands = shuffle(pool.filter(p => norm(p.ex).includes(norm(p.en)))).slice(0, 8);
+  const qs = cands.map(p => {
+    const i = norm(p.ex).indexOf(norm(p.en));
+    const text = p.ex.slice(0, i) + "_____" + p.ex.slice(i + p.en.length);
+    const others = pool.filter(x => x !== p);
+    const same = shuffle(others.filter(x => x.group === p.group)), rest = shuffle(others.filter(x => x.group !== p.group));
+    const opts = shuffle([p, ...[...same, ...rest].slice(0, 3)]);
+    return { p, text, opts, picked: null };
+  });
+  S.quiz = { qs, i: 0, score: 0 };
+}
+function renderQuiz() {
+  const root = $("#panel"); root.replaceChildren();
+  if (!S.quiz) newQuiz();
+  const Q = S.quiz;
+  if (Q.i >= Q.qs.length) {
+    saveScore("quiz", Q.score, Q.qs.length);
+    root.append(h("div", { class: "panel" },
+      h("h2", { class: "q" }, "Kết quả: " + Q.score + "/" + Q.qs.length),
+      h("p", { class: "mini" }, Q.score === Q.qs.length ? "Rất tốt! Hãy sang phần Viết email." : "Ôn lại các thẻ chưa chắc rồi làm lại vòng mới."),
+      h("div", { class: "row" }, h("button", { class: "btn primary", type: "button", onclick: () => { newQuiz(); renderQuiz(); } }, "Làm vòng mới"))));
+    return;
+  }
+  const q = Q.qs[Q.i], done = q.picked !== null;
+  root.append(h("div", { class: "panel" },
+    h("div", { class: "mini" }, "Câu " + (Q.i + 1) + "/" + Q.qs.length + " · Điểm " + Q.score),
+    h("p", { class: "q" }, done ? q.p.ex : q.text),
+    h("div", { class: "mini" }, "Nghĩa của cụm cần điền: " + q.p.vi),
+    h("div", { class: "opts" }, q.opts.map(o => h("button", {
+      class: "opt" + (done && o === q.p ? " good" : "") + (done && q.picked === o && o !== q.p ? " bad" : ""), type: "button", disabled: done ? "" : null,
+      onclick: () => { q.picked = o; if (o === q.p) Q.score++; speak(q.p.ex); renderQuiz(); }
+    }, o.en))),
+    h("div", { class: "fb " + (done ? (q.picked === q.p ? "good" : "bad") : ""), "aria-live": "polite" }, done ? (q.picked === q.p ? "Chính xác!" : "Chưa đúng. Đáp án: " + q.p.en) : ""),
+    done ? h("div", { class: "row" }, h("button", { class: "btn primary", type: "button", onclick: () => { Q.i++; renderQuiz(); } }, Q.i + 1 < Q.qs.length ? "Câu tiếp" : "Xem kết quả")) : null));
+}
+
+/* ---------- 3. Sentence builder ---------- */
+function newBuild() {
+  const seen = new Set();
+  const cands = shuffle(lv().filter(p => { const n = words(p.ex); if (n < 4 || n > 14 || seen.has(p.ex)) return false; seen.add(p.ex); return true; })).slice(0, 6);
+  S.build = { list: cands, i: 0, score: 0 };
+  setupBuildItem();
+}
+function setupBuildItem() {
+  const B = S.build, p = B.list[B.i]; if (!p) return;
+  const ws = p.ex.split(/\s+/);
+  let bank = ws.map((w, k) => ({ w, id: k, used: false }));
+  for (let t = 0; t < 8; t++) { bank = shuffle(bank); if (bank.map(x => x.w).join(" ") !== p.ex) break; }
+  B.bank = bank; B.chosen = []; B.result = null;
+}
+function renderBuild() {
+  const root = $("#panel"); root.replaceChildren();
+  if (!S.build) newBuild();
+  const B = S.build;
+  if (B.i >= B.list.length) {
+    saveScore("build", B.score, B.list.length);
+    root.append(h("div", { class: "panel" },
+      h("h2", { class: "q" }, "Đúng " + B.score + "/" + B.list.length + " câu ngay lần kiểm tra đầu"),
+      h("div", { class: "row" }, h("button", { class: "btn primary", type: "button", onclick: () => { newBuild(); renderBuild(); } }, "Làm vòng mới"))));
+    return;
+  }
+  const p = B.list[B.i];
+  root.append(h("div", { class: "panel" },
+    h("div", { class: "mini" }, "Câu " + (B.i + 1) + "/" + B.list.length + " · Chạm các từ theo đúng thứ tự"),
+    h("p", { class: "q" }, "Gợi ý: " + p.en.replace(/…/g, "…") + " = " + p.vi),
+    h("div", { class: "answer", "aria-label": "Câu của bạn" }, B.chosen.length ? B.chosen.map(c => h("button", { class: "word", type: "button", onclick: () => { c.used = false; B.chosen = B.chosen.filter(x => x !== c); B.result = null; renderBuild(); } }, c.w)) : h("span", { class: "mini" }, "Câu của bạn sẽ hiện ở đây")),
+    h("div", { class: "answer", style: "border-style:solid;border-color:transparent;padding:0" }, B.bank.map(c => h("button", { class: "word", type: "button", disabled: c.used ? "" : null, onclick: () => { c.used = true; B.chosen.push(c); B.result = null; renderBuild(); } }, c.w))),
+    h("div", { class: "fb " + (B.result === null ? "" : B.result ? "good" : "bad"), "aria-live": "polite" }, B.result === null ? "" : B.result ? "Chính xác!" : "Chưa đúng, thử lại hoặc xem đáp án."),
+    h("div", { class: "row" },
+      h("button", { class: "btn primary", type: "button", onclick: () => {
+        const ok = B.chosen.map(c => c.w).join(" ") === p.ex;
+        if (B.firstTry === undefined) B.firstTry = true;
+        if (ok) { if (B.firstTry) B.score++; B.firstTry = undefined; speak(p.ex); } else B.firstTry = false;
+        B.result = ok; renderBuild();
+      } }, "Kiểm tra"),
+      h("button", { class: "btn", type: "button", onclick: () => { setupBuildItem(); renderBuild(); } }, "Làm lại"),
+      B.result === false ? h("button", { class: "btn warm", type: "button", onclick: () => { B.firstTry = false; B.chosen = []; B.bank.forEach(c => c.used = false); B.result = null; $("#panel").querySelector(".fb").textContent = "Đáp án: " + p.ex; renderBuild(); $("#panel").querySelector(".fb").textContent = "Đáp án: " + p.ex; } }, "Xem đáp án") : null,
+      B.result === true ? h("button", { class: "btn primary", type: "button", onclick: () => { B.i++; setupBuildItem(); renderBuild(); } }, B.i + 1 < B.list.length ? "Câu tiếp" : "Xem kết quả") : null)));
+}
+
+/* ---------- 4. Guided email writing ---------- */
+const draftKey = () => "gm_draft_" + S.level;
+function loadDraft() { try { const d = JSON.parse(localStorage.getItem(draftKey()) || "null"); if (d && d.steps && d.steps.length === 4) return d; } catch (e) {} return { subject: "", steps: ["", "", "", ""] }; }
+function saveDraft(d) { try { localStorage.setItem(draftKey(), JSON.stringify(d)); } catch (e) {} }
+
+function renderWrite() {
+  const root = $("#panel"); root.replaceChildren();
+  const draft = loadDraft(), list = lv();
+  const areas = [];
+  const statsBox = h("div", { class: "stats", "aria-live": "polite" });
+
+  const fullText = () => draft.steps.map(s => s.trim()).filter(Boolean).join("\n\n");
+  const update = () => {
+    saveDraft(draft);
+    const txt = fullText(), n = words(txt), tgt = TARGET[S.level], t = norm(txt);
+    const used = list.filter(p => t.includes(keyOf(p)));
+    statsBox.replaceChildren(
+      h("div", { class: "prog" }, h("span", null, n + "/" + tgt + " từ"), h("div", { class: "bar" }, h("i", { style: "width:" + Math.min(100, Math.round(n / tgt * 100)) + "%" }))),
+      h("div", { class: "mini", style: "margin-top:8px" }, "Cụm đã dùng: " + used.length + "/" + list.length + (n >= tgt ? " · Đủ độ dài, hãy kiểm tra lại ngữ pháp rồi sao chép." : "")),
+      h("details", { style: "margin-top:8px;padding:6px 10px" }, h("summary", null, "Danh sách cụm cần dùng"),
+        h("div", { class: "chips", style: "max-height:30vh;overflow-y:auto" }, list.map(p => h("span", { class: "chip" + (used.includes(p) ? " used" : "") }, p.en.replace(/…/g, "").trim())))));
+  };
+
+  root.append(h("div", { class: "step" },
+    h("h3", null, "Tiêu đề email (Subject)"),
+    h("input", { type: "text", id: "subj", placeholder: S.level === "A2" ? "Health Notice: Colds and Flu" : "Health Notice: Seasonal Illnesses During the Weather Change", value: draft.subject, oninput: e => { draft.subject = e.target.value; saveDraft(draft); } })));
+
+  STEPS.forEach((st, i) => {
+    const starters = list.filter(p => st.groups.includes(p.group));
+    const ta = h("textarea", { id: "step" + i, rows: "3", "aria-label": st.title, oninput: e => { draft.steps[i] = e.target.value; update(); } });
+    ta.value = draft.steps[i]; areas.push(ta);
+    root.append(h("div", { class: "step" },
+      h("h3", null, (i + 1) + ". " + st.title),
+      h("p", null, st.tip + " Chạm vào cụm gợi ý để chèn vào bài."),
+      h("div", { class: "chips" }, starters.map(p => h("button", { class: "chip", type: "button", onclick: () => {
+        const add = p.en.replace(/…/g, "").replace(/\s+([,.])/g, "$1").trim() + " ";
+        ta.value = ta.value + (ta.value && !/\s$/.test(ta.value) ? " " : "") + add;
+        draft.steps[i] = ta.value; ta.focus(); update();
+      } }, p.en.replace(/…/g, "…")))),
+      ta));
+  });
+
+  const out = h("textarea", { id: "outbox", rows: "8", readonly: "", "aria-label": "Email hoàn chỉnh" });
+  const msg = h("span", { class: "mini", "aria-live": "polite" });
+  root.append(h("div", { class: "row" },
+    h("button", { class: "btn primary", type: "button", onclick: () => {
+      out.value = (draft.subject.trim() ? "Subject: " + draft.subject.trim() + "\n\n" : "") + fullText();
+      out.hidden = false; out.focus(); out.select();
+      try { navigator.clipboard.writeText(out.value).then(() => { msg.textContent = "Đã sao chép email."; }, () => { msg.textContent = "Hãy chọn và sao chép nội dung bên dưới."; }); } catch (e) { msg.textContent = "Hãy chọn và sao chép nội dung bên dưới."; }
+    } }, "Sao chép email"),
+    h("button", { class: "btn", type: "button", onclick: () => { if (!fullText() && !draft.subject) return; draft.subject = ""; draft.steps = ["", "", "", ""]; saveDraft(draft); renderWrite(); } }, "Xóa bài viết"),
+    msg));
+  out.hidden = true; root.append(out);
+  root.append(h("details", null, h("summary", null, "Xem bài mẫu (" + S.level + ")"), h("pre", null, MODEL[S.level])));
+  root.append(statsBox);
+  update();
+}
+
+/* ---------- submission gateway, name, scores ---------- */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnf8X3_Xfk9F_8HQtBwSFU_s28sRjxKb0aFaHCA4ybmMJvgaztBAbdvaFzITdbVXBt/exec";
+const LESSON = "GiaoMua-Writing";
+const getName = () => { try { return localStorage.getItem("gm_name") || ""; } catch (e) { return ""; } };
+const toast = t => { const e = $("#toast"); e.textContent = t; e.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove("show"), 3800); };
+const updateWho = () => { $("#whoText").textContent = getName() ? "Học sinh: " + getName() + " " : "Chưa nhập tên "; };
+const showGate = () => { $("#gname").value = getName(); $("#gate").hidden = false; setTimeout(() => $("#gname").focus(), 50); };
+const post = async obj => {
+  const r = await fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(obj) });
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || "error");
+  return j;
+};
+const loadScores = () => { try { return JSON.parse(localStorage.getItem("gm_scores") || "{}"); } catch (e) { return {}; } };
+const saveScore = (kind, s, t) => { try { const a = loadScores(); a[S.level] = a[S.level] || {}; a[S.level][kind] = [s, t]; localStorage.setItem("gm_scores", JSON.stringify(a)); } catch (e) {} };
+const blobToB64 = blob => new Promise((res, rej) => { const f = new FileReader(); f.onload = () => res(String(f.result).split(",")[1]); f.onerror = rej; f.readAsDataURL(blob); });
+
+/* ---------- 5. Brainstorm: tell the doctor what is wrong (4 sentences) ---------- */
+const DOC_OPT = {
+  have: [["headache","a headache"],["fever","a fever"],["sore throat","a sore throat"],["cough","a cough"],["runny nose","a runny nose"],["stomachache","a stomachache"]],
+  feel: [["tired","tired"],["dizzy","dizzy"],["sick","sick"]],
+  when: [["yesterday","yesterday"],["two days ago","two days ago"],["last week","last week"]],
+  did:  [["took medicine","took some medicine"],["drank water","drank a lot of water"],["rested","rested at home"]],
+  want: {
+    A2: [["advice","What should I do?"],["medicine","Can I have some medicine?"],["checkup","Can you check me, please?"]],
+    B1: [["advice","Could you tell me what I should do?"],["medicine","Could you prescribe some medicine?"],["checkup","Could you examine me, please?"]]
+  }
+};
+const DOC_Q = {
+  A2: [
+    ["Câu 1: Bạn bị làm sao?", "I have … / I feel …"],
+    ["Câu 2: Bắt đầu từ khi nào?", "It started … ago."],
+    ["Câu 3: Bạn đã làm gì?", "I took some medicine. / I rested."],
+    ["Câu 4: Bạn nhờ bác sĩ giúp gì?", "What should I do?"]
+  ],
+  B1: [
+    ["Câu 1: Bạn bị làm sao?", "I'm not feeling well. I have … and I feel …"],
+    ["Câu 2: Bắt đầu từ khi nào?", "The symptoms started … and they are getting worse."],
+    ["Câu 3: Bạn đã làm gì?", "I … but I don't feel better."],
+    ["Câu 4: Bạn nhờ bác sĩ giúp gì?", "Could you tell me what I should do?"]
+  ]
+};
+const joinList = a => a.length < 2 ? (a[0] || "") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1];
+const docKey = () => "gm_doc_" + S.level;
+const blankDoc = () => ({ sel: { have: [], feel: [], when: "", did: [], want: "advice" }, s: ["", "", "", ""] });
+function loadDoc() { try { const d = JSON.parse(localStorage.getItem(docKey()) || "null"); if (d && d.sel && d.s && d.s.length === 4) return d; } catch (e) {} return blankDoc(); }
+function docSuggest(d) {
+  const L = S.level, o = DOC_OPT, sel = d.sel;
+  const map = (arr, list) => arr.map(k => (list.find(x => x[0] === k) || [])[1]).filter(Boolean);
+  const haves = map(sel.have, o.have), feels = map(sel.feel, o.feel), dids = map(sel.did, o.did);
+  const when = (o.when.find(x => x[0] === sel.when) || [])[1];
+  const want = (o.want[L].find(x => x[0] === sel.want) || [])[1];
+  const s1 = [];
+  if (L === "B1" && (haves.length || feels.length)) s1.push("I'm not feeling well.");
+  if (haves.length) s1.push("I have " + joinList(haves) + ".");
+  if (feels.length) s1.push("I feel " + joinList(feels) + ".");
+  const s2 = when ? (L === "A2" ? "It started " + when + "." : "The symptoms started " + when + ", and they are getting worse.") : "";
+  const s3 = dids.length ? (L === "A2" ? "I " + joinList(dids) + "." : "I " + joinList(dids) + ", but I don't feel better.") : "";
+  return [s1.join(" "), s2, s3, want || ""];
+}
+function renderDoctor() {
+  const root = $("#panel"); root.replaceChildren();
+  const d = loadDoc(), L = S.level;
+  const save = () => { try { localStorage.setItem(docKey(), JSON.stringify(d)); } catch (e) {} };
+  root.append(h("div", { class: "scn" },
+    h("strong", null, "Tình huống: "), "Em không khỏe và đến gặp bác sĩ. Em hãy viết 4 câu để nói với bác sĩ em bị làm sao.",
+    h("div", { class: "vi" }, "Bước 1: brainstorm bằng cách chạm các ô gợi ý. Bước 2: bấm “Tạo câu gợi ý”. Bước 3: sửa lại 4 câu cho đúng ý của em.")));
+
+  const chipGroup = (title, key, list, multi) => h("div", { class: "step" },
+    h("h3", null, title),
+    h("div", { class: "chips" }, list.map(([k, label]) => {
+      const on = multi ? d.sel[key].includes(k) : d.sel[key] === k;
+      return h("button", { class: "chip", type: "button", "aria-pressed": on, onclick: () => {
+        if (multi) { const a = d.sel[key], i = a.indexOf(k); if (i >= 0) a.splice(i, 1); else a.push(k); }
+        else d.sel[key] = d.sel[key] === k ? "" : k;
+        save(); renderDoctor();
+      } }, label);
+    })));
+  root.append(
+    chipGroup("Em bị gì? (chọn nhiều)", "have", DOC_OPT.have, true),
+    chipGroup("Em cảm thấy thế nào? (chọn nhiều)", "feel", DOC_OPT.feel, true),
+    chipGroup("Bắt đầu từ khi nào?", "when", DOC_OPT.when, false),
+    chipGroup("Em đã làm gì? (chọn nhiều)", "did", DOC_OPT.did, true),
+    chipGroup("Em muốn bác sĩ giúp gì?", "want", DOC_OPT.want[L], false));
+
+  root.append(h("div", { class: "row" },
+    h("button", { class: "btn primary", type: "button", onclick: () => {
+      const sug = docSuggest(d); let n = 0;
+      sug.forEach((t, i) => { if (t && !d.s[i].trim()) { d.s[i] = t; n++; } });
+      save(); renderDoctor();
+      toast(n ? "Đã điền câu gợi ý vào các ô còn trống. Hãy sửa lại cho đúng ý của em." : "Các ô đã có chữ, hãy xóa ô cần làm lại.");
+    } }, "Tạo câu gợi ý"),
+    h("button", { class: "btn", type: "button", onclick: () => { const keep = d.sel; Object.assign(d, blankDoc()); d.sel = keep; save(); renderDoctor(); } }, "Xóa 4 câu")));
+
+  const phrases = lv().filter(p => p.group === "doctor");
+  DOC_Q[L].forEach(([title, frame], i) => {
+    const wc = h("span", { class: "wc" });
+    const ta = h("textarea", { id: "doc" + i, rows: "2", "aria-label": title, oninput: e => { d.s[i] = e.target.value; save(); wc.textContent = words(e.target.value) + " từ"; } });
+    ta.value = d.s[i]; wc.textContent = words(d.s[i]) + " từ";
+    root.append(h("div", { class: "step", style: "margin-top:18px" },
+      h("h3", null, title),
+      h("p", null, "Mẫu câu: " + frame),
+      i === 3 ? h("div", { class: "chips" }, phrases.map(p => h("button", { class: "chip", type: "button", onclick: () => {
+        ta.value = (ta.value ? ta.value + " " : "") + p.en.replace(/…/g, "").trim(); d.s[i] = ta.value; save(); ta.focus(); wc.textContent = words(ta.value) + " từ";
+      } }, p.en))) : null,
+      ta, wc));
+  });
+  root.append(h("div", { class: "row" },
+    h("button", { class: "btn", type: "button", onclick: () => speak(d.s.filter(Boolean).join(" ")) }, "🔊 Nghe 4 câu của em"),
+    h("span", { class: "mini" }, "Bài được lưu tự động. Sang mục 7 để nộp.")));
+}
+
+/* ---------- 6. Dialogue reading + recording ---------- */
+const DIALOG = {
+  A2: [
+    ["D","Good morning. What's the matter?","Chào em. Em bị sao vậy?"],
+    ["P","Good morning, doctor. I have a headache and a fever.","Chào bác sĩ. Em bị đau đầu và sốt."],
+    ["D","How long have you felt like this?","Em bị như vậy bao lâu rồi?"],
+    ["P","Since yesterday. I also have a sore throat.","Từ hôm qua. Em còn bị đau họng."],
+    ["D","Let me check. You have a cold. You should rest and drink a lot of water.","Để bác kiểm tra. Em bị cảm lạnh. Em nên nghỉ ngơi và uống nhiều nước."],
+    ["P","Should I take medicine?","Em có nên uống thuốc không?"],
+    ["D","Yes. Take this medicine two times a day.","Có. Em uống thuốc này hai lần một ngày."],
+    ["P","Thank you, doctor.","Cảm ơn bác sĩ."]
+  ],
+  B1: [
+    ["D","Good morning. What seems to be the problem?","Chào em. Em gặp vấn đề gì vậy?"],
+    ["P","I've had a persistent cough and a blocked nose for three days, and I feel very tired.","Em bị ho dai dẳng và nghẹt mũi ba ngày rồi, và em thấy rất mệt."],
+    ["D","Do you have a fever or any difficulty breathing?","Em có sốt hoặc khó thở không?"],
+    ["P","I have a slight fever, but I don't have any trouble breathing.","Em sốt nhẹ, nhưng em không bị khó thở."],
+    ["D","It sounds like the flu. Have you taken any medicine?","Có vẻ là cúm. Em đã uống thuốc gì chưa?"],
+    ["P","Only some paracetamol. It helped a little, but the cough is getting worse.","Chỉ uống paracetamol. Thuốc có đỡ một chút, nhưng cơn ho đang nặng hơn."],
+    ["D","I recommend that you stay at home, drink plenty of water and get enough rest.","Bác khuyên em nên ở nhà, uống nhiều nước và nghỉ ngơi đầy đủ."],
+    ["P","Is it important to avoid going to school?","Em có cần tránh đi học không ạ?"],
+    ["D","Yes, it is. You could infect other students. If the symptoms get worse, come back immediately.","Có. Em có thể lây cho bạn khác. Nếu triệu chứng nặng hơn, hãy quay lại ngay."],
+    ["P","I understand. Thank you for your help, doctor.","Em hiểu rồi. Cảm ơn bác sĩ đã giúp em."]
+  ]
+};
+const REC = {};
+let cur = null;
+const scoreOf = (target, transcript) => {
+  if (!transcript) return null;
+  const tw = norm(target).replace(/[^a-z' ]/g, " ").split(/\s+/).filter(Boolean);
+  const sw = new Set(norm(transcript).replace(/[^a-z' ]/g, " ").split(/\s+/).filter(Boolean));
+  if (!tw.length) return null;
+  return Math.round(tw.filter(w => sw.has(w)).length / tw.length * 100);
+};
+async function startRec(key, target) {
+  if (cur) return;
+  if (!(navigator.mediaDevices && window.MediaRecorder)) { toast("Trình duyệt này không ghi âm được. Hãy dùng Chrome hoặc Safari."); return; }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mr = new MediaRecorder(stream), chunks = [];
+    let sr = null, transcript = "";
+    try {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SR) { sr = new SR(); sr.lang = "en-US"; sr.continuous = true; sr.interimResults = false; sr.onresult = e => { for (let i = e.resultIndex; i < e.results.length; i++) transcript += e.results[i][0].transcript + " "; }; sr.onerror = () => {}; sr.start(); }
+    } catch (e) { sr = null; }
+    const t0 = Date.now();
+    mr.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+    mr.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      try { sr && sr.stop(); } catch (e) {}
+      setTimeout(() => {
+        const blob = new Blob(chunks, { type: mr.mimeType || "audio/webm" });
+        const old = REC[key]; if (old && old.url) URL.revokeObjectURL(old.url);
+        REC[key] = { blob, url: URL.createObjectURL(blob), mime: blob.type, dur: Math.round((Date.now() - t0) / 1000), transcript: transcript.trim(), score: scoreOf(target, transcript), sent: false, busy: false, target };
+        cur = null; render();
+      }, 700);
+    };
+    cur = { key, mr }; mr.start(); render();
+  } catch (e) { cur = null; toast("Em cần bấm “Cho phép” micro để ghi âm."); }
+}
+const stopRec = () => { if (cur) { try { cur.mr.stop(); } catch (e) {} const k = cur.key; cur.stopping = true; render(); } };
+async function sendRec(key, fileBase, label) {
+  const r = REC[key]; if (!r || r.sent || r.busy) return;
+  if (!getName()) { showGate(); return; }
+  r.busy = true; render();
+  try {
+    const b64 = await blobToB64(r.blob);
+    const ext = r.mime.includes("mp4") ? "m4a" : r.mime.includes("ogg") ? "ogg" : "webm";
+    await post({ type: "audio", name: getName(), lesson: LESSON, file: fileBase + "." + ext, label, score: r.score, dur: r.dur, target: r.target, transcript: r.transcript, audio: b64, mime: r.mime });
+    r.sent = true; toast("Đã gửi bản ghi cho cô.");
+  } catch (e) { toast("Chưa gửi được. Hãy kiểm tra mạng rồi bấm gửi lại."); }
+  r.busy = false; render();
+}
+function recWidget(key, fileBase, label, target) {
+  const r = REC[key], active = cur && cur.key === key, box = h("div", { class: "recbox" });
+  if (active) box.append(h("button", { class: "btn warm", type: "button", disabled: cur.stopping ? "" : null, onclick: stopRec }, cur.stopping ? "Đang xử lý…" : "⏹ Dừng"), h("span", { class: "mini" }, cur.stopping ? "" : "Đang ghi âm… hãy đọc to và rõ."));
+  else box.append(h("button", { class: "btn", type: "button", disabled: cur ? "" : null, onclick: () => startRec(key, target) }, r ? "🎙 Ghi lại" : "🎙 Ghi âm"));
+  if (r && !active) {
+    box.append(h("audio", { controls: "", src: r.url, preload: "metadata" }),
+      h("button", { class: "btn" + (r.sent ? "" : " primary"), type: "button", disabled: r.sent || r.busy ? "" : null, onclick: () => sendRec(key, fileBase, label) }, r.sent ? "✅ Đã gửi cô" : r.busy ? "Đang gửi…" : "📤 Gửi cho cô"),
+      r.score != null ? h("span", { class: "mini" }, "Phát âm khoảng " + r.score + "%") : null);
+  }
+  return box;
+}
+const speakSeq = lines => { try { speechSynthesis.cancel(); lines.forEach(t => { const u = new SpeechSynthesisUtterance(t); u.lang = "en-US"; u.rate = 0.9; speechSynthesis.speak(u); }); } catch (e) {} };
+function renderDialog() {
+  const root = $("#panel"); root.replaceChildren();
+  const L = S.level, lines = DIALOG[L];
+  root.append(h("div", { class: "scn" },
+    h("strong", null, "Hội thoại ở phòng khám. "), "Chọn vai của em, nghe mẫu, rồi ghi âm các câu của vai đó và gửi cho cô.",
+    h("div", { class: "vi" }, "Em nghe lại bản ghi trước. Chỉ khi thấy ổn mới bấm “Gửi cho cô”.")));
+  root.append(h("div", { class: "chips" },
+    ["P", "D"].map(r => h("button", { class: "chip", type: "button", "aria-pressed": S.role === r, onclick: () => { S.role = r; render(); } }, r === "P" ? "Em đọc vai Bệnh nhân (Patient)" : "Em đọc vai Bác sĩ (Doctor)")),
+    h("button", { class: "chip", type: "button", onclick: () => speakSeq(lines.map(l => l[1])) }, "🔊 Nghe cả hội thoại")));
+  lines.forEach((l, i) => {
+    const mine = l[0] === S.role, key = L + "|" + S.role + "|" + i;
+    root.append(h("div", { class: "line" + (mine ? " mine" : "") },
+      h("span", { class: "spk" }, (l[0] === "D" ? "Doctor" : "Patient") + (mine ? " · vai của em" : "")),
+      h("div", null, l[1]),
+      h("div", { class: "vi" }, l[2]),
+      h("div", { class: "recbox" },
+        h("button", { class: "btn", type: "button", onclick: () => speak(l[1]) }, "🔊 Nghe")),
+      mine ? recWidget(key, "HoiThoai_" + L + "_" + S.role + String(i + 1).padStart(2, "0"), "Hội thoại " + L + " · " + (S.role === "P" ? "Patient" : "Doctor") + " · câu " + (i + 1), l[1]) : null));
+  });
+  const full = lines.map(l => l[1]).join(" ");
+  root.append(h("div", { class: "panel", style: "margin-top:16px" },
+    h("h3", { style: "margin:0 0 6px;font-family:var(--font-display)" }, "Đọc cả hội thoại (không bắt buộc)"),
+    h("p", { class: "vi", style: "margin:0 0 10px" }, "Em có thể ghi âm một bản đọc hết hội thoại, cả hai vai, để cô nghe."),
+    recWidget(L + "|full", "HoiThoai_" + L + "_CaBai", "Hội thoại " + L + " · cả bài", full)));
+}
+
+/* ---------- 7. Submit to the teacher ---------- */
+function collect() {
+  const L = S.level, list = lv(), sc = (loadScores()[L] || {});
+  const nk = list.filter(p => known.has(pid(p))).length;
+  const d = loadDoc(), em = loadDraft();
+  const text = em.steps.map(s => s.trim()).filter(Boolean).join("\n\n"), nw = words(text), tgt = TARGET[L];
+  const used = list.filter(p => norm(text).includes(keyOf(p))).length;
+  const filled = d.s.filter(s => s.trim()).length;
+  const recKeys = Object.keys(REC).filter(k => k.startsWith(L + "|"));
+  const sent = recKeys.filter(k => REC[k].sent).length;
+  const warn = [];
+  if (!sc.quiz) warn.push("Em chưa làm xong vòng Điền từ.");
+  if (!sc.build) warn.push("Em chưa làm xong vòng Sắp xếp câu.");
+  if (nw < tgt) warn.push("Email mới có " + nw + " từ (mục tiêu " + tgt + " từ).");
+  if (filled < 4) warn.push("Em mới viết " + filled + "/4 câu nói với bác sĩ.");
+  if (!recKeys.length) warn.push("Em chưa ghi âm hội thoại.");
+  else if (sent < recKeys.length) warn.push("Còn " + (recKeys.length - sent) + " bản ghi âm chưa gửi (vào mục 6 bấm “Gửi cho cô”).");
+  const fmt = a => a ? a[0] + "/" + a[1] : "chưa làm";
+  const rows = [
+    { part: "Thẻ ghi nhớ", question: "Số cụm đã nhớ (" + L + ")", answer: nk + "/" + list.length, correct: "", result: "" },
+    { part: "Điền từ", question: "Điểm vòng gần nhất", answer: fmt(sc.quiz), correct: "", result: "" },
+    { part: "Sắp xếp câu", question: "Điểm vòng gần nhất", answer: fmt(sc.build), correct: "", result: "" }
+  ];
+  DOC_Q[L].forEach(([t, frame], i) => rows.push({ part: "Nói với bác sĩ " + (i + 1), question: t.replace(/^Câu \d+: /, "") + " [" + frame + "]", answer: d.s[i], correct: "", result: words(d.s[i]) + " từ" }));
+  rows.push({ part: "Viết email", question: "Tiêu đề: " + (em.subject || "(trống)"), answer: text, correct: "", result: nw + " từ · " + used + "/" + list.length + " cụm" });
+  recKeys.forEach(k => { const r = REC[k]; rows.push({ part: "Ghi âm hội thoại", question: k.replace(L + "|", ""), answer: r.sent ? "đã gửi" : "CHƯA gửi", correct: r.target, result: (r.score != null ? "Phát âm ~" + r.score + "% · " : "") + (r.transcript || "") }); });
+  return { warn, rows, nk, total: list.length, sc, nw, tgt, used, filled, recKeys, sent };
+}
+function renderSubmit() {
+  const root = $("#panel"); root.replaceChildren();
+  const c = collect(), fmt = a => a ? a[0] + "/" + a[1] : "chưa làm";
+  const row = (a, b) => h("div", { class: "okrow" }, h("span", null, a), h("strong", null, b));
+  root.append(h("div", { class: "panel" },
+    h("h2", { class: "q", style: "margin-top:0" }, "Kiểm tra trước khi nộp (" + S.level + ")"),
+    row("Thẻ đã nhớ", c.nk + "/" + c.total),
+    row("Điền từ", fmt(c.sc.quiz)),
+    row("Sắp xếp câu", fmt(c.sc.build)),
+    row("Email", c.nw + "/" + c.tgt + " từ · " + c.used + " cụm"),
+    row("Nói với bác sĩ", c.filled + "/4 câu"),
+    row("Ghi âm đã gửi", c.sent + "/" + c.recKeys.length + " bản")));
+  const status = h("div", { class: "fb", "aria-live": "polite" });
+  if (c.warn.length && S.warned) root.append(h("div", { class: "panel", style: "margin-top:14px" }, h("strong", null, "Em còn thiếu:"), h("ul", { class: "warnlist" }, c.warn.map(w => h("li", null, w))), h("p", { class: "mini", style: "margin:0" }, "Em có thể quay lại hoàn thành, hoặc vẫn nộp bài như hiện tại.")));
+  const go = h("button", { class: "btn primary", type: "button", onclick: async () => {
+    if (!getName()) { showGate(); return; }
+    if (c.warn.length && !S.warned) { S.warned = true; renderSubmit(); return; }
+    go.disabled = true; go.textContent = "Đang nộp…";
+    const ignored = c.warn.length > 0;
+    try {
+      await post({ type: "submit", name: getName(), lesson: LESSON, summary: {
+        vocab: "Thẻ " + c.nk + "/" + c.total + " (" + S.level + ")",
+        gram: "Điền từ " + fmt(c.sc.quiz),
+        ctx: "Sắp xếp câu " + fmt(c.sc.build),
+        rec: c.sent + "/" + c.recKeys.length + " bản ghi",
+        para: "Email " + c.nw + " từ · " + c.used + "/" + c.total + " cụm · Bác sĩ " + c.filled + "/4 câu" + (ignored ? " · CHƯA ĐỦ, đã bỏ qua cảnh báo" : ""),
+        feedback: ignored ? "Thiếu: " + c.warn.join(" ") : "Đã hoàn thành đủ các phần."
+      }, details: c.rows });
+      status.className = "fb good"; status.textContent = "Đã nộp bài cho cô. Cảm ơn " + getName() + "!"; S.warned = false;
+      go.textContent = "Nộp lại"; go.disabled = false;
+    } catch (e) { status.className = "fb bad"; status.textContent = "Chưa nộp được. Hãy kiểm tra mạng rồi bấm nộp lại."; go.textContent = c.warn.length ? "Vẫn nộp bài" : "Nộp bài cho cô"; go.disabled = false; }
+  } }, c.warn.length && S.warned ? "Vẫn nộp bài" : "Nộp bài cho cô");
+  root.append(h("div", { class: "row" }, go, h("button", { class: "btn", type: "button", onclick: () => { S.warned = false; renderSubmit(); } }, "Làm mới")), status);
+}
+
+/* ---------- wiring ---------- */
+function render() {
+  renderHeader();
+  ({ cards: renderCards, quiz: renderQuiz, build: renderBuild, write: renderWrite, doctor: renderDoctor, dialog: renderDialog, submit: renderSubmit })[S.tab]();
+}
+document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => { S.tab = b.dataset.tab; S.flip = false; render(); }));
+const setLevel = l => { S.level = l; S.group = "all"; S.idx = 0; S.flip = false; S.quiz = null; S.build = null; try { localStorage.setItem("gm_level", l); } catch (e) {} render(); };
+$("#lvA2").addEventListener("click", () => setLevel("A2"));
+$("#lvB1").addEventListener("click", () => setLevel("B1"));
+$("#rename").addEventListener("click", showGate);
+$("#gok").addEventListener("click", () => {
+  const v = $("#gname").value.trim();
+  if (!v) { $("#gname").focus(); return; }
+  try { localStorage.setItem("gm_name", v); } catch (e) {}
+  $("#gate").hidden = true; updateWho(); toast("Chào " + v + "!");
+});
+$("#gname").addEventListener("keydown", e => { if (e.key === "Enter") $("#gok").click(); });
+updateWho();
+if (!getName()) showGate();
+render();
+</script>
+</body>
+</html>
