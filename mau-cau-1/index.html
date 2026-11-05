@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mẫu câu sức khỏe 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: one narrow column. Header with progress, two modes (cards, dictation), one large card at a time. */
+:root {
+  --bg: #f3f7f6; --surface: #ffffff; --ink: #14282b; --muted: #566b6e; --line: #d4e1df;
+  --accent: #0e7c7b; --accent-ink: #ffffff; --soft: #e1f0ee; --warm: #c8531f;
+  --good: #1b7f45; --bad: #b83227; --mark: #fff0c2;
+  --font-display: 'Bricolage Grotesque', 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-body: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1b1d; --surface: #172a2d; --ink: #e6f1ef; --muted: #9bb2b4; --line: #27403f;
+    --accent: #4cc3bd; --accent-ink: #06201f; --soft: #1d3a3b; --warm: #f0925f; --good: #5dd28c; --bad: #ff8a7a; --mark: #4a3d12;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1b1d; --surface: #172a2d; --ink: #e6f1ef; --muted: #9bb2b4; --line: #27403f;
+  --accent: #4cc3bd; --accent-ink: #06201f; --soft: #1d3a3b; --warm: #f0925f; --good: #5dd28c; --bad: #ff8a7a; --mark: #4a3d12;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); line-height: 1.55; font-size: 16px; }
+.wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between; }
+h1 { font-family: var(--font-display); font-size: clamp(1.6rem, 5vw, 2.2rem); line-height: 1.1; margin: 0; text-wrap: balance; }
+h1 span { color: var(--warm); }
+.sub { color: var(--muted); margin: 6px 0 0; max-width: 56ch; }
+a.link { color: var(--accent); font-weight: 600; text-decoration: none; border: 1.5px solid var(--accent); border-radius: 10px; padding: 7px 14px; white-space: nowrap; }
+a.link:hover { background: var(--soft); }
+.prog { display: flex; align-items: center; gap: 12px; font-size: .9rem; color: var(--muted); }
+.bar { flex: 1; height: 8px; background: var(--soft); border-radius: 99px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--accent); border-radius: 99px; transition: width .3s; }
+.tabs { display: flex; gap: 4px; border-bottom: 1.5px solid var(--line); margin-bottom: 18px; }
+.tabs button { border: 0; background: transparent; color: var(--muted); font: inherit; font-weight: 500; padding: 10px 14px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1.5px; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--warm); font-weight: 600; }
+button:focus-visible, [tabindex]:focus-visible, textarea:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.chip { border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: .88rem; padding: 5px 12px; border-radius: 99px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.opts { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 12px; font-size: .9rem; color: var(--muted); }
+.opts label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.card { background: var(--surface); border: 1.5px solid var(--line); border-radius: 16px; padding: 22px 20px; min-height: 260px; display: flex; flex-direction: column; gap: 14px; cursor: pointer; }
+.tag { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--warm); font-weight: 600; }
+.sent { border-radius: 10px; padding: 6px 10px; margin: 0 -10px; cursor: pointer; transition: background .15s; }
+.sent:hover { background: var(--soft); }
+.sent.speaking { background: var(--mark); }
+.en { font-family: var(--font-display); font-size: clamp(1.25rem, 4.2vw, 1.6rem); line-height: 1.25; text-wrap: balance; }
+.ipa { color: var(--accent); font-size: .95rem; margin-top: 2px; word-break: break-word; }
+.vi { color: var(--ink); font-size: 1.05rem; }
+.small-en { color: var(--muted); font-size: .9rem; }
+.kws { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.kw { border: 1.5px solid var(--line); background: var(--bg); border-radius: 10px; padding: 6px 10px; font: inherit; color: var(--ink); cursor: pointer; text-align: left; }
+.kw b { display: block; font-weight: 600; }
+.kw span { display: block; font-size: .82rem; color: var(--muted); }
+.kw .p { color: var(--accent); }
+.hint { color: var(--muted); font-size: .85rem; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
+.row.spread { justify-content: space-between; }
+.btn { border: 1.5px solid var(--accent); background: transparent; color: var(--accent); font: inherit; font-weight: 600; padding: 9px 16px; border-radius: 10px; cursor: pointer; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.warm { border-color: var(--warm); color: var(--warm); }
+.btn:disabled { opacity: .45; cursor: default; }
+.mini { font-size: .88rem; color: var(--muted); }
+.panel { background: var(--surface); border: 1.5px solid var(--line); border-radius: 16px; padding: 20px; }
+textarea { width: 100%; font: inherit; font-size: 1.05rem; color: var(--ink); background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; resize: vertical; min-height: 120px; }
+.ok { color: var(--good); font-weight: 600; }
+.bad { color: var(--bad); font-weight: 600; }
+.extra { color: var(--bad); text-decoration: line-through; }
+.diff { margin: 6px 0 12px; line-height: 1.9; }
+.diff { overflow-wrap: anywhere; }
+.score { font-family: var(--font-display); font-size: 1.6rem; }
+.empty { text-align: center; color: var(--muted); padding: 30px 10px; }
+.mask { letter-spacing: .04em; font-family: ui-monospace, Menlo, Consolas, monospace; word-break: break-word; }
+.banner { background: var(--mark); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: .92rem; }
+.weak { border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; display: flex; gap: 10px; justify-content: space-between; align-items: center; }
+@media (prefers-reduced-motion: reduce) { .bar > i, .sent { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="top">
+      <div>
+        <h1>Mẫu câu <span>sức khỏe</span> · Bài 1/2</h1>
+        <p class="sub">15 mẫu câu về bệnh, hỏi thăm, lời khuyên, khỏi bệnh và thời tiết. Học bằng thẻ nhớ, rồi nghe và chép lại.</p>
+      </div>
+      <a class="link" href="../mau-cau-2/">Sang bài 2 →</a>
+    </div>
+    <div class="prog"><span id="progText"></span><div class="bar"><i id="progBar" style="width:0%"></i></div></div>
+  </header>
+  <div id="banner"></div>
+  <div class="tabs" role="tablist" aria-label="Chế độ học">
+    <button role="tab" id="tab-cards" data-tab="cards" aria-selected="true">1. Học thẻ nhớ</button>
+    <button role="tab" id="tab-dict" data-tab="dict" aria-selected="false">2. Nghe chép lại</button>
+  </div>
+  <main id="panel" role="tabpanel"></main>
+</div>
+
+<script>
+const D = {"id": "mau-cau-1", "items": [{"id": "a01", "theme": "me", "s": [{"en": "I don't feel well today.", "ipa": "aɪ doʊnt fiːl wɛl təˈdeɪ", "vi": "Hôm nay mình thấy không khỏe."}, {"en": "I have a headache and a sore throat.", "ipa": "aɪ hæv ə ˈhɛdeɪk ənd ə sɔːr θroʊt", "vi": "Mình bị đau đầu và đau họng."}, {"en": "I think I caught a cold.", "ipa": "aɪ θɪŋk aɪ kɔːt ə koʊld", "vi": "Mình nghĩ là mình bị cảm lạnh."}], "kw": [["headache", "ˈhɛdeɪk", "đau đầu"], ["sore throat", "sɔːr θroʊt", "đau họng"], ["catch a cold", "kætʃ ə koʊld", "bị cảm lạnh"]]}, {"id": "a02", "theme": "me", "s": [{"en": "I have a high fever and a bad cough.", "ipa": "aɪ hæv ə haɪ ˈfiːvər ənd ə bæd kɔːf", "vi": "Mình bị sốt cao và ho nặng."}, {"en": "I feel very tired.", "ipa": "aɪ fiːl ˈvɛri ˈtaɪərd", "vi": "Mình thấy rất mệt."}, {"en": "I can't go to school today.", "ipa": "aɪ kænt ɡoʊ tə skuːl təˈdeɪ", "vi": "Hôm nay mình không đi học được."}], "kw": [["fever", "ˈfiːvər", "sốt"], ["cough", "kɔːf", "ho"], ["tired", "ˈtaɪərd", "mệt"]]}, {"id": "a03", "theme": "me", "s": [{"en": "My stomach hurts.", "ipa": "maɪ ˈstʌmək hɝːts", "vi": "Bụng mình đau."}, {"en": "I feel sick and dizzy.", "ipa": "aɪ fiːl sɪk ənd ˈdɪzi", "vi": "Mình thấy buồn nôn và chóng mặt."}, {"en": "I need to lie down.", "ipa": "aɪ niːd tə laɪ daʊn", "vi": "Mình cần nằm xuống."}, {"en": "Could you call my mother, please?", "ipa": "kʊd ju kɔːl maɪ ˈmʌðər pliːz", "vi": "Bạn gọi giúp mẹ mình được không?"}], "kw": [["dizzy", "ˈdɪzi", "chóng mặt"], ["feel sick", "fiːl sɪk", "buồn nôn"], ["lie down", "laɪ daʊn", "nằm xuống"]]}, {"id": "a04", "theme": "ask", "s": [{"en": "Are you okay?", "ipa": "ɑːr ju oʊˈkeɪ", "vi": "Bạn ổn không?"}, {"en": "You look tired today.", "ipa": "ju lʊk ˈtaɪərd təˈdeɪ", "vi": "Hôm nay trông bạn mệt."}, {"en": "Is something wrong?", "ipa": "ɪz ˈsʌmθɪŋ rɔːŋ", "vi": "Có chuyện gì không ổn à?"}], "kw": [["look tired", "lʊk ˈtaɪərd", "trông mệt mỏi"], ["wrong", "rɔːŋ", "không ổn, có vấn đề"]]}, {"id": "a05", "theme": "ask", "s": [{"en": "How are you feeling now?", "ipa": "haʊ ɑːr ju ˈfiːlɪŋ naʊ", "vi": "Bây giờ bạn thấy thế nào?"}, {"en": "Do you have a fever?", "ipa": "du ju hæv ə ˈfiːvər", "vi": "Bạn có bị sốt không?"}, {"en": "Have you taken any medicine?", "ipa": "hæv ju ˈteɪkən ˈɛni ˈmɛdɪsn", "vi": "Bạn đã uống thuốc nào chưa?"}], "kw": [["fever", "ˈfiːvər", "sốt"], ["medicine", "ˈmɛdɪsn", "thuốc"], ["take medicine", "teɪk ˈmɛdɪsn", "uống thuốc"]]}, {"id": "a06", "theme": "ask", "s": [{"en": "I heard you were sick.", "ipa": "aɪ hɝːd ju wɜːr sɪk", "vi": "Mình nghe nói bạn bị ốm."}, {"en": "I'm sorry to hear that.", "ipa": "aɪm ˈsɑːri tə hɪr ðæt", "vi": "Mình rất tiếc khi nghe điều đó."}, {"en": "Is there anything I can do for you?", "ipa": "ɪz ðɛr ˈɛniθɪŋ aɪ kæn du fər ju", "vi": "Mình có thể giúp gì cho bạn không?"}], "kw": [["I'm sorry to hear that", "aɪm ˈsɑːri tə hɪr ðæt", "mình rất tiếc khi nghe vậy"], ["anything", "ˈɛniθɪŋ", "bất cứ điều gì"]]}, {"id": "a07", "theme": "advice", "s": [{"en": "You should stay at home and rest.", "ipa": "ju ʃʊd steɪ æt hoʊm ənd rɛst", "vi": "Bạn nên ở nhà và nghỉ ngơi."}, {"en": "Drink a lot of warm water.", "ipa": "drɪŋk ə lɑːt əv wɔːrm ˈwɔːtər", "vi": "Hãy uống thật nhiều nước ấm."}, {"en": "Don't forget to take your medicine.", "ipa": "doʊnt fərˈɡɛt tə teɪk jʊr ˈmɛdɪsn", "vi": "Đừng quên uống thuốc."}], "kw": [["rest", "rɛst", "nghỉ ngơi"], ["warm water", "wɔːrm ˈwɔːtər", "nước ấm"], ["medicine", "ˈmɛdɪsn", "thuốc"]]}, {"id": "a08", "theme": "advice", "s": [{"en": "You shouldn't go out in the rain.", "ipa": "ju ˈʃʊdnt ɡoʊ aʊt ɪn ðə reɪn", "vi": "Bạn không nên ra ngoài dưới trời mưa."}, {"en": "Wear a warm jacket and a mask.", "ipa": "wɛr ə wɔːrm ˈdʒækɪt ənd ə mæsk", "vi": "Hãy mặc áo khoác ấm và đeo khẩu trang."}, {"en": "Take care of yourself.", "ipa": "teɪk kɛr əv jɔːrˈsɛlf", "vi": "Hãy giữ gìn sức khỏe."}], "kw": [["jacket", "ˈdʒækɪt", "áo khoác"], ["mask", "mæsk", "khẩu trang"], ["take care of yourself", "teɪk kɛr əv jɔːrˈsɛlf", "giữ gìn sức khỏe"]]}, {"id": "a09", "theme": "advice", "s": [{"en": "If you have a fever for more than three days, please see a doctor.", "ipa": "ɪf ju hæv ə ˈfiːvər fər mɔːr ðæn θriː deɪz pliːz siː ə ˈdɑːktər", "vi": "Nếu bạn bị sốt hơn ba ngày, hãy đi khám bác sĩ."}, {"en": "Don't wait too long.", "ipa": "doʊnt weɪt tuː lɔːŋ", "vi": "Đừng chờ lâu quá."}], "kw": [["see a doctor", "siː ə ˈdɑːktər", "đi khám bác sĩ"], ["fever", "ˈfiːvər", "sốt"]]}, {"id": "a10", "theme": "status", "s": [{"en": "I feel much better today.", "ipa": "aɪ fiːl mʌtʃ ˈbɛtər təˈdeɪ", "vi": "Hôm nay mình thấy khỏe hơn nhiều."}, {"en": "My fever is gone.", "ipa": "maɪ ˈfiːvər ɪz ɡɔːn", "vi": "Mình hết sốt rồi."}, {"en": "I'm going back to school tomorrow.", "ipa": "aɪm ˈɡoʊɪŋ bæk tə skuːl təˈmɑːroʊ", "vi": "Ngày mai mình sẽ đi học lại."}], "kw": [["much better", "mʌtʃ ˈbɛtər", "khỏe hơn nhiều"], ["gone", "ɡɔːn", "hết, biến mất"]]}, {"id": "a11", "theme": "status", "s": [{"en": "I'm not better yet.", "ipa": "aɪm nɑːt ˈbɛtər jɛt", "vi": "Mình vẫn chưa khỏe hơn."}, {"en": "My cough is still bad.", "ipa": "maɪ kɔːf ɪz stɪl bæd", "vi": "Mình vẫn còn ho nặng."}, {"en": "I'm going to see a doctor this afternoon.", "ipa": "aɪm ˈɡoʊɪŋ tə siː ə ˈdɑːktər ðɪs ˌæftərˈnuːn", "vi": "Chiều nay mình sẽ đi khám bác sĩ."}], "kw": [["not … yet", "nɑːt … jɛt", "chưa"], ["still", "stɪl", "vẫn còn"], ["cough", "kɔːf", "ho"]]}, {"id": "a12", "theme": "status", "s": [{"en": "I'm completely recovered, thank you.", "ipa": "aɪm kəmˈpliːtli rɪˈkʌvərd θæŋk ju", "vi": "Mình đã khỏi hẳn rồi, cảm ơn bạn."}, {"en": "I'm back to normal now.", "ipa": "aɪm bæk tə ˈnɔːrml naʊ", "vi": "Bây giờ mình đã bình thường trở lại."}, {"en": "Thanks for asking about me!", "ipa": "θæŋks fər ˈæskɪŋ əˈbaʊt miː", "vi": "Cảm ơn bạn đã hỏi thăm mình!"}], "kw": [["recovered", "rɪˈkʌvərd", "đã khỏi bệnh"], ["back to normal", "bæk tə ˈnɔːrml", "trở lại bình thường"]]}, {"id": "a13", "theme": "weather", "s": [{"en": "It's freezing outside this morning.", "ipa": "ɪts ˈfriːzɪŋ ˌaʊtˈsaɪd ðɪs ˈmɔːrnɪŋ", "vi": "Sáng nay ngoài trời lạnh buốt."}, {"en": "Wear a warm coat and a scarf.", "ipa": "wɛr ə wɔːrm koʊt ənd ə skɑːrf", "vi": "Hãy mặc áo khoác ấm và quàng khăn."}, {"en": "You don't want to catch a cold.", "ipa": "ju doʊnt wɑːnt tə kætʃ ə koʊld", "vi": "Bạn đâu muốn bị cảm lạnh."}], "kw": [["freezing", "ˈfriːzɪŋ", "lạnh buốt"], ["scarf", "skɑːrf", "khăn quàng"], ["catch a cold", "kætʃ ə koʊld", "bị cảm lạnh"]]}, {"id": "a14", "theme": "weather", "s": [{"en": "It's scorching hot today.", "ipa": "ɪts ˈskɔːrtʃɪŋ hɑːt təˈdeɪ", "vi": "Hôm nay nóng như thiêu đốt."}, {"en": "Drink plenty of water and stay in the shade.", "ipa": "drɪŋk ˈplɛnti əv ˈwɔːtər ənd steɪ ɪn ðə ʃeɪd", "vi": "Hãy uống thật nhiều nước và ở trong bóng râm."}, {"en": "Don't play outside at noon.", "ipa": "doʊnt pleɪ ˌaʊtˈsaɪd æt nuːn", "vi": "Đừng chơi ngoài trời vào buổi trưa."}], "kw": [["scorching", "ˈskɔːrtʃɪŋ", "nóng như thiêu"], ["shade", "ʃeɪd", "bóng râm"], ["plenty of", "ˈplɛnti əv", "nhiều"]]}, {"id": "a15", "theme": "weather", "s": [{"en": "There was heavy rain last night.", "ipa": "ðɛr wʌz ˈhɛvi reɪn læst naɪt", "vi": "Đêm qua có mưa lớn."}, {"en": "Now I have a runny nose and I keep sneezing.", "ipa": "naʊ aɪ hæv ə ˈrʌni noʊz ənd aɪ kiːp ˈsniːzɪŋ", "vi": "Giờ mình bị sổ mũi và cứ hắt hơi mãi."}, {"en": "I think the weather made me sick.", "ipa": "aɪ θɪŋk ðə ˈwɛðər meɪd mi sɪk", "vi": "Mình nghĩ thời tiết làm mình bị ốm."}], "kw": [["heavy rain", "ˈhɛvi reɪn", "mưa to"], ["runny nose", "ˈrʌni noʊz", "sổ mũi"], ["sneeze", "sniːz", "hắt hơi"]]}]};
+const THEMES = { me: "Bệnh của mình", ask: "Hỏi thăm", advice: "Lời khuyên", status: "Khỏi / chưa khỏi", weather: "Thời tiết" };
+const THEME_LONG = { me: "Nói về bệnh của mình", ask: "Hỏi thăm người khác", advice: "Cho lời khuyên", status: "Đã khỏi / chưa khỏi", weather: "Thời tiết và sức khỏe" };
+
+const $ = s => document.querySelector(s);
+const h = (tag, props, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) e.setAttribute(k, v);
+  }
+  kids.flat().forEach(c => { if (c !== null && c !== undefined && c !== false) e.append(c); });
+  return e;
+};
+const norm = s => s.toLowerCase().replace(/[’‘]/g, "'");
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("mc_" + D.id + "_" + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("mc_" + D.id + "_" + k, JSON.stringify(v)); } catch (e) {} }
+};
+let known = new Set(store.get("known", []));
+let opts = Object.assign({ ipa: true, auto: true }, store.get("opts", {}));
+const best = store.get("best", {});
+const S = { tab: "cards", theme: "all", onlyNew: false, idx: 0, dict: null };
+
+/* ---------- speech ---------- */
+const hasTTS = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+let voice = null;
+function pickVoice() {
+  if (!hasTTS) return;
+  const vs = speechSynthesis.getVoices();
+  voice = vs.find(v => /en[-_]US/i.test(v.lang) && /(Samantha|Google US English|Aria|Jenny|Natural)/i.test(v.name))
+    || vs.find(v => /en[-_]US/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang)) || null;
+}
+if (hasTTS) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+let token = 0;
+function say(list, o) {
+  o = o || {};
+  if (!hasTTS) return;
+  try { speechSynthesis.cancel(); } catch (e) {}
+  const my = ++token; let i = 0;
+  const next = () => {
+    if (my !== token) return;
+    if (i >= list.length) { if (o.onEnd) o.onEnd(); return; }
+    const idx = i++;
+    const u = new SpeechSynthesisUtterance(list[idx]);
+    u.lang = "en-US"; if (voice) u.voice = voice;
+    u.rate = o.slow ? 0.6 : 0.9;
+    u.onstart = () => { if (my === token && o.onSentence) o.onSentence(idx); };
+    u.onend = () => setTimeout(next, o.slow ? 500 : 250);
+    u.onerror = () => { if (my === token) next(); };
+    try { speechSynthesis.speak(u); } catch (e) { if (my === token) setTimeout(next, 0); }
+  };
+  setTimeout(next, 60);
+}
+const stopSay = () => { token++; try { if (hasTTS) speechSynthesis.cancel(); } catch (e) {} };
+
+/* ---------- header ---------- */
+function renderHeader() {
+  const n = D.items.filter(it => known.has(it.id)).length;
+  $("#progText").textContent = "Đã nhớ " + n + "/" + D.items.length + " mẫu câu";
+  $("#progBar").style.width = Math.round(n / D.items.length * 100) + "%";
+  document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === S.tab));
+}
+
+/* ---------- 1. Flashcards ---------- */
+const cardItems = () => D.items.filter(it => (S.theme === "all" || it.theme === S.theme) && (!S.onlyNew || !known.has(it.id)));
+function highlight(root, i) { root.querySelectorAll("[data-i]").forEach(e => e.classList.toggle("speaking", +e.dataset.i === i)); }
+function readCard(it, slow) {
+  const card = $(".card");
+  say(it.s.map(x => x.en), { slow, onSentence: i => card && highlight(card, i), onEnd: () => card && highlight(card, -1) });
+}
+function renderCards(auto) {
+  const root = $("#panel"); root.replaceChildren();
+  const themes = ["all", ...Object.keys(THEMES).filter(t => D.items.some(it => it.theme === t))];
+  root.append(h("div", { class: "chips" }, themes.map(t => h("button", { class: "chip", type: "button", "aria-pressed": S.theme === t,
+    onclick: () => { S.theme = t; S.idx = 0; renderCards(true); } }, t === "all" ? "Tất cả" : THEMES[t]))));
+  root.append(h("div", { class: "opts" },
+    h("label", null, h("input", { type: "checkbox", checked: opts.auto ? "" : null, onchange: e => { opts.auto = e.target.checked; store.set("opts", opts); } }), "Tự đọc khi chuyển thẻ"),
+    h("label", null, h("input", { type: "checkbox", checked: opts.ipa ? "" : null, onchange: e => { opts.ipa = e.target.checked; store.set("opts", opts); renderCards(false); } }), "Hiện IPA"),
+    h("label", null, h("input", { type: "checkbox", checked: S.onlyNew ? "" : null, onchange: e => { S.onlyNew = e.target.checked; S.idx = 0; renderCards(true); } }), "Chỉ thẻ chưa nhớ")));
+  const list = cardItems();
+  if (!list.length) { root.append(h("div", { class: "empty" }, "Em đã nhớ hết thẻ trong nhóm này. Hãy sang phần Nghe chép lại để kiểm tra.")); return; }
+  if (S.idx >= list.length) S.idx = 0;
+  const it = list[S.idx];
+
+  const front = h("div", { "data-side": "front" },
+    it.s.map((x, i) => h("div", { class: "sent", "data-i": i, onclick: ev => { ev.stopPropagation(); say([x.en], { onSentence: () => highlight(card, i), onEnd: () => highlight(card, -1) }); } },
+      h("div", { class: "en" }, x.en),
+      opts.ipa ? h("div", { class: "ipa" }, "/" + x.ipa + "/") : null)),
+    h("div", { class: "hint", style: "margin-top:10px" }, "Chạm vào một câu để nghe riêng câu đó. Chạm vào khoảng trống của thẻ để xem nghĩa."));
+  const back = h("div", { "data-side": "back", hidden: "" },
+    it.s.map((x, i) => h("div", { class: "sent", "data-i": i, onclick: ev => { ev.stopPropagation(); say([x.en], { onSentence: () => highlight(card, i), onEnd: () => highlight(card, -1) }); } },
+      h("div", { class: "small-en" }, x.en),
+      h("div", { class: "vi" }, x.vi))),
+    h("div", { class: "tag", style: "margin-top:8px" }, "Từ khóa"),
+    h("div", { class: "kws" }, it.kw.map(k => h("button", { class: "kw", type: "button", onclick: ev => { ev.stopPropagation(); say([k[0].replace(/…/g, "")]); } },
+      h("b", null, k[0]), h("span", { class: "p" }, "/" + k[1] + "/"), h("span", null, k[2])))));
+  const flip = () => { const f = front.hidden; front.hidden = !f; back.hidden = f; flipBtn.textContent = f ? "🔄 Xem nghĩa" : "🔄 Xem câu"; };
+  const card = h("div", { class: "card", onclick: flip }, h("div", { class: "tag" }, THEME_LONG[it.theme] + " · " + (S.idx + 1) + "/" + list.length + (known.has(it.id) ? " · đã nhớ ✓" : "")), front, back);
+  const flipBtn = h("button", { class: "btn", type: "button", onclick: flip }, "🔄 Xem nghĩa");
+  root.append(card);
+
+  const go = d => { S.idx = (S.idx + d + list.length) % list.length; renderCards(true); };
+  const mark = ok => {
+    if (ok) known.add(it.id); else known.delete(it.id);
+    store.set("known", [...known]); renderHeader();
+    if (!(ok && S.onlyNew)) S.idx = (S.idx + 1) % list.length;
+    renderCards(true);
+  };
+  root.append(h("div", { class: "row" },
+    h("button", { class: "btn", type: "button", "aria-label": "Thẻ trước", onclick: () => go(-1) }, "⏮"),
+    h("button", { class: "btn primary", type: "button", onclick: () => readCard(it, false) }, "🔊 Nghe lại"),
+    h("button", { class: "btn", type: "button", onclick: () => readCard(it, true) }, "🐢 Nghe chậm"),
+    flipBtn,
+    h("button", { class: "btn", type: "button", "aria-label": "Thẻ sau", onclick: () => go(1) }, "⏭")));
+  root.append(h("div", { class: "row spread" },
+    h("button", { class: "btn warm", type: "button", onclick: () => mark(false) }, "Chưa nhớ"),
+    h("button", { class: "btn primary", type: "button", onclick: () => mark(true) }, "Đã nhớ")));
+  if (auto && opts.auto) readCard(it, false);
+}
+
+/* ---------- 2. Dictation ---------- */
+const tok = s => norm(s).replace(/[^a-z0-9' ]+/g, " ").split(/\s+/).filter(Boolean);
+const K = w => w.replace(/'/g, "");
+function align(E, T) {
+  const n = E.length, m = T.length, dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+  for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) dp[i][j] = K(E[i]) === K(T[j]) ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const ex = [], st = []; let i = 0, j = 0;
+  while (i < n && j < m) {
+    if (K(E[i]) === K(T[j])) { ex.push([E[i], "ok"]); st.push([T[j], "ok"]); i++; j++; }
+    else if (dp[i + 1][j] >= dp[i][j + 1]) { ex.push([E[i], "bad"]); i++; }
+    else { st.push([T[j], "extra"]); j++; }
+  }
+  while (i < n) ex.push([E[i++], "bad"]);
+  while (j < m) st.push([T[j++], "extra"]);
+  return { ex, st, ok: ex.filter(x => x[1] === "ok").length };
+}
+const fullEn = it => it.s.map(x => x.en);
+const maskOf = text => text.split(" ").map(w => w.replace(/[A-Za-z0-9]+/g, m => m[0] + "_".repeat(m.length - 1))).join(" ");
+function newDict() {
+  S.dict = { order: shuffle(D.items.map(x => x.id)), i: 0, plays: 0, first: {}, checked: false, hint: false, text: "", scores: {} };
+}
+function playDict(slow) { const it = D.items.find(x => x.id === S.dict.order[S.dict.i]); S.dict.plays++; const c = $("#plays"); if (c) c.textContent = "Đã nghe " + S.dict.plays + " lần"; say(fullEn(it), { slow }); }
+function renderDict(auto) {
+  const root = $("#panel"); root.replaceChildren();
+  if (!S.dict) newDict();
+  const Q = S.dict;
+  if (Q.i >= Q.order.length) { renderDictSummary(root); return; }
+  const it = D.items.find(x => x.id === Q.order[Q.i]);
+  const words = fullEn(it).join(" ").split(/\s+/).length;
+  const ta = h("textarea", { id: "dtext", rows: "4", placeholder: "Gõ lại những gì em nghe được…", "aria-label": "Bài chép", spellcheck: "false", autocapitalize: "off", oninput: e => { Q.text = e.target.value; } });
+  ta.value = Q.text;
+  const res = h("div", { "aria-live": "polite", style: "margin-top:14px" });
+  const showResult = (scoreOverride) => {
+    const E = tok(fullEn(it).join(" ")), T = tok(Q.text), a = align(E, T);
+    const sc = scoreOverride !== undefined ? scoreOverride : (Q.text.trim() ? Math.round(a.ok / Math.max(E.length, T.length) * 100) : 0);
+    if (!(it.id in Q.scores)) { Q.scores[it.id] = sc; if (sc > (best[it.id] || 0)) { best[it.id] = sc; store.set("best", best); } }
+    Q.checked = true; res.replaceChildren();
+    if (scoreOverride === undefined) {
+      res.append(h("div", { class: "score " + (sc >= 80 ? "ok" : "bad") }, sc + "%"),
+        h("div", { class: "mini" }, "Em viết:"),
+        h("div", { class: "diff" }, a.st.length ? a.st.flatMap(([w, k]) => [h("span", { class: k === "ok" ? "ok" : "extra" }, w), " "]) : h("span", { class: "mini" }, "(trống)")));
+    }
+    res.append(h("div", { class: "mini" }, "Đáp án:"),
+      h("div", { class: "diff" }, a.ex.flatMap(([w, k]) => [h("span", { class: k === "ok" ? "ok" : "bad" }, w), " "])),
+      ...it.s.map(x => h("div", { style: "margin-bottom:8px" }, h("div", { class: "en", style: "font-size:1.1rem" }, x.en), h("div", { class: "ipa" }, "/" + x.ipa + "/"), h("div", { class: "vi" }, x.vi))),
+      h("div", { class: "row" }, h("button", { class: "btn primary", type: "button", onclick: () => { Q.i++; Q.plays = 0; Q.checked = false; Q.hint = false; Q.text = ""; renderDict(true); } }, Q.i + 1 < Q.order.length ? "Câu tiếp ▶" : "Xem kết quả")));
+  };
+  root.append(h("div", { class: "panel" },
+    h("div", { class: "row spread", style: "margin:0 0 10px" }, h("span", { class: "tag" }, THEME_LONG[it.theme] + " · Câu " + (Q.i + 1) + "/" + Q.order.length), h("span", { class: "mini", id: "plays" }, "Đã nghe " + Q.plays + " lần")),
+    h("div", { class: "mini" }, "Nghe rồi gõ lại cả " + it.s.length + " câu. Câu có " + words + " từ. Không cần gõ hoa thường; dấu câu và dấu nháy (') không bị trừ điểm."),
+    h("div", { class: "row" },
+      h("button", { class: "btn primary", type: "button", onclick: () => playDict(false) }, "🔊 Nghe"),
+      h("button", { class: "btn", type: "button", onclick: () => playDict(true) }, "🐢 Nghe chậm")),
+    h("div", { style: "margin-top:12px" }, ta),
+    Q.hint ? h("div", { class: "mask mini", style: "margin-top:8px" }, "Gợi ý: " + fullEn(it).map(maskOf).join(" ")) : null,
+    h("div", { class: "row" },
+      h("button", { class: "btn primary", type: "button", disabled: Q.checked ? "" : null, onclick: () => showResult() }, "Kiểm tra"),
+      h("button", { class: "btn", type: "button", onclick: () => { Q.hint = true; renderDict(false); } }, "Gợi ý chữ cái đầu"),
+      h("button", { class: "btn warm", type: "button", disabled: Q.checked ? "" : null, onclick: () => showResult(0) }, "Xem đáp án")),
+    res));
+  if (Q.checked) showResult();
+  if (auto) playDict(false);
+}
+function renderDictSummary(root) {
+  const Q = S.dict, ids = Object.keys(Q.scores), avg = ids.length ? Math.round(ids.reduce((a, k) => a + Q.scores[k], 0) / ids.length) : 0;
+  const weak = D.items.filter(it => (Q.scores[it.id] || 0) < 80);
+  root.append(h("div", { class: "panel" },
+    h("h2", { style: "margin:0 0 4px;font-family:var(--font-display)" }, "Kết quả vòng này: " + avg + "%"),
+    h("p", { class: "mini" }, weak.length ? "Có " + weak.length + " mẫu câu cần ôn lại bằng thẻ nhớ." : "Tuyệt vời! Em đã chép đúng hầu hết các câu."),
+    weak.map(it => h("div", { class: "weak" }, h("div", null, h("div", { class: "tag" }, THEMES[it.theme] + " · " + (Q.scores[it.id] || 0) + "%"), h("div", null, it.s.map(x => x.en).join(" "))),
+      h("button", { class: "btn", type: "button", onclick: () => { S.tab = "cards"; S.theme = "all"; S.onlyNew = false; S.idx = D.items.indexOf(it); render(true); } }, "Ôn thẻ"))),
+    h("div", { class: "row" }, h("button", { class: "btn primary", type: "button", onclick: () => { newDict(); renderDict(true); } }, "Làm vòng mới"))));
+}
+
+/* ---------- wiring ---------- */
+function render(auto) {
+  renderHeader();
+  stopSay();
+  if (S.tab === "cards") renderCards(!!auto); else renderDict(!!auto);
+}
+document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => { S.tab = b.dataset.tab; render(S.tab === "dict"); }));
+document.addEventListener("keydown", e => {
+  if (S.tab !== "cards" || /TEXTAREA|INPUT/.test((e.target.tagName || ""))) return;
+  const btns = document.querySelectorAll(".row .btn");
+  if (e.key === "ArrowRight") { const b = document.querySelector('[aria-label="Thẻ sau"]'); b && b.click(); }
+  if (e.key === "ArrowLeft") { const b = document.querySelector('[aria-label="Thẻ trước"]'); b && b.click(); }
+});
+if (!hasTTS) $("#banner").append(h("div", { class: "banner" }, "Trình duyệt này chưa hỗ trợ giọng đọc. Hãy mở trang bằng Chrome hoặc Safari."));
+else $("#banner").append(h("div", { class: "banner" }, "Em hãy bật loa. Mỗi lần bấm chuyển thẻ, máy sẽ tự đọc cả mẫu câu."));
+render(false);
+</script>
+</body>
+</html>
