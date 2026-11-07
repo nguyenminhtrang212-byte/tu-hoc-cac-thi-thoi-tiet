@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Food · Tự học (Meat, Fish, Fruit & Vegetables)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: one narrow column. Header with progress, two modes (cards, dictation), one large card at a time. */
+:root {
+  --bg: #f3f7f6; --surface: #ffffff; --ink: #14282b; --muted: #566b6e; --line: #d4e1df;
+  --accent: #0e7c7b; --accent-ink: #ffffff; --soft: #e1f0ee; --warm: #c8531f;
+  --good: #1b7f45; --bad: #b83227; --mark: #fff0c2;
+  --font-display: 'Bricolage Grotesque', 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-body: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1b1d; --surface: #172a2d; --ink: #e6f1ef; --muted: #9bb2b4; --line: #27403f;
+    --accent: #4cc3bd; --accent-ink: #06201f; --soft: #1d3a3b; --warm: #f0925f; --good: #5dd28c; --bad: #ff8a7a; --mark: #4a3d12;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1b1d; --surface: #172a2d; --ink: #e6f1ef; --muted: #9bb2b4; --line: #27403f;
+  --accent: #4cc3bd; --accent-ink: #06201f; --soft: #1d3a3b; --warm: #f0925f; --good: #5dd28c; --bad: #ff8a7a; --mark: #4a3d12;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); line-height: 1.55; font-size: 16px; }
+.wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between; }
+h1 { font-family: var(--font-display); font-size: clamp(1.6rem, 5vw, 2.2rem); line-height: 1.1; margin: 0; text-wrap: balance; }
+h1 span { color: var(--warm); }
+.sub { color: var(--muted); margin: 6px 0 0; max-width: 56ch; }
+a.link { color: var(--accent); font-weight: 600; text-decoration: none; border: 1.5px solid var(--accent); border-radius: 10px; padding: 7px 14px; white-space: nowrap; }
+a.link:hover { background: var(--soft); }
+.prog { display: flex; align-items: center; gap: 12px; font-size: .9rem; color: var(--muted); }
+.bar { flex: 1; height: 8px; background: var(--soft); border-radius: 99px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--accent); border-radius: 99px; transition: width .3s; }
+.tabs { display: flex; gap: 4px; border-bottom: 1.5px solid var(--line); margin-bottom: 18px; }
+.tabs button { border: 0; background: transparent; color: var(--muted); font: inherit; font-weight: 500; padding: 10px 14px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1.5px; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--warm); font-weight: 600; }
+button:focus-visible, [tabindex]:focus-visible, textarea:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.chip { border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: .88rem; padding: 5px 12px; border-radius: 99px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.opts { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 12px; font-size: .9rem; color: var(--muted); }
+.opts label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.card { background: var(--surface); border: 1.5px solid var(--line); border-radius: 16px; padding: 22px 20px; min-height: 260px; display: flex; flex-direction: column; gap: 14px; cursor: pointer; }
+.tag { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--warm); font-weight: 600; }
+.sent { border-radius: 10px; padding: 6px 10px; margin: 0 -10px; cursor: pointer; transition: background .15s; }
+.sent:hover { background: var(--soft); }
+.sent.speaking { background: var(--mark); }
+.en { font-family: var(--font-display); font-size: clamp(1.25rem, 4.2vw, 1.6rem); line-height: 1.25; text-wrap: balance; }
+.ipa { color: var(--accent); font-size: .95rem; margin-top: 2px; word-break: break-word; }
+.vi { color: var(--ink); font-size: 1.05rem; }
+.small-en { color: var(--muted); font-size: .9rem; }
+.kws { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.kw { border: 1.5px solid var(--line); background: var(--bg); border-radius: 10px; padding: 6px 10px; font: inherit; color: var(--ink); cursor: pointer; text-align: left; }
+.kw b { display: block; font-weight: 600; }
+.kw span { display: block; font-size: .82rem; color: var(--muted); }
+.kw .p { color: var(--accent); }
+.hint { color: var(--muted); font-size: .85rem; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
+.row.spread { justify-content: space-between; }
+.btn { border: 1.5px solid var(--accent); background: transparent; color: var(--accent); font: inherit; font-weight: 600; padding: 9px 16px; border-radius: 10px; cursor: pointer; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.warm { border-color: var(--warm); color: var(--warm); }
+.btn:disabled { opacity: .45; cursor: default; }
+.mini { font-size: .88rem; color: var(--muted); }
+.panel { background: var(--surface); border: 1.5px solid var(--line); border-radius: 16px; padding: 20px; }
+textarea { width: 100%; font: inherit; font-size: 1.05rem; color: var(--ink); background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; resize: vertical; min-height: 120px; }
+.ok { color: var(--good); font-weight: 600; }
+.bad { color: var(--bad); font-weight: 600; }
+.extra { color: var(--bad); text-decoration: line-through; }
+.diff { margin: 6px 0 12px; line-height: 1.9; }
+.diff { overflow-wrap: anywhere; }
+.score { font-family: var(--font-display); font-size: 1.6rem; }
+.empty { text-align: center; color: var(--muted); padding: 30px 10px; }
+.mask { letter-spacing: .04em; font-family: ui-monospace, Menlo, Consolas, monospace; word-break: break-word; }
+.banner { background: var(--mark); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: .92rem; }
+.weak { border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; display: flex; gap: 10px; justify-content: space-between; align-items: center; }
+@media (prefers-reduced-motion: reduce) { .bar > i, .sent { transition: none; } }
+
+.who{font-size:.88rem;color:var(--muted)}
+.who button{border:0;background:none;color:var(--accent);font:inherit;text-decoration:underline;cursor:pointer;padding:0 0 0 4px}
+.steps{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px}
+.stepchip{flex:0 0 auto;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.9rem;padding:7px 13px;border-radius:99px;cursor:pointer;white-space:nowrap}
+.stepchip[aria-selected="true"]{border-color:var(--warm);font-weight:600}
+.stepchip.done{background:var(--soft)}
+.scn{background:var(--soft);border-radius:12px;padding:12px 14px;margin-bottom:14px}
+.scn .vi{margin-top:6px;font-size:.95rem;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.wcard{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px;text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center}
+.wcard[data-r="know"]{border-color:var(--good);background:var(--soft)}
+.wcard[data-r="unknown"]{border-color:var(--warm)}
+.emo{font-size:2.4rem;line-height:1.1}.bigemo{font-size:4rem;text-align:center;line-height:1.1;margin-bottom:6px}
+.wd{font-family:var(--font-display);font-size:1.2rem;font-weight:700}
+.ip{color:var(--accent);font-size:.85rem}
+.spk-btn{border:0;background:none;color:var(--accent);font:inherit;font-size:.85rem;cursor:pointer;padding:4px}
+.two{display:flex;gap:6px;width:100%;margin-top:4px}
+.tg{flex:1;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:.82rem;padding:6px 4px;border-radius:8px;cursor:pointer}
+.tg[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.step{margin:18px 0}.step h3{font-family:var(--font-display);margin:0 0 6px}
+.sec{font-family:var(--font-display);margin:26px 0 8px;font-size:1.25rem}
+.q{font-size:1.15rem;margin:8px 0 12px}
+.opts2{display:grid;gap:8px}
+.opt{border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;text-align:left;padding:11px 14px;border-radius:10px;cursor:pointer}
+.opt:disabled{cursor:default}.opt.good{border-color:var(--good);background:var(--soft);font-weight:600}.opt.badopt{border-color:var(--bad)}
+.fb{margin-top:10px;min-height:1.2em}.fb.good{color:var(--good);font-weight:600}.fb.bad{color:var(--bad);font-weight:600}
+.answer{display:flex;flex-wrap:wrap;gap:8px;min-height:50px;padding:10px;border:1.5px dashed var(--line);border-radius:12px;margin:10px 0}
+.word{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;padding:7px 12px;border-radius:10px;cursor:pointer}
+.word:disabled{opacity:.3}
+.btn.big{font-size:1.1rem;padding:12px 26px}.btn.fillwarm{background:var(--warm);color:#fff}
+mark{background:var(--mark);color:inherit;padding:0 4px;border-radius:4px}
+input[type=text]{width:100%;font:inherit;font-size:1.05rem;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:6px}
+.line{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;flex-direction:column;gap:8px}
+.recbox{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.recbox audio{max-width:100%;height:36px}
+.theory{margin:0 0 10px;padding-left:20px}.theory li{margin-bottom:6px}
+details summary{cursor:pointer;color:var(--accent);font-weight:600}
+.okrow{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.warnlist{margin:8px 0;padding-left:20px;color:var(--bad)}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw;z-index:20}
+#toast.show{opacity:1}
+#gate{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:30}
+#gate[hidden]{display:none}
+.gbox{background:var(--surface);border-radius:16px;padding:24px;max-width:380px;width:100%}
+</style>
+</head>
+<body>
+<div id="gate" hidden><div class="gbox"><div class="bigemo" aria-hidden="true">🍎</div><h2 style="font-family:var(--font-display);margin:0 0 6px;text-align:center">Em tên là gì?</h2><p class="mini" style="text-align:center">Cô cần biết tên để nhận bài của em.</p><label for="gname" class="mini">Họ và tên</label><input type="text" id="gname" autocomplete="name"><div class="row"><button class="btn primary" id="gok" type="button">Bắt đầu</button></div></div></div>
+<div class="wrap">
+<header><div class="top"><div><h1>Food <span>· Meat, Fish, Fruit &amp; Vegetables</span></h1><p class="sub">I can name meat and fish. I can name fruit and vegetables. Tự học theo 5 bước, cuối cùng nộp bài cho cô.</p></div></div>
+<div class="who"><span id="whoText"></span><button type="button" id="rename">Đổi tên</button></div>
+<div class="prog"><span id="progText"></span><div class="bar"><i id="progBar" style="width:0%"></i></div></div></header>
+<div id="banner"></div>
+<div class="steps" id="steps" role="tablist" aria-label="Các bước"></div>
+<main id="panel"></main>
+</div>
+<div id="toast" role="status"></div>
+<script>
+/* ===== CONTENT: Food (A2) ===== */
+// e = emoji (empty when no unambiguous emoji exists). Each emoji is used by at most one word.
+const CATS = [
+  { id: "meat", title: "Thịt (Meat)", words: [
+    { w: "beef", ipa: "biːf", vi: "thịt bò", e: "🥩", ex: "Beef comes from a cow." },
+    { w: "lamb", ipa: "læm", vi: "thịt cừu", e: "🐑", ex: "Lamb comes from a sheep." },
+    { w: "pork", ipa: "pɔːrk", vi: "thịt lợn", e: "🐖", ex: "Pork comes from a pig." },
+    { w: "chicken", ipa: "ˈtʃɪkɪn", vi: "thịt gà", e: "🍗", ex: "I eat chicken with rice." },
+    { w: "duck", ipa: "dʌk", vi: "thịt vịt", e: "🦆", ex: "Do you eat duck?" },
+    { w: "ham", ipa: "hæm", vi: "giăm bông", e: "🍖", ex: "I like ham in my sandwich." },
+    { w: "bacon", ipa: "ˈbeɪkən", vi: "thịt xông khói", e: "🥓", ex: "Bacon comes from a pig." },
+    { w: "sausages", ipa: "ˈsɔːsɪdʒɪz", vi: "xúc xích", e: "🌭", ex: "We have sausages for breakfast." }
+  ]},
+  { id: "fish", title: "Cá và hải sản (Fish & seafood)", words: [
+    { w: "salmon", ipa: "ˈsæmən", vi: "cá hồi", e: "🐟", ex: "Salmon is a fish." },
+    { w: "tuna", ipa: "ˈtuːnə", vi: "cá ngừ", e: "", ex: "I like tuna in my salad." },
+    { w: "squid", ipa: "skwɪd", vi: "mực", e: "🦑", ex: "Squid is seafood." },
+    { w: "prawns", ipa: "prɔːnz", vi: "tôm", e: "🦐", ex: "Prawns are small seafood." },
+    { w: "crab", ipa: "kræb", vi: "cua", e: "🦀", ex: "I don't eat crab." },
+    { w: "mussels", ipa: "ˈmʌslz", vi: "trai, vẹm", e: "", ex: "Mussels are seafood." }
+  ]},
+  { id: "fruit", title: "Trái cây (Fruit)", words: [
+    { w: "banana", ipa: "bəˈnænə", vi: "chuối", e: "🍌", ex: "A banana is yellow." },
+    { w: "orange", ipa: "ˈɔːrɪndʒ", vi: "cam", e: "🍊", ex: "I drink orange juice." },
+    { w: "peach", ipa: "piːtʃ", vi: "quả đào", e: "🍑", ex: "A peach is sweet." },
+    { w: "apple", ipa: "ˈæpl", vi: "táo", e: "🍎", ex: "I eat an apple every day." },
+    { w: "pear", ipa: "pɛr", vi: "lê", e: "🍐", ex: "This pear is very sweet." },
+    { w: "lemon", ipa: "ˈlɛmən", vi: "chanh vàng", e: "🍋", ex: "Lemons are very bitter." },
+    { w: "mango", ipa: "ˈmæŋɡoʊ", vi: "xoài", e: "🥭", ex: "I love mango." },
+    { w: "strawberry", ipa: "ˈstrɔːbɛri", vi: "dâu tây", e: "🍓", ex: "Strawberries are very sweet." },
+    { w: "cherry", ipa: "ˈtʃɛri", vi: "anh đào", e: "🍒", ex: "Cherries are small and red." },
+    { w: "melon", ipa: "ˈmɛlən", vi: "dưa lê, dưa vàng", e: "🍈", ex: "Do you like melon?" },
+    { w: "grapes", ipa: "ɡreɪps", vi: "nho", e: "🍇", ex: "Grapes are small and sweet." },
+    { w: "pineapple", ipa: "ˈpaɪnæpl", vi: "quả dứa (thơm)", e: "🍍", ex: "Pineapple is sweet and fresh." },
+    { w: "avocado", ipa: "ˌævəˈkɑːdoʊ", vi: "quả bơ", e: "🥑", ex: "I like avocado on bread." }
+  ]},
+  { id: "veg", title: "Rau củ (Vegetables)", words: [
+    { w: "potato", ipa: "pəˈteɪtoʊ", vi: "khoai tây", e: "🥔", ex: "I eat a potato with my dinner." },
+    { w: "beans", ipa: "biːnz", vi: "đậu que", e: "🫘", ex: "Green beans are vegetables." },
+    { w: "onion", ipa: "ˈʌnjən", vi: "hành tây", e: "🧅", ex: "I put onion in the soup." },
+    { w: "carrot", ipa: "ˈkærət", vi: "cà rốt", e: "🥕", ex: "A carrot is orange." },
+    { w: "cauliflower", ipa: "ˈkɔːlɪflaʊər", vi: "súp lơ trắng", e: "", ex: "Cauliflower is white." },
+    { w: "cabbage", ipa: "ˈkæbɪdʒ", vi: "bắp cải", e: "", ex: "Cabbage is green." },
+    { w: "peas", ipa: "piːz", vi: "đậu Hà Lan", e: "", ex: "Frozen peas are very cold." },
+    { w: "aubergine", ipa: "ˈoʊbərʒiːn", vi: "cà tím", e: "🍆", ex: "An aubergine is purple." },
+    { w: "courgette", ipa: "kʊrˈʒɛt", vi: "bí ngòi", e: "", ex: "A courgette is green." },
+    { w: "mushroom", ipa: "ˈmʌʃruːm", vi: "nấm", e: "🍄", ex: "Do you like mushroom soup?" },
+    { w: "garlic", ipa: "ˈɡɑːrlɪk", vi: "tỏi", e: "🧄", ex: "I put garlic in my food." },
+    { w: "chilli", ipa: "ˈtʃɪli", vi: "ớt cay", e: "🌶️", ex: "A chilli is very hot." },
+    { w: "lettuce", ipa: "ˈlɛtɪs", vi: "rau xà lách", e: "🥬", ex: "A salad usually has lettuce." },
+    { w: "tomato", ipa: "təˈmeɪtoʊ", vi: "cà chua", e: "🍅", ex: "I like tomato in a salad." },
+    { w: "cucumber", ipa: "ˈkjuːkʌmbər", vi: "dưa chuột", e: "🥒", ex: "Cucumber is in my salad." },
+    { w: "pepper", ipa: "ˈpɛpər", vi: "ớt chuông", e: "🫑", ex: "Red pepper and green pepper are vegetables." }
+  ]},
+  { id: "desc", title: "Vị và trạng thái (Taste & state)", words: [
+    { w: "taste", ipa: "teɪst", vi: "có vị, nếm", e: "", ex: "This juice tastes of orange and lemon." },
+    { w: "sweet", ipa: "swiːt", vi: "ngọt", e: "", ex: "Strawberries are very sweet." },
+    { w: "bitter", ipa: "ˈbɪtər", vi: "đắng", e: "", ex: "Lemons are very bitter." },
+    { w: "fresh", ipa: "frɛʃ", vi: "tươi", e: "", ex: "I eat a lot of fresh fruit." },
+    { w: "raw", ipa: "rɔː", vi: "sống (chưa nấu)", e: "", ex: "A raw carrot is not cooked." },
+    { w: "frozen", ipa: "ˈfroʊzn", vi: "đông lạnh", e: "", ex: "Frozen peas are in a freezer." },
+    { w: "cooked", ipa: "kʊkt", vi: "đã nấu chín", e: "", ex: "I like cooked vegetables." }
+  ]}
+];
+
+// True / False. For false statements: wrong = part to correct, fix = accepted answers, full = correct sentence.
+const TFS = [
+  { t: "Beef comes from a cow.", ok: true, vi: "Thịt bò đến từ con bò." },
+  { t: "Pork comes from a sheep.", ok: false, wrong: "sheep", fix: ["pig"], full: "Pork comes from a pig.", vi: "Thịt lợn đến từ con lợn." },
+  { t: "Lamb comes from a sheep.", ok: true, vi: "Thịt cừu đến từ con cừu." },
+  { t: "Tuna is a fish.", ok: true, vi: "Cá ngừ là một loại cá." },
+  { t: "Squid is a fish.", ok: false, wrong: "a fish", fix: ["seafood"], full: "Squid is seafood.", vi: "Mực là hải sản." },
+  { t: "Prawns, crab and mussels are seafood.", ok: true, vi: "Tôm, cua và trai là hải sản." },
+  { t: "Bacon comes from a chicken.", ok: false, wrong: "chicken", fix: ["pig"], full: "Bacon comes from a pig.", vi: "Thịt xông khói đến từ con lợn." },
+  { t: "Ham and sausages come from a pig.", ok: true, vi: "Giăm bông và xúc xích đến từ con lợn." },
+  { t: "A banana is a vegetable.", ok: false, wrong: "vegetable", fix: ["fruit"], full: "A banana is a fruit.", vi: "Chuối là một loại trái cây." },
+  { t: "A carrot is a fruit.", ok: false, wrong: "fruit", fix: ["vegetable"], full: "A carrot is a vegetable.", vi: "Cà rốt là một loại rau củ." },
+  { t: "Strawberries are very sweet.", ok: true, vi: "Dâu tây rất ngọt." },
+  { t: "Lemons are very sweet.", ok: false, wrong: "sweet", fix: ["bitter"], full: "Lemons are very bitter.", vi: "Chanh rất đắng (chua gắt)." },
+  { t: "A salad usually has lettuce.", ok: true, vi: "Món salad thường có xà lách." },
+  { t: "Frozen peas are very hot.", ok: false, wrong: "hot", fix: ["cold", "freezing"], full: "Frozen peas are very cold.", vi: "Đậu Hà Lan đông lạnh rất lạnh." },
+  { t: "Butter is countable.", ok: false, wrong: "countable", fix: ["uncountable"], full: "Butter is uncountable.", vi: "Bơ là danh từ không đếm được." },
+  { t: "Eggs are countable.", ok: true, vi: "Trứng là danh từ đếm được." },
+  { t: "We say a bar of cheese.", ok: false, wrong: "bar", fix: ["piece"], full: "We say a piece of cheese.", vi: "Ta nói “a piece of cheese” (một miếng phô mai)." }
+];
+
+// Grammar theory
+const THEORY = [
+  { title: "1. Đếm được và không đếm được (Countable / Uncountable)", body: [
+    "Đếm được: an apple, a banana, a cake, two eggs, olives, noodles, biscuits.",
+    "Không đếm được (U): milk, bread, butter, cheese, sugar, jam, olive oil, rice, pasta, chocolate.",
+    "Danh từ không đếm được: dùng some / a lot of, không thêm -s, không dùng a/an. Ví dụ: some butter (KHÔNG nói a butter). This bread is nice. (KHÔNG nói These breads are nice.)",
+    "Muốn đếm: a piece of cheese, a bar of chocolate."
+  ]},
+  { title: "2. Hỏi và trả lời về món ăn (Do you …?)", body: [
+    "Do you eat pork or bacon? → Yes, I do. / No, I don't.",
+    "Do + you + động từ nguyên mẫu (eat, like): Do you eat fish? Do you like mushrooms?",
+    "Phủ định: I don't eat pork. Nói thói quen: I eat a lot of fresh fruit."
+  ]},
+  { title: "3. Tả vị và trạng thái (taste, sweet, bitter…)", body: [
+    "be + very + tính từ: Strawberries are very sweet. Lemons are very bitter. (sweet ≠ bitter)",
+    "taste of + món: This juice tastes of orange and lemon.",
+    "raw (sống), cooked (đã nấu), frozen (đông lạnh), fresh (tươi): I eat a lot of fresh fruit. A salad has raw vegetables."
+  ]}
+];
+const GM = [
+  { q: "Milk is ___.", o: ["countable", "uncountable"], a: 1, x: "Milk là danh từ không đếm được (U)." },
+  { q: "An egg is ___.", o: ["countable", "uncountable"], a: 0, x: "Egg đếm được: an egg, two eggs." },
+  { q: "Which word is uncountable?", o: ["apple", "rice", "banana"], a: 1, x: "Rice (cơm, gạo) không đếm được." },
+  { q: "I eat ___ apple every day.", o: ["a", "an", "some"], a: 1, x: "apple bắt đầu bằng nguyên âm nên dùng an." },
+  { q: "I'd like ___ rice, please.", o: ["a", "some", "an"], a: 1, x: "Rice không đếm được nên dùng some." },
+  { q: "This is ___ cake.", o: ["some", "an", "a"], a: 2, x: "Cake đếm được, số ít: a cake." },
+  { q: "Can I have ___ butter?", o: ["a", "an", "some"], a: 2, x: "some butter, không nói a butter." },
+  { q: "This bread ___ nice.", o: ["is", "are"], a: 0, x: "Bread không đếm được nên dùng is." },
+  { q: "These biscuits ___ nice.", o: ["is", "are"], a: 1, x: "Biscuits là số nhiều nên dùng are." },
+  { q: "a ___ of cheese", o: ["bar", "piece", "bottle"], a: 1, x: "a piece of cheese (một miếng phô mai)." },
+  { q: "a ___ of chocolate", o: ["glass", "bottle", "bar"], a: 2, x: "a bar of chocolate (một thanh sô cô la)." },
+  { q: "___ you eat pork?", o: ["Does", "Do", "Are"], a: 1, x: "Với you dùng Do." },
+  { q: "“Do you eat fish?” “Yes, I ___.”", o: ["am", "eat", "do"], a: 2, x: "Trả lời ngắn: Yes, I do." },
+  { q: "“Do you eat bacon?” “No, I ___.”", o: ["don't", "doesn't", "not"], a: 0, x: "Trả lời ngắn: No, I don't." },
+  { q: "Lemons are very ___.", o: ["sweet", "bitter", "frozen"], a: 1, x: "Lemons are very bitter." },
+  { q: "This juice ___ of orange and lemon.", o: ["taste", "tastes", "is taste"], a: 1, x: "Chủ ngữ số ít (juice) nên dùng tastes." },
+  { q: "I eat a lot of ___ fruit.", o: ["fresh", "bitter", "tastes"], a: 0, x: "fresh fruit = trái cây tươi." }
+];
+const GB = [
+  { vi: "Bạn có ăn thịt lợn hay thịt xông khói không?", en: "Do you eat pork or bacon?" },
+  { vi: "Mình ăn rất nhiều trái cây tươi.", en: "I eat a lot of fresh fruit." },
+  { vi: "Dâu tây rất ngọt.", en: "Strawberries are very sweet." },
+  { vi: "Bánh mì này ngon.", en: "This bread is nice." }
+];
+
+// Speaking
+const SP_A = [
+  { id: "A1", en: "Beef comes from a cow, and pork comes from a pig.", vi: "Thịt bò đến từ con bò, còn thịt lợn đến từ con lợn." },
+  { id: "A2", en: "Salmon and tuna are fish. Squid, prawns, crab and mussels are seafood.", vi: "Cá hồi và cá ngừ là cá. Mực, tôm, cua và trai là hải sản." },
+  { id: "A3", en: "I eat a lot of fresh fruit. Strawberries are very sweet, but lemons are very bitter.", vi: "Mình ăn nhiều trái cây tươi. Dâu tây rất ngọt, nhưng chanh rất đắng." },
+  { id: "A4", en: "A salad has lettuce, tomatoes and cucumber. It is often part of a meal.", vi: "Món salad có xà lách, cà chua và dưa chuột. Nó thường là một phần của bữa ăn." },
+  { id: "A5", en: "Do you eat pork or bacon? No, I don't. I eat chicken and fish.", vi: "Bạn có ăn thịt lợn hay thịt xông khói không? Không. Mình ăn thịt gà và cá." }
+];
+const SP_B = [
+  { id: "B1", q: "What meat or fish do you eat? Do you eat pork or bacon?", vi: "Bạn ăn thịt hay cá gì? Bạn có ăn thịt lợn hay thịt xông khói không?",
+    frame: "I eat … and … / Yes, I do. / No, I don't.", hints: ["beef", "pork", "chicken", "salmon", "prawns"],
+    model: "I eat chicken, beef and salmon. Yes, I eat pork, but I don't eat bacon." },
+  { id: "B2", q: "What is your favourite fruit? What does it taste like?", vi: "Trái cây em thích nhất là gì? Nó có vị thế nào?",
+    frame: "My favourite fruit is … It's very sweet. / It tastes of …", hints: ["mango", "sweet", "bitter", "fresh", "taste"],
+    model: "My favourite fruit is mango. It's very sweet and fresh. I eat a lot of fresh fruit." },
+  { id: "B3", q: "What vegetables do you like? Do you eat them raw or cooked?", vi: "Em thích rau củ nào? Em ăn sống hay nấu chín?",
+    frame: "I like … and … I eat … raw / cooked.", hints: ["carrot", "tomato", "cabbage", "raw", "cooked"],
+    model: "I like carrots and tomatoes. I eat carrots raw, but I eat cabbage cooked." },
+  { id: "B4", q: "What do you have for breakfast?", vi: "Bữa sáng em ăn gì?",
+    frame: "I have some … and a … / I don't eat …", hints: ["bread", "eggs", "milk", "rice", "noodles"],
+    model: "For breakfast, I have some bread and butter and two eggs. I drink some milk." }
+];
+const SP_C = {
+  id: "C", title: "Món ăn em thích nhất (30–40 giây)",
+  prompts: ["Món em thích nhất là gì? (My favourite meal is …)", "Trong đó có gì? (some rice, a piece of fish, two eggs, a lot of vegetables…)", "Nó có vị thế nào? (sweet / bitter / fresh / cooked)", "Em có thích món này không? Vì sao?"],
+  model: "My favourite meal is rice with chicken and vegetables. I eat some rice, a piece of chicken and a lot of fresh vegetables, like carrots and cabbage. The chicken is cooked, and the vegetables are very fresh. For dessert, I eat some strawberries. They are very sweet. I love this meal!"
+};
+
+/* ===== APP ===== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnf8X3_Xfk9F_8HQtBwSFU_s28sRjxKb0aFaHCA4ybmMJvgaztBAbdvaFzITdbVXBt/exec";
+const LESSON = "Food-1";
+const ALL = CATS.flatMap(c => c.words.map(w => Object.assign({ cat: c.id }, w)));
+const STEPS = [["vocab", "1. Từ vựng"], ["tf", "2. Đúng hay sai?"], ["gram", "3. Ngữ pháp"], ["speak", "4. Speaking"], ["submit", "5. Nộp bài"]];
+
+const $ = s => document.querySelector(s);
+const h = (tag, props, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) e.setAttribute(k, v);
+  }
+  kids.flat().forEach(c => { if (c !== null && c !== undefined && c !== false) e.append(c); });
+  return e;
+};
+const norm = s => s.toLowerCase().replace(/[’‘]/g, "'");
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("food1_" + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("food1_" + k, JSON.stringify(v)); } catch (e) {} }
+};
+const getName = () => { try { return localStorage.getItem("food1_name") || ""; } catch (e) { return ""; } };
+const toast = t => { const e = $("#toast"); e.textContent = t; e.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove("show"), 3800); };
+const updateWho = () => { $("#whoText").textContent = getName() ? "Học sinh: " + getName() + " " : "Chưa nhập tên "; };
+const showGate = () => { $("#gname").value = getName(); $("#gate").hidden = false; setTimeout(() => $("#gname").focus(), 50); };
+const post = async obj => {
+  const r = await fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(obj) });
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || "error");
+  return j;
+};
+const blobToB64 = blob => new Promise((res, rej) => { const f = new FileReader(); f.onload = () => res(String(f.result).split(",")[1]); f.onerror = rej; f.readAsDataURL(blob); });
+
+let rate = store.get("rate", {});
+let RES = store.get("res", {});
+const saveRes = () => store.set("res", RES);
+const St = { tab: "vocab" };
+
+/* ---------- speech ---------- */
+const hasTTS = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+let voice = null;
+function pickVoice() {
+  if (!hasTTS) return;
+  const vs = speechSynthesis.getVoices();
+  voice = vs.find(v => /en[-_]US/i.test(v.lang) && /(Samantha|Google US English|Aria|Jenny|Natural)/i.test(v.name)) || vs.find(v => /en[-_]US/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang)) || null;
+}
+if (hasTTS) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+let token = 0;
+function say(list, o) {
+  o = o || {};
+  if (!hasTTS) return;
+  try { speechSynthesis.cancel(); } catch (e) {}
+  const my = ++token; let i = 0;
+  const next = () => {
+    if (my !== token) return;
+    if (i >= list.length) { if (o.onEnd) o.onEnd(); return; }
+    const idx = i++;
+    const u = new SpeechSynthesisUtterance(list[idx]);
+    u.lang = "en-US"; if (voice) u.voice = voice;
+    u.rate = o.slow ? 0.6 : 0.9;
+    u.onend = () => setTimeout(next, 250);
+    u.onerror = () => { if (my === token) next(); };
+    try { speechSynthesis.speak(u); } catch (e) { if (my === token) setTimeout(next, 0); }
+  };
+  setTimeout(next, 60);
+}
+const stopSay = () => { token++; try { if (hasTTS) speechSynthesis.cancel(); } catch (e) {} };
+
+/* ---------- generic multiple-choice runner ---------- */
+const newMcq = () => ({ i: 0, score: 0, picked: null, wrong: [], played: {} });
+function mcqRun(root, st, items, o) {
+  if (st.i >= items.length) { o.onDone(); return; }
+  const it = items[st.i], done = st.picked !== null;
+  const box = h("div", { class: "panel" });
+  box.append(h("div", { class: "mini" }, (o.label || "Câu") + " " + (st.i + 1) + "/" + items.length + " · Điểm " + st.score));
+  if (it.pre) box.append(h("div", { class: "bigemo", "aria-hidden": "true" }, it.pre));
+  box.append(h("p", { class: "q" }, it.q));
+  if (it.audio) box.append(h("div", { class: "row", style: "margin:0 0 8px" }, h("button", { class: "btn", type: "button", onclick: () => say([it.audio]) }, "🔊 Nghe lại")));
+  box.append(h("div", { class: "opts2" }, it.o.map((t, k) => h("button", {
+    class: "opt" + (done && k === it.a ? " good" : "") + (done && st.picked === k && k !== it.a ? " badopt" : ""), type: "button", disabled: done ? "" : null,
+    onclick: () => { st.picked = k; if (k === it.a) st.score++; else st.wrong.push(it); if (it.audio || k === it.a) say([it.audio || it.say || ""].filter(Boolean)); o.rerender(); }
+  }, t))));
+  box.append(h("div", { class: "fb " + (done ? (st.picked === it.a ? "good" : "bad") : ""), "aria-live": "polite" }, done ? (st.picked === it.a ? "Chính xác! " : "Chưa đúng. Đáp án: " + it.o[it.a] + ". ") + (it.x || "") : ""));
+  if (done) box.append(h("div", { class: "row" }, h("button", { class: "btn primary", type: "button", onclick: () => { st.i++; st.picked = null; o.rerender(); } }, st.i + 1 < items.length ? "Câu tiếp ▶" : "Xem kết quả")));
+  root.append(box);
+  if (it.audio && !st.played[st.i]) { st.played[st.i] = true; say([it.audio]); }
+}
+
+/* ---------- sentence builder ---------- */
+const newBuild = () => ({ i: 0, score: 0, first: true, bank: null, chosen: [], result: null });
+function builderRun(root, st, items, o) {
+  if (st.i >= items.length) { o.onDone(); return; }
+  const it = items[st.i];
+  if (!st.bank) { let b = it.en.split(/\s+/).map((w, k) => ({ w, k, used: false })); for (let t = 0; t < 8; t++) { b = shuffle(b); if (b.map(x => x.w).join(" ") !== it.en) break; } st.bank = b; st.chosen = []; st.result = null; st.first = true; }
+  root.append(h("div", { class: "panel" },
+    h("div", { class: "mini" }, "Câu " + (st.i + 1) + "/" + items.length + " · Chạm các từ theo đúng thứ tự"),
+    h("p", { class: "q" }, it.vi),
+    h("div", { class: "answer" }, st.chosen.length ? st.chosen.map(c => h("button", { class: "word", type: "button", onclick: () => { c.used = false; st.chosen = st.chosen.filter(x => x !== c); st.result = null; o.rerender(); } }, c.w)) : h("span", { class: "mini" }, "Câu của em sẽ hiện ở đây")),
+    h("div", { class: "answer", style: "border-color:transparent;padding:0" }, st.bank.map(c => h("button", { class: "word", type: "button", disabled: c.used ? "" : null, onclick: () => { c.used = true; st.chosen.push(c); st.result = null; o.rerender(); } }, c.w))),
+    h("div", { class: "fb " + (st.result === null ? "" : st.result ? "good" : "bad"), "aria-live": "polite" }, st.result === null ? "" : st.result ? "Chính xác!" : "Chưa đúng, thử lại nhé."),
+    h("div", { class: "row" },
+      h("button", { class: "btn primary", type: "button", onclick: () => {
+        const ok = st.chosen.map(c => c.w).join(" ") === it.en;
+        if (ok) { if (st.first) st.score++; say([it.en]); } else st.first = false;
+        st.result = ok; o.rerender();
+      } }, "Kiểm tra"),
+      h("button", { class: "btn", type: "button", onclick: () => { st.bank.forEach(c => c.used = false); st.chosen = []; st.result = null; o.rerender(); } }, "Làm lại"),
+      st.result === true ? h("button", { class: "btn primary", type: "button", onclick: () => { st.i++; st.bank = null; o.rerender(); } }, st.i + 1 < items.length ? "Câu tiếp ▶" : "Xem kết quả") : null)));
+}
+
+/* =====================================================
+   1. VOCABULARY: rate -> study the unknown -> quiz
+   ===================================================== */
+const V = { phase: "rate", deck: [], idx: 0, qs: null, st: null };
+const unknownWords = () => ALL.filter(w => rate[w.w] !== "know");
+function renderVocab(auto) {
+  const root = $("#panel"); root.replaceChildren();
+  if (V.phase === "rate") vRate(root);
+  else if (V.phase === "study") vStudy(root, auto);
+  else if (V.phase === "quiz") vQuiz(root);
+  else vSummary(root);
+}
+function vRate(root) {
+  root.append(h("div", { class: "scn" },
+    h("strong", null, "Bước 1: Em biết những từ nào? "), "Nhìn hình, nghe thử bằng nút 🔊, rồi chọn “Biết” hoặc “Chưa biết” cho từng từ. Hãy thật thà nhé, máy sẽ kiểm tra lại các từ em chọn “Biết”.",
+    h("div", { class: "vi" }, "Em đang luyện: I can name meat and fish. I can name fruit and vegetables.")));
+  const prog = h("div", { class: "mini", style: "margin-bottom:10px", "aria-live": "polite" });
+  const upd = () => {
+    const k = ALL.filter(w => rate[w.w] === "know").length, u = ALL.filter(w => rate[w.w] === "unknown").length;
+    prog.textContent = "Đã chọn " + (k + u) + "/" + ALL.length + " từ · Biết: " + k + " · Chưa biết: " + u;
+  };
+  upd(); root.append(prog);
+  CATS.forEach(cat => {
+    const grid = h("div", { class: "grid" });
+    const bulk = v => { cat.words.forEach(w => { rate[w.w] = v; }); store.set("rate", rate); renderVocab(); };
+    cat.words.forEach(w => {
+      const card = h("div", { class: "wcard" });
+      const bK = h("button", { class: "tg", type: "button" }, "Biết"), bU = h("button", { class: "tg", type: "button" }, "Chưa biết");
+      const paint = () => { card.dataset.r = rate[w.w] || ""; bK.setAttribute("aria-pressed", rate[w.w] === "know"); bU.setAttribute("aria-pressed", rate[w.w] === "unknown"); };
+      const set = v => { rate[w.w] = v; store.set("rate", rate); paint(); upd(); };
+      bK.addEventListener("click", () => set("know")); bU.addEventListener("click", () => set("unknown"));
+      card.append(h("div", { class: "emo", "aria-hidden": "true" }, w.e || "🍽️"), h("div", { class: "wd" }, w.w), h("div", { class: "ip" }, "/" + w.ipa + "/"),
+        h("button", { class: "spk-btn", type: "button", "aria-label": "Nghe " + w.w, onclick: () => say([w.w]) }, "🔊 Nghe"), h("div", { class: "two" }, bK, bU));
+      paint(); grid.append(card);
+    });
+    root.append(h("div", { class: "step" }, h("h3", null, cat.title),
+      h("div", { class: "chips", style: "margin:2px 0 10px" }, h("button", { class: "chip", type: "button", onclick: () => bulk("know") }, "Nhóm này: biết hết"), h("button", { class: "chip", type: "button", onclick: () => bulk("unknown") }, "Nhóm này: chưa biết hết")), grid));
+  });
+  root.append(h("div", { class: "row" }, h("button", { class: "btn primary", type: "button", onclick: () => {
+    ALL.forEach(w => { if (!rate[w.w]) rate[w.w] = "unknown"; }); store.set("rate", rate);
+    V.deck = unknownWords(); V.idx = 0; V.phase = "study"; render(true);
+  } }, "Lọc từ chưa biết và học →"), h("span", { class: "mini" }, "Từ chưa chọn sẽ được tính là “Chưa biết”.")));
+}
+function vStudy(root, auto) {
+  const n = unknownWords().length;
+  root.append(h("div", { class: "scn" }, h("strong", null, "Từ em cần học: " + V.deck.length + " từ. "), "Mỗi lần chuyển thẻ, máy tự đọc từ và câu ví dụ. Chạm vào thẻ để xem nghĩa."));
+  if (!V.deck.length) {
+    root.append(h("div", { class: "empty" }, "Em chọn biết hết các từ! Hãy làm bài kiểm tra để máy xác nhận nhé."),
+      h("div", { class: "row" }, h("button", { class: "btn primary", type: "button", onclick: startQuiz }, "Làm bài kiểm tra →"), h("button", { class: "btn", type: "button", onclick: () => { V.phase = "rate"; render(); } }, "← Chọn lại từ")));
+    return;
+  }
+  if (V.idx >= V.deck.length) V.idx = 0;
+  const w = V.deck[V.idx];
+  const front = h("div", { "data-side": "front", style: "text-align:center" }, h("div", { class: "bigemo", "aria-hidden": "true" }, w.e || "🍽️"), h("div", { class: "en" }, w.w), h("div", { class: "ipa" }, "/" + w.ipa + "/"));
+  const back = h("div", { "data-side": "back", hidden: "", style: "text-align:center" }, h("div", { class: "en" }, w.w), h("div", { class: "vi" }, w.vi), h("div", { class: "small-en", style: "margin-top:10px" }, "“" + w.ex + "”"));
+  const flip = () => { const f = front.hidden; front.hidden = !f; back.hidden = f; flipBtn.textContent = f ? "🔄 Xem nghĩa" : "🔄 Xem từ"; };
+  const flipBtn = h("button", { class: "btn", type: "button", onclick: flip }, "🔄 Xem nghĩa");
+  root.append(h("div", { class: "card", onclick: flip }, h("div", { class: "tag" }, "Từ " + (V.idx + 1) + "/" + V.deck.length), front, back));
+  const go = d => { V.idx = (V.idx + d + V.deck.length) % V.deck.length; renderVocab(true); };
+  root.append(h("div", { class: "row" },
+    h("button", { class: "btn", type: "button", "aria-label": "Từ trước", onclick: () => go(-1) }, "⏮"),
+    h("button", { class: "btn primary", type: "button", onclick: () => say([w.w, w.ex]) }, "🔊 Nghe lại"),
+    flipBtn,
+    h("button", { class: "btn", type: "button", "aria-label": "Từ sau", onclick: () => go(1) }, "⏭")));
+  root.append(h("div", { class: "row spread" }, h("button", { class: "btn", type: "button", onclick: () => { V.phase = "rate"; render(); } }, "← Chọn lại từ"), h("button", { class: "btn primary", type: "button", onclick: startQuiz }, "Làm bài kiểm tra →")));
+  if (auto) say([w.w, w.ex]);
+}
+function buildVocabQuiz() {
+  const unk = unknownWords(), kn = ALL.filter(w => rate[w.w] === "know");
+  const per = unk.length > 12 ? 1 : 2, jobs = [];
+  unk.forEach(w => { shuffle(w.e ? ["pic", "listen", "vi"] : ["listen", "vi"]).slice(0, per).forEach(t => jobs.push({ w, t, known: false })); });
+  shuffle(kn).slice(0, 6).forEach(w => jobs.push({ w, t: shuffle(w.e ? ["pic", "listen", "vi"] : ["listen", "vi"])[0], known: true }));
+  return shuffle(jobs).slice(0, 30).map(j => {
+    const w = j.w, pool = ALL.filter(x => x.cat === w.cat && x !== w);
+    const opts = shuffle([w, ...shuffle(pool).slice(0, 3)]), a = opts.indexOf(w);
+    const x = w.w + " = " + w.vi + ". “" + w.ex + "”";
+    if (j.t === "pic") return { w, known: j.known, pre: w.e, q: "Đây là gì?", o: opts.map(v => v.w), a, x, say: w.w };
+    if (j.t === "listen") return { w, known: j.known, audio: w.w, q: "Nghe và chọn từ đúng.", o: opts.map(v => v.w), a, x };
+    return { w, known: j.known, q: "Từ “" + w.w + "” nghĩa là gì?", o: opts.map(v => v.vi), a, x, say: w.w };
+  });
+}
+function startQuiz() { V.qs = buildVocabQuiz(); V.st = newMcq(); V.phase = "quiz"; render(); }
+function vQuiz(root) {
+  root.append(h("div", { class: "scn" }, h("strong", null, "Kiểm tra từ vựng. "), "Gồm các từ em chưa biết và vài từ em chọn “Biết” để kiểm tra lại."));
+  mcqRun(root, V.st, V.qs, { label: "Câu", rerender: () => renderVocab(), onDone: () => {
+    const wrongUnk = [], falseKnown = [];
+    V.st.wrong.forEach(it => { if (it.known) { falseKnown.push(it.w.w); rate[it.w.w] = "unknown"; } else wrongUnk.push(it.w.w); });
+    store.set("rate", rate);
+    RES.vocab = { score: V.st.score, total: V.qs.length, wrong: [...new Set(wrongUnk)], falseKnown: [...new Set(falseKnown)], unknown: unknownWords().length };
+    saveRes(); V.phase = "summary"; renderHeader(); renderVocab();
+  } });
+}
+function vSummary(root) {
+  const r = RES.vocab || { score: 0, total: 0, wrong: [], falseKnown: [] };
+  const retry = [...new Set([...r.wrong, ...r.falseKnown])];
+  root.append(h("div", { class: "panel" },
+    h("h2", { class: "q", style: "margin-top:0" }, "Kết quả: " + r.score + "/" + r.total),
+    r.falseKnown.length ? h("p", null, "Em chọn “Biết” nhưng trả lời sai: ", h("strong", null, r.falseKnown.join(", ")), ". Các từ này đã được chuyển sang “Chưa biết”.") : null,
+    r.wrong.length ? h("p", null, "Từ chưa biết và làm sai: ", h("strong", null, r.wrong.join(", ")), ".") : null,
+    !retry.length ? h("p", { class: "ok" }, "Tuyệt vời! Em không sai từ nào.") : null,
+    h("div", { class: "row" },
+      retry.length ? h("button", { class: "btn warm", type: "button", onclick: () => { V.deck = ALL.filter(w => retry.includes(w.w)); V.idx = 0; V.phase = "study"; render(true); } }, "Học lại " + retry.length + " từ sai") : null,
+      h("button", { class: "btn", type: "button", onclick: () => { V.phase = "rate"; render(); } }, "Chọn lại từ từ đầu"),
+      h("button", { class: "btn primary", type: "button", onclick: () => { St.tab = "tf"; render(); } }, "Sang mục 2 →"))));
+}
+
+/* =====================================================
+   2. TRUE / FALSE with correction
+   ===================================================== */
+const T = { order: null, i: 0, cur: null, res: {} };
+const newTF = () => { T.order = shuffle(TFS.map((_, i) => i)); T.i = 0; T.cur = { judge: null, fixed: false, tries: 0, hint: false, shown: false }; T.res = {}; };
+const fixOk = (v, it) => { const n = norm(v).replace(/[^a-z' ]/g, " "), tk = n.split(/\s+/).filter(Boolean); return it.fix.some(f => tk.includes(f)); };
+function renderTF() {
+  const root = $("#panel"); root.replaceChildren();
+  if (!T.order) newTF();
+  if (T.i >= T.order.length) { tfSummary(root); return; }
+  const idx = T.order[T.i], it = TFS[idx], c = T.cur, judged = c.judge !== null;
+  const total = TFS.length;
+  root.append(h("div", { class: "scn" }, h("strong", null, "Bước 2: Đúng (True) hay Sai (False)? "), "Đọc câu và chọn. Nếu câu sai, em hãy sửa lại từ sai cho đúng.",
+    h("div", { class: "vi" }, "Câu " + (T.i + 1) + "/" + total)));
+  const sentence = () => {
+    if (judged && !it.ok && !c.fixed) { const p = it.t.indexOf(it.wrong); return [it.t.slice(0, p), h("mark", null, it.wrong), it.t.slice(p + it.wrong.length)]; }
+    if (c.fixed) return it.full;
+    return it.t;
+  };
+  const box = h("div", { class: "panel" }, h("p", { class: "q", style: "font-size:1.35rem" }, sentence()));
+  box.append(h("div", { class: "row" },
+    h("button", { class: "btn big" + (judged && c.judge === true ? " primary" : ""), type: "button", disabled: judged ? "" : null, onclick: () => judge(true) }, "✅ True"),
+    h("button", { class: "btn big warm" + (judged && c.judge === false ? " fillwarm" : ""), type: "button", disabled: judged ? "" : null, onclick: () => judge(false) }, "❌ False")));
+  const judge = v => {
+    c.judge = v; const ok = v === it.ok;
+    T.res[idx] = { judge: v ? "True" : "False", judgeOk: ok, fix: "", fixOk: it.ok ? null : false };
+    if (it.ok) say([it.t]);
+    renderTF();
+  };
+  if (judged) {
+    const ok = c.judge === it.ok;
+    box.append(h("div", { class: "fb " + (ok ? "good" : "bad"), "aria-live": "polite" }, ok ? "Đúng rồi! " : "Chưa đúng. ", it.ok ? "Câu này ĐÚNG. " + it.vi : "Câu này SAI. Từ được tô vàng chưa đúng."));
+    if (!it.ok && !c.fixed) {
+      const inp = h("input", { type: "text", id: "fixin", placeholder: "Từ đúng là…", autocomplete: "off", autocapitalize: "off", spellcheck: "false", "aria-label": "Từ sửa lại" });
+      const msg = h("div", { class: "fb", "aria-live": "polite" });
+      const check = () => {
+        const v = inp.value.trim(); if (!v) { inp.focus(); return; }
+        c.tries++;
+        if (fixOk(v, it)) { c.fixed = true; if (c.tries === 1) T.res[idx].fixOk = true; T.res[idx].fix = v; say([it.full]); renderTF(); }
+        else { T.res[idx].fix = v; msg.className = "fb bad"; msg.textContent = c.tries >= 2 ? "Chưa đúng. Gợi ý: từ đúng bắt đầu bằng chữ “" + it.fix[0][0] + "”." : "Chưa đúng, thử lại nhé."; }
+      };
+      inp.addEventListener("keydown", e => { if (e.key === "Enter") check(); });
+      box.append(h("div", { style: "margin-top:14px" }, h("label", { for: "fixin", class: "mini" }, "Sửa lại: thay “" + it.wrong + "” bằng từ đúng"), inp, h("div", { class: "row" },
+        h("button", { class: "btn primary", type: "button", onclick: check }, "Kiểm tra"),
+        c.tries >= 2 ? h("button", { class: "btn warm", type: "button", onclick: () => { T.res[idx].fix = it.fix[0]; c.fixed = true; say([it.full]); renderTF(); } }, "Xem đáp án") : null), msg));
+    }
+    if (c.fixed) box.append(h("div", { class: "fb good" }, "Câu đúng: " + it.full + " — " + it.vi));
+    if (it.ok || c.fixed) box.append(h("div", { class: "row" }, h("button", { class: "btn primary", type: "button", onclick: () => { T.i++; T.cur = { judge: null, fixed: false, tries: 0 }; renderTF(); } }, T.i + 1 < total ? "Câu tiếp ▶" : "Xem kết quả")));
+  }
+  root.append(box);
+}
+function tfSummary(root) {
+  const ids = Object.keys(T.res).map(Number), j = ids.filter(i => T.res[i].judgeOk).length;
+  const falseIds = ids.filter(i => !TFS[i].ok), f = falseIds.filter(i => T.res[i].fixOk).length;
+  RES.tf = { judge: [j, TFS.length], fix: [f, falseIds.length], items: ids.map(i => ({ t: TFS[i].t, ok: TFS[i].ok, judge: T.res[i].judge, judgeOk: T.res[i].judgeOk, fix: T.res[i].fix, fixOk: T.res[i].fixOk, full: TFS[i].full || "" })) };
+  saveRes(); renderHeader();
+  const bad = ids.filter(i => !T.res[i].judgeOk || (!TFS[i].ok && !T.res[i].fixOk));
+  root.append(h("div", { class: "panel" },
+    h("h2", { class: "q", style: "margin-top:0" }, "Chọn đúng/sai: " + j + "/" + TFS.length + " · Sửa lỗi: " + f + "/" + falseIds.length),
+    bad.length ? h("p", { class: "mini" }, "Các câu cần xem lại:") : h("p", { class: "ok" }, "Tuyệt vời! Em làm đúng tất cả."),
+    ...bad.map(i => h("div", { class: "weak" }, h("div", null, h("div", null, TFS[i].t), h("div", { class: "ok" }, TFS[i].ok ? "→ Câu này đúng." : "→ " + TFS[i].full)))),
+    h("div", { class: "row" }, h("button", { class: "btn", type: "button", onclick: () => { newTF(); renderTF(); } }, "Làm lại"), h("button", { class: "btn primary", type: "button", onclick: () => { St.tab = "gram"; render(); } }, "Sang mục 3 →"))));
+}
+
+/* =====================================================
+   3. GRAMMAR: theory -> multiple choice -> sentence builder
+   ===================================================== */
+const G = { phase: "theory", ticks: [false, false, false], mq: newMcq(), bq: newBuild(), items: null };
+function renderGram() {
+  const root = $("#panel"); root.replaceChildren();
+  if (G.phase === "theory") {
+    root.append(h("div", { class: "scn" }, h("strong", null, "Bước 3: Ngữ pháp đi cùng chủ đề Food. "), "Đọc 3 phần, bấm “Em đã đọc” rồi làm bài tập."));
+    THEORY.forEach((t, i) => root.append(h("div", { class: "panel", style: "margin-bottom:12px" },
+      h("h3", { style: "margin:0 0 8px;font-family:var(--font-display)" }, t.title),
+      h("ul", { class: "theory" }, t.body.map(b => h("li", null, b))),
+      h("label", { class: "mini", style: "display:flex;gap:8px;align-items:center;cursor:pointer" }, h("input", { type: "checkbox", checked: G.ticks[i] ? "" : null, onchange: e => { G.ticks[i] = e.target.checked; renderGram(); } }), "Em đã đọc kỹ phần này"))));
+    root.append(h("div", { class: "row" }, h("button", { class: "btn primary", type: "button", disabled: G.ticks.every(Boolean) ? null : "", onclick: () => { G.phase = "mcq"; G.mq = newMcq(); renderGram(); } }, "Làm bài tập →"), G.ticks.every(Boolean) ? null : h("span", { class: "mini" }, "Hãy đọc và tick cả 3 phần.")));
+    return;
+  }
+  if (G.phase === "mcq") {
+    root.append(h("div", { class: "scn" }, h("strong", null, "Bài tập 1: Chọn đáp án đúng.")));
+    mcqRun(root, G.mq, GM, { label: "Câu", rerender: renderGram, onDone: () => { G.phase = "build"; G.bq = newBuild(); renderGram(); } });
+    return;
+  }
+  if (G.phase === "build") {
+    root.append(h("div", { class: "scn" }, h("strong", null, "Bài tập 2: Sắp xếp từ thành câu đúng.")));
+    builderRun(root, G.bq, GB, { rerender: renderGram, onDone: () => {
+      RES.gram = { m: [G.mq.score, GM.length], b: [G.bq.score, GB.length], wrong: G.mq.wrong.map(it => it.q + " → " + it.o[it.a]) };
+      saveRes(); G.phase = "done"; renderHeader(); renderGram();
+    } });
+    return;
+  }
+  const r = RES.gram;
+  root.append(h("div", { class: "panel" },
+    h("h2", { class: "q", style: "margin-top:0" }, "Chọn đáp án: " + r.m[0] + "/" + r.m[1] + " · Sắp xếp câu: " + r.b[0] + "/" + r.b[1]),
+    r.wrong.length ? h("div", null, h("p", { class: "mini" }, "Các câu cần xem lại:"), ...r.wrong.map(w => h("div", { class: "weak" }, w))) : h("p", { class: "ok" }, "Tuyệt vời! Em làm đúng hết phần chọn đáp án."),
+    h("div", { class: "row" }, h("button", { class: "btn", type: "button", onclick: () => { G.phase = "theory"; renderGram(); } }, "Xem lại lý thuyết"), h("button", { class: "btn", type: "button", onclick: () => { G.phase = "mcq"; G.mq = newMcq(); renderGram(); } }, "Làm lại"), h("button", { class: "btn primary", type: "button", onclick: () => { St.tab = "speak"; render(); } }, "Sang mục 4 →"))));
+}
+
+/* =====================================================
+   4. SPEAKING: read aloud -> answer questions -> talk
+   ===================================================== */
+const REC = {};
+let cur = null;
+const scoreOf = (target, transcript) => {
+  if (!transcript) return null;
+  const tw = norm(target).replace(/[^a-z' ]/g, " ").split(/\s+/).filter(Boolean);
+  const sw = new Set(norm(transcript).replace(/[^a-z' ]/g, " ").split(/\s+/).filter(Boolean));
+  return tw.length ? Math.round(tw.filter(w => sw.has(w)).length / tw.length * 100) : null;
+};
+async function startRec(key, target) {
+  if (cur) return;
+  if (!(navigator.mediaDevices && window.MediaRecorder)) { toast("Trình duyệt này không ghi âm được. Hãy dùng Chrome hoặc Safari."); return; }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mr = new MediaRecorder(stream), chunks = [];
+    let sr = null, transcript = "";
+    try {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SR) { sr = new SR(); sr.lang = "en-US"; sr.continuous = true; sr.interimResults = false; sr.onresult = e => { for (let i = e.resultIndex; i < e.results.length; i++) transcript += e.results[i][0].transcript + " "; }; sr.onerror = () => {}; sr.start(); }
+    } catch (e) { sr = null; }
+    const t0 = Date.now();
+    mr.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+    mr.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      try { sr && sr.stop(); } catch (e) {}
+      setTimeout(() => {
+        const blob = new Blob(chunks, { type: mr.mimeType || "audio/webm" });
+        const old = REC[key]; if (old && old.url) URL.revokeObjectURL(old.url);
+        REC[key] = { blob, url: URL.createObjectURL(blob), mime: blob.type, dur: Math.round((Date.now() - t0) / 1000), transcript: transcript.trim(), score: scoreOf(target, transcript), sent: false, busy: false, target };
+        cur = null; render();
+      }, 700);
+    };
+    cur = { key, mr }; mr.start(); render();
+  } catch (e) { cur = null; toast("Em cần bấm “Cho phép” micro để ghi âm."); }
+}
+const stopRec = () => { if (cur) { try { cur.mr.stop(); } catch (e) {} cur.stopping = true; render(); } };
+async function sendRec(key, fileBase, label) {
+  const r = REC[key]; if (!r || r.sent || r.busy) return;
+  if (!getName()) { showGate(); return; }
+  r.busy = true; render();
+  try {
+    const b64 = await blobToB64(r.blob);
+    const ext = r.mime.includes("mp4") ? "m4a" : r.mime.includes("ogg") ? "ogg" : "webm";
+    await post({ type: "audio", name: getName(), lesson: LESSON, file: fileBase + "." + ext, label, score: r.score, dur: r.dur, target: r.target, transcript: r.transcript, audio: b64, mime: r.mime });
+    r.sent = true; toast("Đã gửi bản ghi cho cô.");
+  } catch (e) { toast("Chưa gửi được. Hãy kiểm tra mạng rồi bấm gửi lại."); }
+  r.busy = false; render();
+}
+function recWidget(key, fileBase, label, target) {
+  const r = REC[key], active = cur && cur.key === key, box = h("div", { class: "recbox" });
+  if (active) box.append(h("button", { class: "btn warm", type: "button", disabled: cur.stopping ? "" : null, onclick: stopRec }, cur.stopping ? "Đang xử lý…" : "⏹ Dừng"), h("span", { class: "mini" }, cur.stopping ? "" : "Đang ghi âm… hãy nói to và rõ."));
+  else box.append(h("button", { class: "btn", type: "button", disabled: cur ? "" : null, onclick: () => startRec(key, target) }, r ? "🎙 Ghi lại" : "🎙 Ghi âm"));
+  if (r && !active) box.append(h("audio", { controls: "", src: r.url, preload: "metadata" }),
+    h("button", { class: "btn" + (r.sent ? "" : " primary"), type: "button", disabled: r.sent || r.busy ? "" : null, onclick: () => sendRec(key, fileBase, label) }, r.sent ? "✅ Đã gửi cô" : r.busy ? "Đang gửi…" : "📤 Gửi cho cô"),
+    r.score != null ? h("span", { class: "mini" }, "Phát âm khoảng " + r.score + "%") : null);
+  return box;
+}
+function renderSpeak() {
+  const root = $("#panel"); root.replaceChildren();
+  root.append(h("div", { class: "scn" }, h("strong", null, "Bước 4: Speaking. "), "Có 3 phần: (A) đọc to, (B) trả lời câu hỏi, (C) nói về món ăn em thích. Em nghe mẫu, ghi âm, nghe lại rồi mới bấm “Gửi cho cô”.",
+    h("div", { class: "vi" }, "Mẹo: nói chậm, rõ từng từ. Nếu chưa hài lòng, bấm “Ghi lại”.")));
+  root.append(h("h3", { class: "sec" }, "A. Đọc to (Read aloud)"));
+  SP_A.forEach(s => root.append(h("div", { class: "line" },
+    h("div", null, s.en), h("div", { class: "vi" }, s.vi),
+    h("div", { class: "recbox" }, h("button", { class: "btn", type: "button", onclick: () => say([s.en]) }, "🔊 Nghe mẫu"), h("button", { class: "btn", type: "button", onclick: () => say([s.en], { slow: true }) }, "🐢 Chậm")),
+    recWidget("sp|" + s.id, "Food_" + s.id, "Đọc to " + s.id, s.en))));
+  root.append(h("h3", { class: "sec" }, "B. Trả lời câu hỏi (Answer the questions)"));
+  SP_B.forEach(s => root.append(h("div", { class: "line" },
+    h("div", { class: "en", style: "font-size:1.15rem" }, s.q), h("div", { class: "vi" }, s.vi),
+    h("div", { class: "mini" }, "Mẫu câu: " + s.frame),
+    h("div", { class: "chips", style: "margin:0" }, s.hints.map(x => h("button", { class: "chip", type: "button", onclick: () => say([x]) }, "🔊 " + x))),
+    h("details", null, h("summary", null, "Xem câu trả lời mẫu"), h("p", null, s.model), h("button", { class: "btn", type: "button", onclick: () => say([s.model]) }, "🔊 Nghe mẫu")),
+    recWidget("sp|" + s.id, "Food_" + s.id, "Trả lời " + s.id, s.q + " " + s.model))));
+  root.append(h("h3", { class: "sec" }, "C. Nói tự do: " + SP_C.title));
+  root.append(h("div", { class: "line" },
+    h("div", { class: "mini" }, "Hãy nói 4–6 câu, trả lời các ý sau:"),
+    h("ul", { class: "theory" }, SP_C.prompts.map(p => h("li", null, p))),
+    h("details", null, h("summary", null, "Xem bài nói mẫu"), h("p", null, SP_C.model), h("button", { class: "btn", type: "button", onclick: () => say([SP_C.model]) }, "🔊 Nghe mẫu")),
+    recWidget("sp|C", "Food_C", "Nói tự do C", SP_C.model)));
+  const secOf = k => k.split("|")[1][0];
+  const sentSecs = new Set(Object.keys(REC).filter(k => k.startsWith("sp|") && REC[k].sent).map(secOf));
+  if (["A", "B", "C"].every(s => sentSecs.has(s)) && !RES.speak) { RES.speak = true; saveRes(); renderHeader(); }
+}
+
+/* =====================================================
+   5. SUBMIT
+   ===================================================== */
+function collect() {
+  const know = ALL.filter(w => rate[w.w] === "know").length, unk = ALL.length - know;
+  const recKeys = Object.keys(REC), sent = recKeys.filter(k => REC[k].sent).length;
+  const v = RES.vocab, tf = RES.tf, gr = RES.gram;
+  const warn = [];
+  if (!v) warn.push("Em chưa làm xong bài kiểm tra từ vựng (mục 1).");
+  if (!tf) warn.push("Em chưa làm xong phần Đúng hay sai (mục 2).");
+  if (!gr) warn.push("Em chưa làm xong phần Ngữ pháp (mục 3).");
+  if (!recKeys.length) warn.push("Em chưa ghi âm phần Speaking (mục 4).");
+  else {
+    if (sent < recKeys.length) warn.push("Còn " + (recKeys.length - sent) + " bản ghi âm chưa gửi (vào mục 4 bấm “Gửi cho cô”).");
+    if (!RES.speak) warn.push("Speaking cần gửi ít nhất 1 bản ở mỗi phần A, B, C (mục 4).");
+  }
+  const rows = [
+    { part: "Từ vựng · tự đánh giá", question: "Biết / Chưa biết", answer: know + " / " + unk, correct: "", result: "" },
+    { part: "Từ vựng · từ chưa biết", question: "Danh sách (sau kiểm tra)", answer: unknownWords().map(w => w.w).join(", "), correct: "", result: "" }
+  ];
+  if (v) rows.push({ part: "Từ vựng · kiểm tra", question: "Điểm", answer: v.score + "/" + v.total, correct: "", result: "Sai: " + (v.wrong.join(", ") || "-") + " | Tưởng là biết: " + (v.falseKnown.join(", ") || "-") });
+  if (tf) tf.items.forEach((it, i) => rows.push({ part: "Đúng/Sai " + (i + 1), question: it.t, answer: "Chọn " + it.judge + (it.ok ? "" : "; sửa: " + (it.fix || "(chưa)")), correct: it.ok ? "True" : "False → " + it.full, result: (it.judgeOk ? "chọn đúng" : "chọn sai") + (it.ok ? "" : it.fixOk ? "; sửa đúng ngay" : "; sửa chưa đúng ngay") }));
+  if (gr) { rows.push({ part: "Ngữ pháp · chọn đáp án", question: "Điểm", answer: gr.m[0] + "/" + gr.m[1], correct: "", result: gr.wrong.join(" | ") || "-" }); rows.push({ part: "Ngữ pháp · sắp xếp câu", question: "Điểm lần đầu", answer: gr.b[0] + "/" + gr.b[1], correct: "", result: "" }); }
+  recKeys.forEach(k => { const r = REC[k]; rows.push({ part: "Speaking " + k.replace("sp|", ""), question: r.target, answer: r.sent ? "đã gửi" : "CHƯA gửi", correct: "", result: (r.score != null ? "Phát âm ~" + r.score + "% · " : "") + (r.transcript || "") }); });
+  return { warn, rows, know, unk, v, tf, gr, recKeys, sent };
+}
+let warned = false;
+function renderSubmit() {
+  const root = $("#panel"); root.replaceChildren();
+  const c = collect();
+  const row = (a, b) => h("div", { class: "okrow" }, h("span", null, a), h("strong", null, b));
+  root.append(h("div", { class: "panel" },
+    h("h2", { class: "q", style: "margin-top:0" }, "Kiểm tra trước khi nộp"),
+    row("Từ vựng: biết / chưa biết", c.know + " / " + c.unk),
+    row("Kiểm tra từ vựng", c.v ? c.v.score + "/" + c.v.total : "chưa làm"),
+    row("Đúng hay sai", c.tf ? "chọn " + c.tf.judge[0] + "/" + c.tf.judge[1] + " · sửa " + c.tf.fix[0] + "/" + c.tf.fix[1] : "chưa làm"),
+    row("Ngữ pháp", c.gr ? "chọn " + c.gr.m[0] + "/" + c.gr.m[1] + " · sắp xếp " + c.gr.b[0] + "/" + c.gr.b[1] : "chưa làm"),
+    row("Speaking đã gửi", c.sent + "/" + c.recKeys.length + " bản")));
+  const status = h("div", { class: "fb", "aria-live": "polite" });
+  if (c.warn.length && warned) root.append(h("div", { class: "panel", style: "margin-top:14px" }, h("strong", null, "Em còn thiếu:"), h("ul", { class: "warnlist" }, c.warn.map(w => h("li", null, w))), h("p", { class: "mini", style: "margin:0" }, "Em có thể quay lại hoàn thành, hoặc vẫn nộp bài như hiện tại.")));
+  const go = h("button", { class: "btn primary", type: "button", onclick: async () => {
+    if (!getName()) { showGate(); return; }
+    if (c.warn.length && !warned) { warned = true; renderSubmit(); return; }
+    go.disabled = true; go.textContent = "Đang nộp…";
+    const ignored = c.warn.length > 0;
+    try {
+      await post({ type: "submit", name: getName(), lesson: LESSON, summary: {
+        vocab: "Biết " + c.know + "/" + ALL.length + " · Kiểm tra " + (c.v ? c.v.score + "/" + c.v.total : "chưa làm"),
+        gram: "Ngữ pháp " + (c.gr ? c.gr.m[0] + "/" + c.gr.m[1] + " · sắp xếp " + c.gr.b[0] + "/" + c.gr.b[1] : "chưa làm"),
+        ctx: "Đúng/Sai " + (c.tf ? c.tf.judge[0] + "/" + c.tf.judge[1] + " · sửa " + c.tf.fix[0] + "/" + c.tf.fix[1] : "chưa làm"),
+        rec: c.sent + "/" + c.recKeys.length + " bản ghi",
+        para: "Food-1" + (ignored ? " · CHƯA ĐỦ, đã bỏ qua cảnh báo" : " · đã hoàn thành đủ"),
+        feedback: ignored ? "Thiếu: " + c.warn.join(" ") : "Đã hoàn thành đủ các phần."
+      }, details: c.rows });
+      status.className = "fb good"; status.textContent = "Đã nộp bài cho cô. Cảm ơn " + getName() + "!"; warned = false;
+      go.textContent = "Nộp lại"; go.disabled = false;
+    } catch (e) { status.className = "fb bad"; status.textContent = "Chưa nộp được. Hãy kiểm tra mạng rồi bấm nộp lại."; go.textContent = c.warn.length ? "Vẫn nộp bài" : "Nộp bài cho cô"; go.disabled = false; }
+  } }, c.warn.length && warned ? "Vẫn nộp bài" : "Nộp bài cho cô");
+  root.append(h("div", { class: "row" }, go, h("button", { class: "btn", type: "button", onclick: () => { warned = false; renderSubmit(); } }, "Làm mới")), status);
+}
+
+/* ---------- shell ---------- */
+function renderHeader() {
+  const doneMap = { vocab: !!RES.vocab, tf: !!RES.tf, gram: !!RES.gram, speak: !!RES.speak, submit: false };
+  const box = $("#steps"); box.replaceChildren();
+  STEPS.forEach(([id, label]) => box.append(h("button", { class: "stepchip" + (doneMap[id] ? " done" : ""), type: "button", role: "tab", "aria-selected": St.tab === id, onclick: () => { St.tab = id; render(); } }, (doneMap[id] ? "✅ " : "") + label)));
+  const n = ["vocab", "tf", "gram", "speak"].filter(k => doneMap[k]).length;
+  $("#progText").textContent = "Hoàn thành " + n + "/4 phần";
+  $("#progBar").style.width = Math.round(n / 4 * 100) + "%";
+}
+function render(auto) {
+  stopSay(); renderHeader();
+  ({ vocab: () => renderVocab(!!auto), tf: renderTF, gram: renderGram, speak: renderSpeak, submit: renderSubmit })[St.tab]();
+}
+$("#rename").addEventListener("click", showGate);
+$("#gok").addEventListener("click", () => {
+  const v = $("#gname").value.trim();
+  if (!v) { $("#gname").focus(); return; }
+  try { localStorage.setItem("food1_name", v); } catch (e) {}
+  $("#gate").hidden = true; updateWho(); toast("Chào " + v + "!");
+});
+$("#gname").addEventListener("keydown", e => { if (e.key === "Enter") $("#gok").click(); });
+if (!hasTTS) $("#banner").append(h("div", { class: "banner" }, "Trình duyệt này chưa hỗ trợ giọng đọc. Hãy mở trang bằng Chrome hoặc Safari."));
+updateWho();
+if (!getName()) showGate();
+render(false);
+
+</script>
+</body>
+</html>
