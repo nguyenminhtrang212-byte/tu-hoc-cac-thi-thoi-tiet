@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Writing 1 · Family: Elderly parents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: one narrow column. Header with progress, two modes (cards, dictation), one large card at a time. */
+:root {
+  --bg: #f3f7f6; --surface: #ffffff; --ink: #14282b; --muted: #566b6e; --line: #d4e1df;
+  --accent: #0e7c7b; --accent-ink: #ffffff; --soft: #e1f0ee; --warm: #c8531f;
+  --good: #1b7f45; --bad: #b83227; --mark: #fff0c2;
+  --font-display: 'Bricolage Grotesque', 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-body: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1b1d; --surface: #172a2d; --ink: #e6f1ef; --muted: #9bb2b4; --line: #27403f;
+    --accent: #4cc3bd; --accent-ink: #06201f; --soft: #1d3a3b; --warm: #f0925f; --good: #5dd28c; --bad: #ff8a7a; --mark: #4a3d12;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1b1d; --surface: #172a2d; --ink: #e6f1ef; --muted: #9bb2b4; --line: #27403f;
+  --accent: #4cc3bd; --accent-ink: #06201f; --soft: #1d3a3b; --warm: #f0925f; --good: #5dd28c; --bad: #ff8a7a; --mark: #4a3d12;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); line-height: 1.55; font-size: 16px; }
+.wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between; }
+h1 { font-family: var(--font-display); font-size: clamp(1.6rem, 5vw, 2.2rem); line-height: 1.1; margin: 0; text-wrap: balance; }
+h1 span { color: var(--warm); }
+.sub { color: var(--muted); margin: 6px 0 0; max-width: 56ch; }
+a.link { color: var(--accent); font-weight: 600; text-decoration: none; border: 1.5px solid var(--accent); border-radius: 10px; padding: 7px 14px; white-space: nowrap; }
+a.link:hover { background: var(--soft); }
+.prog { display: flex; align-items: center; gap: 12px; font-size: .9rem; color: var(--muted); }
+.bar { flex: 1; height: 8px; background: var(--soft); border-radius: 99px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--accent); border-radius: 99px; transition: width .3s; }
+.tabs { display: flex; gap: 4px; border-bottom: 1.5px solid var(--line); margin-bottom: 18px; }
+.tabs button { border: 0; background: transparent; color: var(--muted); font: inherit; font-weight: 500; padding: 10px 14px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1.5px; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--warm); font-weight: 600; }
+button:focus-visible, [tabindex]:focus-visible, textarea:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.chip { border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: .88rem; padding: 5px 12px; border-radius: 99px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.opts { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 12px; font-size: .9rem; color: var(--muted); }
+.opts label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.card { background: var(--surface); border: 1.5px solid var(--line); border-radius: 16px; padding: 22px 20px; min-height: 260px; display: flex; flex-direction: column; gap: 14px; cursor: pointer; }
+.tag { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--warm); font-weight: 600; }
+.sent { border-radius: 10px; padding: 6px 10px; margin: 0 -10px; cursor: pointer; transition: background .15s; }
+.sent:hover { background: var(--soft); }
+.sent.speaking { background: var(--mark); }
+.en { font-family: var(--font-display); font-size: clamp(1.25rem, 4.2vw, 1.6rem); line-height: 1.25; text-wrap: balance; }
+.ipa { color: var(--accent); font-size: .95rem; margin-top: 2px; word-break: break-word; }
+.vi { color: var(--ink); font-size: 1.05rem; }
+.small-en { color: var(--muted); font-size: .9rem; }
+.kws { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.kw { border: 1.5px solid var(--line); background: var(--bg); border-radius: 10px; padding: 6px 10px; font: inherit; color: var(--ink); cursor: pointer; text-align: left; }
+.kw b { display: block; font-weight: 600; }
+.kw span { display: block; font-size: .82rem; color: var(--muted); }
+.kw .p { color: var(--accent); }
+.hint { color: var(--muted); font-size: .85rem; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
+.row.spread { justify-content: space-between; }
+.btn { border: 1.5px solid var(--accent); background: transparent; color: var(--accent); font: inherit; font-weight: 600; padding: 9px 16px; border-radius: 10px; cursor: pointer; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.warm { border-color: var(--warm); color: var(--warm); }
+.btn:disabled { opacity: .45; cursor: default; }
+.mini { font-size: .88rem; color: var(--muted); }
+.panel { background: var(--surface); border: 1.5px solid var(--line); border-radius: 16px; padding: 20px; }
+textarea { width: 100%; font: inherit; font-size: 1.05rem; color: var(--ink); background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; resize: vertical; min-height: 120px; }
+.ok { color: var(--good); font-weight: 600; }
+.bad { color: var(--bad); font-weight: 600; }
+.extra { color: var(--bad); text-decoration: line-through; }
+.diff { margin: 6px 0 12px; line-height: 1.9; }
+.diff { overflow-wrap: anywhere; }
+.score { font-family: var(--font-display); font-size: 1.6rem; }
+.empty { text-align: center; color: var(--muted); padding: 30px 10px; }
+.mask { letter-spacing: .04em; font-family: ui-monospace, Menlo, Consolas, monospace; word-break: break-word; }
+.banner { background: var(--mark); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: .92rem; }
+.weak { border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; display: flex; gap: 10px; justify-content: space-between; align-items: center; }
+@media (prefers-reduced-motion: reduce) { .bar > i, .sent { transition: none; } }
+
+.who{font-size:.88rem;color:var(--muted)}
+.who button{border:0;background:none;color:var(--accent);font:inherit;text-decoration:underline;cursor:pointer;padding:0 0 0 4px}
+.steps{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px}
+.stepchip{flex:0 0 auto;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.9rem;padding:7px 13px;border-radius:99px;cursor:pointer;white-space:nowrap}
+.stepchip[aria-selected="true"]{border-color:var(--warm);font-weight:600}
+.stepchip.done{background:var(--soft)}
+.scn{background:var(--soft);border-radius:12px;padding:12px 14px;margin-bottom:14px}
+.scn .vi{margin-top:6px;font-size:.95rem;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.wcard{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px;text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center}
+.wcard[data-r="know"]{border-color:var(--good);background:var(--soft)}
+.wcard[data-r="unknown"]{border-color:var(--warm)}
+.emo{font-size:2.4rem;line-height:1.1}.bigemo{font-size:4rem;text-align:center;line-height:1.1;margin-bottom:6px}
+.wd{font-family:var(--font-display);font-size:1.2rem;font-weight:700}
+.ip{color:var(--accent);font-size:.85rem}
+.spk-btn{border:0;background:none;color:var(--accent);font:inherit;font-size:.85rem;cursor:pointer;padding:4px}
+.two{display:flex;gap:6px;width:100%;margin-top:4px}
+.tg{flex:1;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:.82rem;padding:6px 4px;border-radius:8px;cursor:pointer}
+.tg[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.step{margin:18px 0}.step h3{font-family:var(--font-display);margin:0 0 6px}
+.sec{font-family:var(--font-display);margin:26px 0 8px;font-size:1.25rem}
+.q{font-size:1.15rem;margin:8px 0 12px}
+.opts2{display:grid;gap:8px}
+.opt{border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;text-align:left;padding:11px 14px;border-radius:10px;cursor:pointer}
+.opt:disabled{cursor:default}.opt.good{border-color:var(--good);background:var(--soft);font-weight:600}.opt.badopt{border-color:var(--bad)}
+.fb{margin-top:10px;min-height:1.2em}.fb.good{color:var(--good);font-weight:600}.fb.bad{color:var(--bad);font-weight:600}
+.answer{display:flex;flex-wrap:wrap;gap:8px;min-height:50px;padding:10px;border:1.5px dashed var(--line);border-radius:12px;margin:10px 0}
+.word{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;padding:7px 12px;border-radius:10px;cursor:pointer}
+.word:disabled{opacity:.3}
+.btn.big{font-size:1.1rem;padding:12px 26px}.btn.fillwarm{background:var(--warm);color:#fff}
+mark{background:var(--mark);color:inherit;padding:0 4px;border-radius:4px}
+input[type=text]{width:100%;font:inherit;font-size:1.05rem;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:6px}
+.line{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;flex-direction:column;gap:8px}
+.recbox{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.recbox audio{max-width:100%;height:36px}
+.theory{margin:0 0 10px;padding-left:20px}.theory li{margin-bottom:6px}
+details summary{cursor:pointer;color:var(--accent);font-weight:600}
+.okrow{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.warnlist{margin:8px 0;padding-left:20px;color:var(--bad)}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw;z-index:20}
+#toast.show{opacity:1}
+#gate{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:30}
+#gate[hidden]{display:none}
+.gbox{background:var(--surface);border-radius:16px;padding:24px;max-width:380px;width:100%}
+
+.timebox{background:var(--soft);border-radius:10px;padding:8px 12px;font-size:.92rem;font-weight:600;color:var(--accent)}
+.pg{font-family:var(--font-display);margin:0 0 8px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px;align-items:start;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px}
+.vibox{background:var(--soft);border-radius:10px;padding:10px 12px}
+.vtxt{font-size:1.02rem;margin-top:4px}
+.entbox textarea{min-height:90px}
+.analysis{grid-column:1/-1;border-top:1px dashed var(--line);padding-top:10px;font-size:.95rem}
+.revealed{background:var(--mark);border-radius:10px;padding:8px 12px;margin-bottom:8px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.tagpill{background:var(--accent);color:var(--accent-ink);font-size:.76rem;padding:2px 9px;border-radius:99px}
+.chipst{font-size:.75rem;padding:2px 8px;border-radius:99px;background:var(--bg);border:1px solid var(--line);margin-left:6px}
+.chipst.good{background:var(--good);color:#fff;border-color:var(--good)}.chipst.mid{background:var(--mark)}.chipst.rev{background:var(--warm);color:#fff;border-color:var(--warm)}
+.stickyscore{position:sticky;top:0;z-index:5;background:var(--surface);border:1.5px solid var(--accent);border-radius:12px;padding:8px 14px;margin-bottom:10px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.scorebig{font-family:var(--font-display);font-size:1.7rem;color:var(--accent)}
+select{font:inherit;padding:6px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+@media (max-width:560px){.pair{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="gate" hidden><div class="gbox"><div class="bigemo" aria-hidden="true">✍️</div><h2 style="font-family:var(--font-display);margin:0 0 6px;text-align:center">Em tên là gì?</h2><p class="mini" style="text-align:center">Cô cần biết tên để nhận bài của em.</p><label for="gname" class="mini">Họ và tên</label><input type="text" id="gname" autocomplete="name"><div class="row"><button class="btn primary" id="gok" type="button">Bắt đầu</button></div></div></div>
+<div class="wrap">
+<header><div class="top"><div><h1>Writing <span>· Family: Elderly parents</span></h1><p class="sub">Học từ vựng, nghĩ ý bằng tiếng mẹ đẻ rồi dịch một bài học thuật theo từng cụm. Xem gợi ý sẽ bị trừ điểm.</p></div></div>
+<div class="who"><span id="whoText"></span><button type="button" id="rename">Đổi tên</button></div>
+<div class="prog"><span id="progText"></span><div class="bar"><i id="progBar" style="width:0%"></i></div></div></header>
+<div class="timebox" id="timeBox" aria-live="off"></div>
+<div id="banner"></div>
+<div class="steps" id="steps" role="tablist" aria-label="Các bước"></div>
+<main id="panel"></main>
+</div>
+<div id="toast" role="status"></div>
+<script>
+/* ===== CONTENT: Writing 1 - [Family] Elderly parents (Discuss both views + opinion) ===== */
+const VOC = [
+  { id: "task", title: "Từ để giải đề & dựng cấu trúc", words: [
+    { w: "discuss both views", ipa: "dɪˈskʌs bəʊθ vjuːz", vi: "thảo luận cả hai quan điểm", ex: "In this essay, I will discuss both views." },
+    { w: "give your opinion", ipa: "ɡɪv jɔː əˈpɪnjən", vi: "nêu ý kiến của em", ex: "The task also asks you to give your opinion." },
+    { w: "introduction", ipa: "ˌɪntrəˈdʌkʃn", vi: "mở bài", ex: "The introduction should be short and clear." },
+    { w: "paraphrase", ipa: "ˈpærəfreɪz", vi: "diễn đạt lại bằng từ khác", ex: "Do not copy the question. Paraphrase it." },
+    { w: "thesis statement", ipa: "ˈθiːsɪs ˈsteɪtmənt", vi: "câu nêu quan điểm chính của bài", ex: "My thesis statement is in the first paragraph." },
+    { w: "topic sentence", ipa: "ˈtɒpɪk ˈsentəns", vi: "câu chủ đề của đoạn", ex: "Each paragraph begins with a topic sentence." },
+    { w: "supporting idea", ipa: "səˈpɔːtɪŋ aɪˈdɪə", vi: "ý hỗ trợ (giải thích, ví dụ)", ex: "Every main idea needs a supporting idea." },
+    { w: "counter-argument", ipa: "ˈkaʊntər ˈɑːɡjumənt", vi: "lập luận phản biện (ý kiến đối lập)", ex: "A good essay mentions one counter-argument." },
+    { w: "outweigh", ipa: "ˌaʊtˈweɪ", vi: "nặng ký hơn, quan trọng hơn", ex: "I think the benefits outweigh the problems." },
+    { w: "for instance", ipa: "fər ˈɪnstəns", vi: "ví dụ như", ex: "Many old people feel useful. For instance, they help with homework." },
+    { w: "in addition", ipa: "ɪn əˈdɪʃn", vi: "ngoài ra, thêm vào đó", ex: "In addition, nursing homes can be expensive." },
+    { w: "however", ipa: "haʊˈevə", vi: "tuy nhiên", ex: "Nursing homes are safe. However, they can be lonely." },
+    { w: "although", ipa: "ɔːlˈðəʊ", vi: "mặc dù", ex: "Although it is expensive, many families choose it." },
+    { w: "therefore", ipa: "ˈðeəfɔː", vi: "vì vậy, do đó", ex: "Adults work all day. Therefore, they cannot care for their parents." },
+    { w: "in most cases", ipa: "ɪn məʊst ˈkeɪsɪz", vi: "trong hầu hết trường hợp", ex: "Home care is better in most cases." },
+    { w: "in conclusion", ipa: "ɪn kənˈkluːʒn", vi: "tóm lại", ex: "In conclusion, family care is better." }
+  ] },
+  { id: "topic", title: "Từ về chủ đề Gia đình & người cao tuổi", words: [
+    { w: "elderly", ipa: "ˈeldəli", vi: "cao tuổi (tính từ)", ex: "Elderly people often need help." },
+    { w: "nursing home", ipa: "ˈnɜːsɪŋ həʊm", vi: "viện dưỡng lão", ex: "My grandmother does not want a nursing home." },
+    { w: "look after", ipa: "lʊk ˈɑːftə", vi: "chăm sóc", ex: "Who will look after the old man?" },
+    { w: "health problem", ipa: "helθ ˈprɒbləm", vi: "vấn đề sức khỏe", ex: "Heart disease is a serious health problem." },
+    { w: "lonely", ipa: "ˈləʊnli", vi: "cô đơn", ex: "She feels lonely after her husband died." },
+    { w: "pass away", ipa: "pɑːs əˈweɪ", vi: "qua đời (cách nói nhẹ nhàng)", ex: "If her husband must pass away, she will live alone." },
+    { w: "mental health", ipa: "ˈmentl helθ", vi: "sức khỏe tinh thần", ex: "Friends are good for mental health." },
+    { w: "feel useful", ipa: "fiːl ˈjuːsfl", vi: "cảm thấy mình có ích", ex: "Old people feel useful when they cook for the family." },
+    { w: "grandchildren", ipa: "ˈɡræntʃɪldrən", vi: "các cháu (nội, ngoại)", ex: "He plays with his grandchildren every day." },
+    { w: "afford", ipa: "əˈfɔːd", vi: "đủ tiền để chi trả", ex: "Not every family can afford a nursing home." },
+    { w: "duty", ipa: "ˈdjuːti", vi: "bổn phận, nghĩa vụ", ex: "Caring for parents is a duty in Vietnam." },
+    { w: "guilty", ipa: "ˈɡɪlti", vi: "cảm thấy có lỗi", ex: "Children may feel guilty if they send parents away." },
+    { w: "habit", ipa: "ˈhæbɪt", vi: "thói quen", ex: "Old and young people have different habits." },
+    { w: "react", ipa: "riˈækt", vi: "phản ứng, xử lý", ex: "Nurses can react quickly in an emergency." }
+  ] }
+];
+
+/* ---- Step 2: planning (write in any language) ---- */
+const TASK_TYPES = [
+  { t: "Chỉ nêu ý kiến: đồng ý hay không đồng ý", ok: false },
+  { t: "Thảo luận cả hai quan điểm VÀ nêu ý kiến của em", ok: true },
+  { t: "Nêu ưu điểm và nhược điểm của một vấn đề", ok: false },
+  { t: "Nêu nguyên nhân và giải pháp", ok: false }
+];
+const PLAN_FIELDS = [
+  { id: "ask", g: "A. Đọc đề", q: "Đề bài hỏi em điều gì? Hãy diễn đạt lại bằng lời của em.", ph: "Ví dụ: Đề hỏi người già nên sống với con hay ở viện…" },
+  { id: "kw", g: "A. Đọc đề", q: "Gạch ra 3–5 từ khoá của đề (viết tiếng Anh hoặc tiếng Việt).", ph: "elderly parents, live with, nursing homes…" },
+  { id: "v1a", g: "B. Quan điểm 1: Viện dưỡng lão tốt hơn", q: "Lý do 1 của người ủng hộ viện dưỡng lão là gì? Vì sao lý do đó hợp lý?", ph: "Viết suy nghĩ của em: lý do → giải thích → ví dụ" },
+  { id: "v1b", g: "B. Quan điểm 1: Viện dưỡng lão tốt hơn", q: "Lý do 2 của họ là gì?", ph: "…" },
+  { id: "v2a", g: "C. Quan điểm 2: Sống cùng con cháu tốt hơn", q: "Lý do 1 để người già sống cùng con cháu là gì? Cho một ví dụ gần gũi.", ph: "…" },
+  { id: "v2b", g: "C. Quan điểm 2: Sống cùng con cháu tốt hơn", q: "Lý do 2 là gì? (Gợi ý: văn hoá Việt Nam, chi phí…)", ph: "…" },
+  { id: "op", g: "D. Ý kiến của em", q: "Em đứng về phía nào, và có ngoại lệ nào không? Viết thành 2–3 câu.", ph: "Theo em… nhưng trong trường hợp… thì…" }
+];
+const ORDER_ITEMS = [
+  { t: "Nêu lại ý kiến của em, tóm tắt lý do chính, gợi ý khi nào nên chọn viện dưỡng lão", pos: 4 },
+  { t: "Đoạn 2: lý do vì sao nhiều người thích viện dưỡng lão", pos: 2 },
+  { t: "Paraphrase đề bài, nói có hai quan điểm và nêu ý kiến của em", pos: 1 },
+  { t: "Đoạn 3: lý do em ủng hộ việc sống cùng gia đình (cảm xúc, văn hoá, chi phí)", pos: 3 }
+];
+const SAMPLE_PLAN = [
+  "Mở bài: paraphrase đề → hai quan điểm → ý kiến của em (sống cùng gia đình tốt hơn trong hầu hết trường hợp).",
+  "Thân bài 1 (quan điểm viện dưỡng lão): ① người già có bệnh, cần chăm sóc cả ngày, con cái đi làm → viện có y tá, bác sĩ; ② sống chung dễ xích mích vì khác thói quen.",
+  "Thân bài 2 (ý kiến của em): ① cảm xúc: tránh cô đơn, thấy mình có ích khi giúp cháu; ② văn hoá: chăm sóc cha mẹ là bổn phận, gửi đi dễ bị phán xét; ③ chi phí viện cao.",
+  "Kết bài: nhắc lại ý kiến + chỉ dùng viện dưỡng lão khi cha mẹ ốm nặng và gia đình không xoay xở được."
+];
+
+/* ---- Step 3: parallel translation. Each chunk: vi, en, k=[regex,hint], tag, an (analysis) ---- */
+const PARAS = [
+  { title: "Đoạn 1 · Mở bài", chunks: [
+    { vi: "Mọi người có những ý kiến khác nhau về nơi người già nên sống trong phần cuối đời.",
+      en: "People have different opinions about where old people should spend the last part of their lives.",
+      k: [["opinion|view|idea|belie", "ý kiến khác nhau"], ["where|which place|place", "nơi (where)"], ["old|elder", "người già"], ["last|final|end", "phần cuối đời"], ["spend|live|stay", "sống / trải qua"]],
+      tag: ["Paraphrase đề", "Mệnh đề danh từ"],
+      an: "Đây là câu paraphrase đề: “Some people believe…” → “People have different opinions about…”. Sau about là một mệnh đề danh từ bắt đầu bằng where, và trong mệnh đề này vẫn giữ trật tự S + V (where old people should spend…), KHÔNG đảo như câu hỏi." },
+    { vi: "Một số người cho rằng họ nên ở cùng con cái,",
+      en: "Some think they should stay with their children,",
+      k: [["some", "một số người"], ["think|believe|say|feel", "cho rằng"], ["stay|live", "ở cùng"], ["child|kid|son|daughter", "con cái"]],
+      tag: ["Some… others…"],
+      an: "Cặp Some… while others… giúp nêu hai phía đối lập trong một câu. “think (that) they should…”: từ that thường được lược bỏ." },
+    { vi: "trong khi những người khác tin rằng viện dưỡng lão là lựa chọn tốt hơn.",
+      en: "while others believe a nursing home is a better choice.",
+      k: [["while|whereas|but", "trong khi"], ["other", "những người khác"], ["believe|think|say|argue", "tin rằng"], ["nursing home|care home|retirement home|old.?age home", "viện dưỡng lão"], ["better|best", "tốt hơn"], ["choice|option|solution", "lựa chọn"]],
+      tag: ["Liên từ đối lập"],
+      an: "while ở đây nghĩa là “trong khi / ngược lại” (= whereas), không phải “trong lúc”. “better choice” không cần than… vì ngầm hiểu là so với việc ở cùng con cái." },
+    { vi: "Theo tôi, sống cùng gia đình tốt hơn trong hầu hết trường hợp,",
+      en: "In my opinion, living with family is better in most cases,",
+      k: [["opinion|think|believe|view", "theo ý kiến của tôi"], ["live|living|stay", "sống"], ["famil", "với gia đình"], ["better|best", "tốt hơn"], ["most|many|majority|usually|generally", "hầu hết trường hợp"]],
+      tag: ["Câu nêu quan điểm", "V-ing làm chủ ngữ"],
+      an: "Đây là thesis statement (câu nêu quan điểm). “living with family” là danh động từ làm chủ ngữ, nên động từ chia số ít: is. Cụm in most cases giúp quan điểm bớt tuyệt đối, rất hợp văn học thuật." },
+    { vi: "mặc dù viện dưỡng lão là cần thiết trong một số tình huống.",
+      en: "although nursing homes are necessary in some situations.",
+      k: [["although|though|while|but|however", "mặc dù"], ["nursing home|care home", "viện dưỡng lão"], ["necessary|needed|need|essential|important|useful", "cần thiết"], ["some|certain|few|special", "một số tình huống"]],
+      tag: ["Nhượng bộ (although)"],
+      an: "although + mệnh đề thể hiện sự nhượng bộ: thừa nhận ý ngược lại để bài viết cân bằng. Lưu ý: dùng although thì KHÔNG dùng thêm but trong cùng câu." }
+  ] },
+  { title: "Đoạn 2 · Thân bài 1 (quan điểm: viện dưỡng lão)", chunks: [
+    { vi: "Có những lý do chính đáng khiến nhiều người thích viện dưỡng lão hơn.",
+      en: "There are good reasons why many people prefer nursing homes.",
+      k: [["reason", "lý do"], ["good|valid|strong|solid|clear|real", "chính đáng"], ["many|lot of|some|numerous", "nhiều người"], ["prefer|choose|like|favour|favor", "thích hơn"], ["nursing home|care home", "viện dưỡng lão"]],
+      tag: ["Topic sentence", "Mệnh đề quan hệ (why)"],
+      an: "Đây là topic sentence: nêu ý chính cả đoạn. Cấu trúc There are + N (reasons) + why + mệnh đề: why bổ nghĩa cho reasons (giống mệnh đề quan hệ)." },
+    { vi: "Thứ nhất, người cao tuổi thường có các vấn đề sức khỏe như bệnh tim hoặc trí nhớ kém,",
+      en: "First, elderly people often have health problems such as heart disease or poor memory,",
+      k: [["first", "thứ nhất"], ["elder|old", "người cao tuổi"], ["often|usually|always|frequent|commonly|many|tend", "thường"], ["health", "vấn đề sức khỏe"], ["heart", "bệnh tim"], ["memory", "trí nhớ kém"]],
+      tag: ["such as + ví dụ"],
+      an: "First là từ nối thứ tự. such as + danh từ để đưa ví dụ cụ thể (heart disease, poor memory); sau such as không cần thêm etc." },
+    { vi: "nên họ cần có người chăm sóc họ suốt cả ngày.",
+      en: "so they need someone to look after them all day.",
+      k: [["so|therefore|thus|as a result", "nên"], ["need|require", "cần"], ["someone|somebody|people|person|nurse|carer|caregiver", "có người"], ["look after|take care|care for|looking after|taking care|watch", "chăm sóc"], ["all day|whole day|24|entire day|day and night|all the time", "suốt cả ngày"]],
+      tag: ["Nguyên nhân → kết quả (so)", "need + O + to V"],
+      an: "so nối kết quả với lý do vừa nêu (có bệnh → cần người chăm). someone to look after them = someone who looks after them (to V rút gọn mệnh đề quan hệ). look after là cụm động từ = take care of." },
+    { vi: "Hầu hết người trưởng thành làm việc toàn thời gian nên họ không thể dành loại chăm sóc này tại nhà.",
+      en: "Most adults work full-time, so they cannot give this kind of care at home.",
+      k: [["most|many|majority", "hầu hết"], ["adult|people|children|son|daughter|worker", "người trưởng thành"], ["full.?time|work", "làm việc toàn thời gian"], ["cannot|can't|can not|unable|not able|don't have|no time|difficult|hard", "không thể"], ["care|look after|take care", "chăm sóc"], ["home|house", "tại nhà"]],
+      tag: ["Chuỗi nhân quả"],
+      an: "Most + N (không có of): hầu hết. this kind of care: kind of + danh từ không đếm được. Lại dùng so để nối: không có thời gian → không thể chăm sóc. Hai vế dùng thì hiện tại đơn vì đây là sự thật chung." },
+    { vi: "Trong viện dưỡng lão có y tá và bác sĩ có thể phản ứng nhanh nếu có chuyện không ổn xảy ra.",
+      en: "In a nursing home, there are nurses and doctors who can react quickly if something goes wrong.",
+      k: [["nursing home|care home", "trong viện dưỡng lão"], ["nurse", "y tá"], ["doctor", "bác sĩ"], ["react|respond|help|act|deal|treat|quick", "phản ứng"], ["quick|fast|immediately|soon|rapid|promptly", "nhanh"], ["wrong|problem|emergency|trouble|bad|happen|accident|something", "có chuyện không ổn"]],
+      tag: ["Mệnh đề quan hệ (who)", "Câu điều kiện"],
+      an: "who can react… là mệnh đề quan hệ bổ nghĩa cho nurses and doctors. if something goes wrong: điều kiện có thật, dùng hiện tại đơn sau if (KHÔNG dùng will). quickly là trạng từ bổ nghĩa cho react." },
+    { vi: "Thứ hai, sống chung một nhà đôi khi có thể gây ra tranh cãi.",
+      en: "Second, living in the same house can sometimes cause arguments.",
+      k: [["second|another|also|next", "thứ hai"], ["live|living|stay", "sống"], ["same (house|home|roof)|together|one house|under the same", "chung một nhà"], ["sometimes|may|can|occasionally|often", "đôi khi"], ["argument|conflict|quarrel|fight|disagree|dispute|tension|problem", "tranh cãi"]],
+      tag: ["V-ing làm chủ ngữ", "Hedging (can sometimes)"],
+      an: "living in the same house là chủ ngữ dạng V-ing. can + sometimes làm lời khẳng định bớt tuyệt đối (hedging) – đặc trưng văn học thuật." },
+    { vi: "Người già và người trẻ có những thói quen khác nhau, chẳng hạn về đồ ăn, giờ ngủ hoặc cách nuôi dạy con,",
+      en: "Old people and young people have different habits, for example about food, sleeping time or how to raise children,",
+      k: [["old|elder", "người già"], ["young|child|adult|younger", "người trẻ"], ["different|differ|various", "khác nhau"], ["habit|lifestyle|way of life|custom", "thói quen"], ["food|eat|meal|diet", "đồ ăn"], ["sleep|bed", "giờ ngủ"], ["raise|bring up|educat|parenting|upbring|teach|care for", "nuôi dạy con"]],
+      tag: ["Cấu trúc song song"],
+      an: "for example + about + 3 thành phần song song: food / sleeping time / how to raise children (hai cụm danh từ + một cụm how to + V). Cấu trúc song song giúp câu liệt kê gọn và rõ." },
+    { vi: "và điều này có thể gây căng thẳng cho tất cả mọi người.",
+      en: "and this may create stress for everyone.",
+      k: [["stress|pressure|tension|uncomfort|unhappy|conflict", "căng thẳng"], ["everyone|all|everybody|both|family|each other", "mọi người"], ["may|might|can|could|will|would|lead|cause|create|make|bring", "có thể gây ra"]],
+      tag: ["this = cả ý trước", "Hedging (may)"],
+      an: "this ở đây thay cho cả ý ở vế trước (khác biệt thói quen), một cách nối ý rất tự nhiên. may thể hiện khả năng, không chắc chắn." }
+  ] },
+  { title: "Đoạn 3 · Thân bài 2 (ý kiến của em)", chunks: [
+    { vi: "Tuy nhiên, tôi tin rằng ở cùng gia đình có nhiều lợi ích hơn.",
+      en: "However, I believe that staying with family has more benefits.",
+      k: [["however|but|on the other hand|nevertheless", "tuy nhiên"], ["believe|think|feel|opinion|view|sure", "tôi tin"], ["stay|live|living|staying", "ở cùng"], ["famil", "gia đình"], ["more|many|greater|better|several|most|advantage", "nhiều hơn"], ["benefit|advantage|good|positive|pros", "lợi ích"]],
+      tag: ["Topic sentence", "However đầu câu"],
+      an: "However (luôn có dấu phẩy sau) chuyển hướng sang quan điểm của em; đây vừa là topic sentence vừa nhắc lại thesis. staying with family là V-ing làm chủ ngữ nên dùng has. more benefits: so sánh hơn với danh từ đếm được số nhiều." },
+    { vi: "Lợi ích lớn nhất là về mặt cảm xúc.",
+      en: "The biggest one is emotional.",
+      k: [["biggest|greatest|main|most important|major|largest|key|primary|great|big|important", "lớn nhất"], ["emotion|feeling|mental|psycholog|spirit", "cảm xúc"]],
+      tag: ["one thay danh từ", "So sánh nhất"],
+      an: "one thay cho benefit để tránh lặp từ. The biggest = so sánh nhất (the + adj-est). emotional là tính từ làm bổ ngữ sau is." },
+    { vi: "Nhiều người già cảm thấy cô đơn sau khi vợ hoặc chồng qua đời,",
+      en: "Many old people feel lonely after their husband or wife passes away,",
+      k: [["many|lot|most|some|several", "nhiều"], ["old|elder", "người già"], ["feel|become|get|are", "cảm thấy"], ["lonely|alone|loneliness|isolated|sad|empty", "cô đơn"], ["after|when|once|following", "sau khi"], ["husband|wife|spouse|partner", "vợ hoặc chồng"], ["pass|die|death|dead|lose|lost|gone", "qua đời"]],
+      tag: ["feel + adj", "Nói giảm (pass away)"],
+      an: "feel + tính từ (lonely). after + mệnh đề hiện tại đơn (passes – số ít vì husband or wife). pass away là cách nói nhẹ nhàng, lịch sự của die." },
+    { vi: "và nếu họ chuyển đến viện dưỡng lão, họ có thể cảm thấy con cái đã bỏ rơi mình.",
+      en: "and if they move to a nursing home, they may feel that their children have left them.",
+      k: [["if|when|once|after|in case", "nếu"], ["move|go|send|put|live|stay|enter", "chuyển đến"], ["nursing home|care home", "viện dưỡng lão"], ["may|might|can|could|will|would|possibly|perhaps|probably", "có thể"], ["feel|think|believe|see", "cảm thấy"], ["child|kid|son|daughter|famil", "con cái"], ["leave|left|abandon|desert|reject|throw|neglect|forget|give up", "bỏ rơi"]],
+      tag: ["Câu điều kiện loại 1", "Hiện tại hoàn thành"],
+      an: "if + hiện tại đơn, S + may + V: điều kiện có thể xảy ra. feel that + mệnh đề; have left (hiện tại hoàn thành) vì hành động bỏ rơi đã xảy ra và ảnh hưởng đến cảm giác hiện tại." },
+    { vi: "Khi sống cùng các cháu, họ có người để trò chuyện mỗi ngày và cảm thấy mình có ích,",
+      en: "When they live with their grandchildren, they have someone to talk to every day and they feel useful,",
+      k: [["when|while|if|once|as", "khi"], ["live|stay|spend|be", "sống"], ["grandchild|grandson|granddaughter|grandkid", "cháu"], ["someone|somebody|people|person|talk|chat|speak|communicat|company", "có người trò chuyện"], ["every day|each day|daily|everyday|all the time", "mỗi ngày"], ["useful|helpful|needed|valuable|worth|important|purpose|meaning|active", "cảm thấy có ích"]],
+      tag: ["someone to talk to"],
+      an: "When + hiện tại đơn: sự thật thường xuyên. someone to talk to: giới từ to đứng cuối vì talk to someone. Hai mệnh đề they have… and they feel… song song, cùng chủ ngữ." },
+    { vi: "chẳng hạn khi họ giúp bọn trẻ làm bài tập hoặc nấu ăn cho cả nhà.",
+      en: "for instance when they help the children with homework or cook for the family.",
+      k: [["for instance|for example|such as|like|e\\.g|especially", "chẳng hạn"], ["help|support|assist|teach", "giúp"], ["child|kid|grandchild", "bọn trẻ"], ["homework|study|learn|school", "bài tập"], ["cook|prepare|make|meal|food", "nấu ăn"], ["family|everyone", "cho cả nhà"]],
+      tag: ["for instance + mệnh đề", "help sb with sth"],
+      an: "for instance có thể đứng trước cả một mệnh đề (when they help… ). help sb with sth: giúp ai việc gì. help… or cook…: hai động từ song song cùng chủ ngữ they." },
+    { vi: "Điều này rất quan trọng đối với sức khỏe tinh thần của họ.",
+      en: "This is very important for their mental health.",
+      k: [["important|vital|essential|significant|crucial|necessary|good|beneficial|matter|key", "rất quan trọng"], ["mental|psycholog|emotional|spirit|brain|mind", "tinh thần"], ["health|well", "sức khỏe"]],
+      tag: ["Câu chốt ý"],
+      an: "This = cả ý ở trên. Câu ngắn này là câu chốt (concluding sentence) của lập luận: nêu ý nghĩa/hệ quả của ví dụ. important for + N." },
+    { vi: "Ngoài ra, ở những quốc gia như Việt Nam, việc chăm sóc cha mẹ được xem là một bổn phận,",
+      en: "In addition, in countries like Vietnam, taking care of parents is seen as a duty,",
+      k: [["in addition|also|moreover|furthermore|besides|another|additionally", "ngoài ra"], ["countr|culture|society|place|asia|nation|tradition", "những quốc gia"], ["vietnam", "Việt Nam"], ["take care|taking care|look after|looking after|care of|care for|caring|support", "chăm sóc"], ["parent|elder|old", "cha mẹ"], ["duty|responsib|obligation", "bổn phận"], ["see|view|regard|consider|think|treat|believe|as a", "được xem là"]],
+      tag: ["Câu bị động", "V-ing làm chủ ngữ"],
+      an: "In addition: thêm một ý mới. like = such as. Bị động: is seen as a duty (be seen as = được xem như). taking care of parents là V-ing làm chủ ngữ nên dùng is." },
+    { vi: "nên việc gửi họ đi có thể khiến con cái cảm thấy có lỗi và bị họ hàng phán xét.",
+      en: "so sending them away can make children feel guilty and be judged by relatives.",
+      k: [["so|therefore|thus|as a result|and|this", "nên"], ["send|put|place|move|leave", "gửi đi"], ["away|nursing|home|them", "họ đi"], ["make|cause|let|lead|feel|force", "khiến"], ["child|kid|son|daughter|people", "con cái"], ["guilty|ashamed|bad|sorry|regret|shame|remorse", "có lỗi"], ["judge|critic|blame|gossip|look down|talk|disapprove|condemn", "phán xét"], ["relative|famil|neighbo|people|community|society|others|uncle|aunt", "họ hàng"]],
+      tag: ["make + O + V", "Song song + bị động"],
+      an: "make + O + V nguyên mẫu (không to): make children feel guilty. Sau make children có hai động từ song song: feel guilty and be judged by relatives (cái sau ở dạng bị động). so nối hệ quả của việc bị xem là bổn phận." },
+    { vi: "Ngoài ra, viện dưỡng lão có thể rất đắt và không phải gia đình nào cũng đủ khả năng chi trả.",
+      en: "Also, nursing homes can be expensive, and not every family can afford them.",
+      k: [["also|in addition|moreover|besides|furthermore|and|another|additionally", "ngoài ra"], ["nursing home|care home|they|these|it", "viện dưỡng lão"], ["expensive|cost|pricey|costly|high price|a lot of money|much money|price", "đắt"], ["afford|pay|money|enough|able|have", "chi trả được"], ["famil|people|household", "gia đình"]],
+      tag: ["not every + N"],
+      an: "Also ít trang trọng hơn In addition nhưng vẫn dùng được khi thêm ý cuối. not every + danh từ SỐ ÍT + động từ số ít: không phải… nào cũng… (phủ định bộ phận, khác với no one). afford + O: đủ tiền cho thứ gì." }
+  ] },
+  { title: "Đoạn 4 · Kết bài", chunks: [
+    { vi: "Tóm lại, mặc dù viện dưỡng lão cung cấp dịch vụ y tế tốt hơn,",
+      en: "In conclusion, although nursing homes offer better medical care,",
+      k: [["in conclusion|to conclude|to sum up|overall|in summary|finally|all in all|in short", "tóm lại"], ["although|though|while|even though|whereas|despite|but", "mặc dù"], ["nursing home|care home", "viện dưỡng lão"], ["offer|provide|give|have|supply", "cung cấp"], ["better|good|high|best|quality|superior|more|great|proper|professional", "tốt hơn"], ["medical|health|doctor|treatment|medicine", "y tế"], ["care|service|treatment|support|help", "chăm sóc"]],
+      tag: ["Kết bài", "Nhượng bộ đầu câu"],
+      an: "In conclusion mở đầu kết bài. Mệnh đề although đứng ĐẦU câu thì phải có dấu phẩy rồi mới đến mệnh đề chính. Nhắc lại ý nhượng bộ ở đoạn mở bài, nhưng bằng từ khác (offer better medical care)." },
+    { vi: "tôi nghĩ cha mẹ già hạnh phúc hơn khi sống cùng con cái.",
+      en: "I think elderly parents are happier when they live with their children.",
+      k: [["think|believe|feel|opinion|view|sure", "tôi nghĩ"], ["elder|old|parent", "cha mẹ già"], ["happier|happy|happiness|joy|better|satisf|content|comfortable|enjoy", "hạnh phúc hơn"], ["when|if|while|as|once|after|living|stay", "khi"], ["live|stay|living|reside|be with|together", "sống"], ["child|kid|son|daughter|famil", "con cái"]],
+      tag: ["Nhắc lại thesis", "So sánh hơn"],
+      an: "Đây là mệnh đề chính, nhắc lại thesis của em bằng từ mới (happier thay cho better). happier: so sánh hơn của tính từ ngắn (happy → happier). when + hiện tại đơn." },
+    { vi: "Viện dưỡng lão chỉ nên được sử dụng khi cha mẹ ốm nặng và gia đình không thể xoay xở được.",
+      en: "Nursing homes should be used only when the parent is seriously ill and the family cannot manage.",
+      k: [["nursing home|care home|they|these|it", "viện dưỡng lão"], ["should|must|ought|need|only|can", "nên"], ["use|choose|consider|select|send|put|go|move|take|resort|option", "được sử dụng"], ["only|just|solely|merely|if|unless|when", "chỉ khi"], ["seriously|very|badly|severely|gravely|really|extremely|critically|ill|sick|disease", "ốm nặng"], ["cannot|can't|unable|not able|not manage|can not|couldn't|could not|struggle|fail|difficult|not cope", "không thể xoay xở"], ["manage|cope|care|look after|handle|deal|afford|support", "xoay xở"]],
+      tag: ["Bị động với modal", "only when"],
+      an: "should be used = modal + be + V3 (bị động: viện dưỡng lão được dùng). only when = chỉ khi: giới hạn điều kiện. seriously ill: trạng từ + tính từ. manage ở đây là nội động từ: xoay xở được. Câu cuối đưa ra khuyến nghị/giải pháp." }
+  ] }
+];
+
+/* ===== APP ===== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnf8X3_Xfk9F_8HQtBwSFU_s28sRjxKb0aFaHCA4ybmMJvgaztBAbdvaFzITdbVXBt/exec";
+const LESSON = "Writing-Family-1";
+
+const $ = s => document.querySelector(s);
+const h = (tag, props, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) e.setAttribute(k, v);
+  }
+  kids.flat().forEach(c => { if (c !== null && c !== undefined && c !== false) e.append(c); });
+  return e;
+};
+const norm = s => s.toLowerCase().replace(/[’‘]/g, "'");
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("wr1_" + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("wr1_" + k, JSON.stringify(v)); } catch (e) {} }
+};
+const getName = () => { try { return localStorage.getItem("wr1_name") || ""; } catch (e) { return ""; } };
+const toast = t => { const e = $("#toast"); e.textContent = t; e.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove("show"), 3800); };
+const updateWho = () => { $("#whoText").textContent = getName() ? "Học sinh: " + getName() + " " : "Chưa nhập tên "; };
+const showGate = () => { $("#gname").value = getName(); $("#gate").hidden = false; setTimeout(() => $("#gname").focus(), 50); };
+const post = async obj => {
+  const r = await fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(obj) });
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || "error");
+  return j;
+};
+const blobToB64 = blob => new Promise((res, rej) => { const f = new FileReader(); f.onload = () => res(String(f.result).split(",")[1]); f.onerror = rej; f.readAsDataURL(blob); });
+
+let RES = store.get("res", {});
+const saveRes = () => store.set("res", RES);
+const St = { tab: "vocab" };
+
+/* ---------- speech ---------- */
+const hasTTS = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+let voice = null;
+function pickVoice() {
+  if (!hasTTS) return;
+  const vs = speechSynthesis.getVoices();
+  voice = vs.find(v => /en[-_]US/i.test(v.lang) && /(Samantha|Google US English|Aria|Jenny|Natural)/i.test(v.name)) || vs.find(v => /en[-_]US/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang)) || null;
+}
+if (hasTTS) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+let token = 0;
+function say(list, o) {
+  o = o || {};
+  if (!hasTTS) return;
+  try { speechSynthesis.cancel(); } catch (e) {}
+  const my = ++token; let i = 0;
+  const next = () => {
+    if (my !== token) return;
+    if (i >= list.length) { if (o.onEnd) o.onEnd(); return; }
+    const idx = i++;
+    const u = new SpeechSynthesisUtterance(list[idx]);
+    u.lang = "en-US"; if (voice) u.voice = voice;
+    u.rate = o.slow ? 0.6 : 0.9;
+    u.onend = () => setTimeout(next, 250);
+    u.onerror = () => { if (my === token) next(); };
+    try { speechSynthesis.speak(u); } catch (e) { if (my === token) setTimeout(next, 0); }
+  };
+  setTimeout(next, 60);
+}
+const stopSay = () => { token++; try { if (hasTTS) speechSynthesis.cancel(); } catch (e) {} };
+
+/* ---------- generic multiple-choice runner ---------- */
+const newMcq = () => ({ i: 0, score: 0, picked: null, wrong: [], played: {} });
+function mcqRun(root, st, items, o) {
+  if (st.i >= items.length) { o.onDone(); return; }
+  const it = items[st.i], done = st.picked !== null;
+  const box = h("div", { class: "panel" });
+  box.append(h("div", { class: "mini" }, (o.label || "Câu") + " " + (st.i + 1) + "/" + items.length + " · Điểm " + st.score));
+  if (it.pre) box.append(h("div", { class: "bigemo", "aria-hidden": "true" }, it.pre));
+  box.append(h("p", { class: "q" }, it.q));
+  if (it.audio) box.append(h("div", { class: "row", style: "margin:0 0 8px" }, h("button", { class: "btn", type: "button", onclick: () => say([it.audio]) }, "🔊 Nghe lại")));
+  box.append(h("div", { class: "opts2" }, it.o.map((t, k) => h("button", {
+    class: "opt" + (done && k === it.a ? " good" : "") + (done && st.picked === k && k !== it.a ? " badopt" : ""), type: "button", disabled: done ? "" : null,
+    onclick: () => { st.picked = k; if (k === it.a) st.score++; else st.wrong.push(it); if (it.audio || k === it.a) say([it.audio || it.say || ""].filter(Boolean)); o.rerender(); }
+  }, t))));
+  box.append(h("div", { class: "fb " + (done ? (st.picked === it.a ? "good" : "bad") : ""), "aria-live": "polite" }, done ? (st.picked === it.a ? "Chính xác! " : "Chưa đúng. Đáp án: " + it.o[it.a] + ". ") + (it.x || "") : ""));
+  if (done) box.append(h("div", { class: "row" }, h("button", { class: "btn primary", type: "button", onclick: () => { st.i++; st.picked = null; o.rerender(); } }, st.i + 1 < items.length ? "Câu tiếp ▶" : "Xem kết quả")));
+  root.append(box);
+  if (it.audio && !st.played[st.i]) { st.played[st.i] = true; say([it.audio]); }
+}
+
+
+/* ===== Writing-1 app ===== */
+const STEPS = [["vocab", "1. Từ vựng"], ["plan", "2. Dàn ý"], ["trans", "3. Dịch song song"], ["submit", "4. Nộp bài"]];
+const STEP_NAME = { vocab: "Từ vựng", plan: "Dàn ý", trans: "Dịch song song", submit: "Nộp bài" };
+const WORDS = VOC.flatMap(g => g.words.map(w => Object.assign({ g: g.id }, w)));
+
+/* ---------- study time (only counts while the page is visible and the student is active) ---------- */
+const TIME = store.get("time", { vocab: 0, plan: 0, trans: 0, submit: 0 });
+let lastAct = Date.now();
+["pointerdown", "keydown", "scroll", "touchstart", "input"].forEach(ev => window.addEventListener(ev, () => { lastAct = Date.now(); }, { passive: true }));
+const fmtT = s => { s = Math.round(s); const m = Math.floor(s / 60); return (m ? m + " phút " : "") + String(s % 60) + " giây"; };
+function showTimer() { const e = $("#timeBox"); if (e) e.textContent = "⏱ Thời gian học mục này: " + fmtT(TIME[St.tab] || 0) + " · Tổng: " + fmtT(Object.values(TIME).reduce((a, b) => a + b, 0)); }
+setInterval(() => {
+  if (document.visibilityState !== "visible" || Date.now() - lastAct > 90000) return;
+  TIME[St.tab] = (TIME[St.tab] || 0) + 1; store.set("time", TIME); showTimer();
+}, 1000);
+function go(tab) {
+  if (tab === St.tab) return;
+  const prev = St.tab, t = TIME[prev] || 0;
+  if (t >= 5) toast("Mục " + STEP_NAME[prev] + ": em đã học " + fmtT(t) + ".");
+  St.tab = tab; render();
+}
+
+/* =====================================================
+   1. VOCABULARY: flashcards (auto-read) -> check
+   ===================================================== */
+const V = { phase: "cards", idx: 0, group: "all", qs: null, st: null };
+const mem = store.get("mem", {});
+const deck = () => WORDS.filter(w => V.group === "all" || w.g === V.group);
+function renderVocab(auto) {
+  const root = $("#panel"); root.replaceChildren();
+  if (V.phase === "cards") vCards(root, auto);
+  else if (V.phase === "quiz") vQuiz(root);
+  else vSum(root);
+}
+function vCards(root, auto) {
+  const d = deck(); if (V.idx >= d.length) V.idx = 0;
+  const w = d[V.idx], known = WORDS.filter(x => mem[x.w] === "yes").length;
+  root.append(h("div", { class: "scn" }, h("strong", null, "Bước 1: Học từ vựng bằng thẻ. "), "Mỗi lần chuyển thẻ, máy tự đọc từ và câu ví dụ. Chạm vào thẻ để xem nghĩa. Đồng hồ ở trên cho em biết đã học bao lâu.",
+    h("div", { class: "vi" }, "Em đã đánh dấu “Đã nhớ”: " + known + "/" + WORDS.length + " từ.")));
+  root.append(h("div", { class: "chips" }, [["all", "Tất cả (" + WORDS.length + ")"], ...VOC.map(g => [g.id, g.title])].map(([id, t]) => h("button", { class: "chip", type: "button", "aria-pressed": String(V.group === id), onclick: () => { V.group = id; V.idx = 0; renderVocab(true); } }, t))));
+  const front = h("div", { "data-side": "front", style: "text-align:center" }, h("div", { class: "en" }, w.w), h("div", { class: "ipa" }, "/" + w.ipa + "/"));
+  const back = h("div", { "data-side": "back", hidden: "", style: "text-align:center" }, h("div", { class: "en" }, w.w), h("div", { class: "vi" }, w.vi), h("div", { class: "small-en", style: "margin-top:10px" }, "“" + w.ex + "”"));
+  const flipBtn = h("button", { class: "btn", type: "button" }, "🔄 Xem nghĩa");
+  const flip = () => { const f = front.hidden; front.hidden = !f; back.hidden = f; flipBtn.textContent = f ? "🔄 Xem nghĩa" : "🔄 Xem từ"; };
+  flipBtn.addEventListener("click", flip);
+  root.append(h("div", { class: "card", onclick: flip }, h("div", { class: "tag" }, (w.g === "task" ? "Giải đề & cấu trúc" : "Chủ đề Family") + " · " + (V.idx + 1) + "/" + d.length), front, back));
+  const mv = dlt => { V.idx = (V.idx + dlt + d.length) % d.length; renderVocab(true); };
+  root.append(h("div", { class: "row" },
+    h("button", { class: "btn", type: "button", "aria-label": "Từ trước", onclick: () => mv(-1) }, "⏮"),
+    h("button", { class: "btn primary", type: "button", onclick: () => say([w.w, w.ex]) }, "🔊 Nghe lại"),
+    flipBtn,
+    h("button", { class: "btn", type: "button", "aria-label": "Từ sau", onclick: () => mv(1) }, "⏭")));
+  const mark = v => { mem[w.w] = v; store.set("mem", mem); mv(1); };
+  root.append(h("div", { class: "row" }, h("button", { class: "btn warm", type: "button", onclick: () => mark("no") }, "Chưa nhớ"), h("button", { class: "btn", type: "button", onclick: () => mark("yes") }, "✅ Đã nhớ")));
+  root.append(h("div", { class: "row spread" }, h("span", { class: "mini" }, "Học xong thì làm bài kiểm tra nhé."), h("button", { class: "btn primary", type: "button", onclick: startQuiz }, "Kiểm tra từ vựng →")));
+  if (auto) say([w.w, w.ex]);
+}
+function buildQuiz() {
+  const types = ["vi", "word", "cloze"];
+  return shuffle(WORDS).slice(0, 15).map((w, n) => {
+    const pool = WORDS.filter(x => x.g === w.g && x !== w), opts = shuffle([w, ...shuffle(pool).slice(0, 3)]), a = opts.indexOf(w);
+    const x = w.w + " = " + w.vi + ". “" + w.ex + "”", t = types[n % 3];
+    if (t === "vi") return { w, q: "“" + w.w + "” nghĩa là gì?", o: opts.map(v => v.vi), a, x, say: w.w };
+    if (t === "word") return { w, q: "Từ/cụm nào có nghĩa: " + w.vi + "?", o: opts.map(v => v.w), a, x, say: w.w };
+    const re = new RegExp(w.w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    return { w, q: "Điền vào chỗ trống: " + w.ex.replace(re, "_____"), o: opts.map(v => v.w), a, x, say: w.ex };
+  });
+}
+function startQuiz() { V.qs = buildQuiz(); V.st = newMcq(); V.phase = "quiz"; renderVocab(); }
+function vQuiz(root) {
+  root.append(h("div", { class: "scn" }, h("strong", null, "Kiểm tra từ vựng "), "(15 câu: nghĩa, từ, điền chỗ trống)."));
+  mcqRun(root, V.st, V.qs, { label: "Câu", rerender: () => renderVocab(), onDone: () => {
+    RES.vocab = { score: V.st.score, total: V.qs.length, wrong: [...new Set(V.st.wrong.map(it => it.w.w))] };
+    V.st.wrong.forEach(it => { mem[it.w.w] = "no"; }); store.set("mem", mem);
+    saveRes(); V.phase = "sum"; renderHeader(); renderVocab();
+  } });
+}
+function vSum(root) {
+  const r = RES.vocab;
+  root.append(h("div", { class: "panel" },
+    h("h2", { class: "q", style: "margin-top:0" }, "Kết quả: " + r.score + "/" + r.total),
+    r.wrong.length ? h("p", null, "Từ cần học lại: ", h("strong", null, r.wrong.join(", ")), ".") : h("p", { class: "ok" }, "Tuyệt vời! Em không sai từ nào."),
+    h("p", { class: "mini" }, "Thời gian em đã học từ vựng: " + fmtT(TIME.vocab || 0) + "."),
+    h("div", { class: "row" },
+      h("button", { class: "btn", type: "button", onclick: () => { V.phase = "cards"; V.group = "all"; V.idx = 0; renderVocab(true); } }, "Học lại bằng thẻ"),
+      h("button", { class: "btn", type: "button", onclick: startQuiz }, "Làm lại bài kiểm tra"),
+      h("button", { class: "btn primary", type: "button", onclick: () => go("plan") }, "Sang mục 2 →"))));
+}
+
+/* =====================================================
+   2. PLANNING in any language
+   ===================================================== */
+const PL = store.get("plan", { type: null, f: {}, ord: {} });
+const savePlan = () => store.set("plan", PL);
+const wc = s => (s.trim() ? s.trim().split(/\s+/).length : 0);
+function renderPlan() {
+  const root = $("#panel"); root.replaceChildren();
+  root.append(h("div", { class: "scn" }, h("strong", null, "Bước 2: Nghĩ trước, viết sau. "), "Em hãy viết suy nghĩ của mình bằng ", h("strong", null, "tiếng Việt hoặc tiếng Anh"), " đều được. Mục tiêu là sắp xếp ý theo dòng logic: lý do → giải thích → ví dụ, chưa cần viết đúng ngữ pháp.",
+    h("div", { class: "vi" }, "Đề: [Family] Some people believe that elderly parents should live with their children’s families. Others think that nursing homes are a better option. Discuss both views and give your opinion.")));
+  // task type
+  const tbox = h("div", { class: "panel", style: "margin-bottom:12px" }, h("h3", { class: "pg" }, "A. Đây là dạng đề nào?"));
+  const tfb = h("div", { class: "fb", "aria-live": "polite" });
+  const showT = () => { if (PL.type === null) { tfb.textContent = ""; return; } const ok = TASK_TYPES[PL.type].ok; tfb.className = "fb " + (ok ? "good" : "bad"); tfb.textContent = ok ? "Đúng! Đề yêu cầu: (1) thảo luận quan điểm 1, (2) thảo luận quan điểm 2, (3) nêu ý kiến của em. Nên bài có 4 đoạn." : "Chưa đúng. Hãy đọc kỹ cụm “Discuss both views AND give your opinion”."; };
+  TASK_TYPES.forEach((o, i) => tbox.append(h("label", { class: "opt", style: "display:block;margin-bottom:6px;cursor:pointer" }, h("input", { type: "radio", name: "tt", checked: PL.type === i ? "" : null, onchange: () => { PL.type = i; savePlan(); showT(); } }), " " + o.t)));
+  tbox.append(tfb); showT(); root.append(tbox);
+  let lastG = "";
+  PLAN_FIELDS.forEach(f => {
+    if (f.g !== lastG) { root.append(h("h3", { class: "sec" }, f.g)); lastG = f.g; }
+    const ta = h("textarea", { id: "pf_" + f.id, placeholder: f.ph, rows: "3", "aria-label": f.q });
+    ta.value = PL.f[f.id] || "";
+    const cnt = h("span", { class: "mini" }, wc(ta.value) + " từ");
+    ta.addEventListener("input", () => { PL.f[f.id] = ta.value; savePlan(); cnt.textContent = wc(ta.value) + " từ"; updPlanGate(); });
+    root.append(h("div", { class: "line" }, h("label", { for: "pf_" + f.id }, f.q), ta, cnt));
+  });
+  root.append(h("h3", { class: "sec" }, "E. Sắp xếp thứ tự các đoạn"));
+  const ob = h("div", { class: "line" }, h("div", { class: "mini" }, "Gán số 1–4 cho mỗi phần theo thứ tự xuất hiện trong bài."));
+  const ofb = h("div", { class: "fb", "aria-live": "polite" });
+  ORDER_ITEMS.forEach((o, i) => {
+    const sel = h("select", { "aria-label": "Thứ tự " + (i + 1) }, h("option", { value: "" }, "—"), [1, 2, 3, 4].map(n => h("option", { value: String(n) }, String(n))));
+    sel.value = PL.ord[i] || ""; sel.addEventListener("change", () => { PL.ord[i] = sel.value; savePlan(); });
+    ob.append(h("div", { style: "display:flex;gap:10px;align-items:center" }, sel, h("span", null, o.t)));
+  });
+  ob.append(h("div", { class: "row" }, h("button", { class: "btn", type: "button", onclick: () => {
+    const used = ORDER_ITEMS.map((o, i) => +PL.ord[i] || 0); const good = ORDER_ITEMS.every((o, i) => used[i] === o.pos);
+    ofb.className = "fb " + (good ? "good" : "bad"); ofb.textContent = good ? "Chính xác! Mở bài → thân bài 1 → thân bài 2 → kết bài." : "Chưa đúng. Gợi ý: mở bài phải paraphrase đề và nêu ý kiến; kết bài đứng cuối.";
+  } }, "Kiểm tra thứ tự")), ofb); root.append(ob);
+  const gate = h("div", { class: "mini" });
+  const sampleBtn = h("button", { class: "btn primary", type: "button" }, "Xem dàn ý mẫu");
+  const sample = h("div", { class: "panel", hidden: "", style: "margin-top:10px" }, h("strong", null, "Dàn ý mẫu của cô (so sánh với dàn ý của em):"), h("ul", { class: "theory" }, SAMPLE_PLAN.map(x => h("li", null, x))));
+  sampleBtn.addEventListener("click", () => { sample.hidden = !sample.hidden; });
+  const filled = () => PLAN_FIELDS.filter(f => wc(PL.f[f.id] || "") >= 3).length;
+  function updPlanGate() { const n = filled(); sampleBtn.disabled = n < 5; gate.textContent = n < 5 ? "Viết ít nhất 5 ô (mỗi ô từ 3 từ) để mở dàn ý mẫu. Hiện có " + n + "/" + PLAN_FIELDS.length + " ô." : "Em đã viết đủ. Hãy so sánh với dàn ý mẫu nhé."; }
+  updPlanGate();
+  root.append(h("h3", { class: "sec" }, "F. So sánh với dàn ý mẫu"), h("div", { class: "line" }, gate, h("div", { class: "row", style: "margin-top:0" }, sampleBtn), sample));
+  root.append(h("div", { class: "row spread" }, h("span", { class: "mini" }, "Bài của em được tự lưu trên máy này."), h("button", { class: "btn primary", type: "button", onclick: () => go("trans") }, "Sang mục 3 →")));
+}
+
+/* =====================================================
+   3. PARALLEL TRANSLATION with penalty hints
+   ===================================================== */
+const CH = PARAS.flatMap((p, pi) => p.chunks.map((c, ci) => Object.assign({ id: pi + "-" + ci, pi, ci }, c)));
+const TR = store.get("tr", {}); // id -> {text, score, revealed, checked}
+const saveTr = () => store.set("tr", TR);
+const trOf = c => TR[c.id] || (TR[c.id] = { text: "", score: 0, revealed: false, checked: false });
+function scoreChunk(c, text) {
+  const words = text.trim().split(/\s+/).filter(Boolean); if (!words.length) return { s: 0, hit: [], miss: c.k.map(x => x[1]) };
+  const hit = [], miss = [];
+  c.k.forEach(([re, hint]) => (new RegExp(re, "i").test(text) ? hit : miss).push(hint));
+  const need = Math.max(3, Math.round(c.en.split(/\s+/).length * 0.6));
+  return { s: Math.round(hit.length / c.k.length * Math.min(1, words.length / need) * 100) / 100, hit, miss, short: words.length < need };
+}
+const pct = () => Math.round(CH.reduce((a, c) => a + (trOf(c).revealed ? 0 : trOf(c).score), 0) / CH.length * 100);
+let scoreEl = null;
+function updScore() {
+  if (!scoreEl) return;
+  const done = CH.filter(c => trOf(c).checked || trOf(c).revealed).length, rev = CH.filter(c => trOf(c).revealed).length;
+  scoreEl.replaceChildren(h("span", { class: "scorebig" }, pct() + "%"), h("span", { class: "mini" }, " Điểm dịch · đã làm " + done + "/" + CH.length + " · đã xem gợi ý " + rev));
+}
+function renderTrans() {
+  const root = $("#panel"); root.replaceChildren();
+  root.append(h("div", { class: "scn" }, h("strong", null, "Bước 3: Dịch Việt → Anh, theo từng cụm. "), "Bên trái là bản tiếng Việt, bên phải là bài dịch của em. Bấm “Kiểm tra” để máy chấm các ý chính và hiện phân tích cấu trúc. ",
+    h("strong", null, "Nếu bấm xem bản tiếng Anh, cụm đó tính 0 điểm."),
+    h("div", { class: "vi" }, "Điểm = trung bình % của tất cả các cụm. Em có thể sửa và kiểm tra lại nhiều lần.")));
+  scoreEl = h("div", { class: "stickyscore", "aria-live": "polite" }); root.append(scoreEl);
+  PARAS.forEach((p, pi) => {
+    root.append(h("h3", { class: "sec" }, p.title));
+    CH.filter(c => c.pi === pi).forEach(c => root.append(chunkRow(c)));
+  });
+  updScore();
+  root.append(h("div", { class: "row spread" }, h("span", { class: "mini" }, "Bài dịch được tự lưu trên máy này."), h("button", { class: "btn primary", type: "button", onclick: () => go("submit") }, "Sang mục 4 →")));
+}
+function chunkRow(c) {
+  const st = trOf(c), row = h("div", { class: "pair", id: "row-" + c.id });
+  const draw = () => {
+    row.replaceChildren();
+    const left = h("div", { class: "vibox" }, h("div", { class: "mini" }, "Bản cần dịch · cụm " + (c.ci + 1)), h("div", { class: "vtxt" }, c.vi));
+    const ta = h("textarea", { rows: "3", placeholder: "Dịch sang tiếng Anh…", "aria-label": "Bài dịch: " + c.vi }); ta.value = st.text;
+    ta.addEventListener("input", () => { st.text = ta.value; saveTr(); });
+    const chip = h("span", { class: "chipst" + (st.revealed ? " rev" : st.checked ? (st.score >= 0.8 ? " good" : " mid") : "") }, st.revealed ? "Đã xem gợi ý · 0%" : st.checked ? Math.round(st.score * 100) + "%" : "Chưa kiểm tra");
+    const right = h("div", { class: "entbox" }, h("div", { class: "mini" }, "Bài dịch của em ", chip), ta);
+    const fb = h("div", { class: "fb", "aria-live": "polite" });
+    const acts = h("div", { class: "row", style: "margin-top:8px" });
+    const bCheck = h("button", { class: "btn primary", type: "button", onclick: () => {
+      if (!ta.value.trim()) { toast("Em hãy dịch thử trước khi kiểm tra nhé."); ta.focus(); return; }
+      st.text = ta.value; const r = scoreChunk(c, st.text); st.score = r.s; st.checked = true; st.hit = r.hit; st.miss = r.miss; st.short = r.short; saveTr(); draw(); updScore();
+    } }, st.checked ? "Kiểm tra lại" : "Kiểm tra");
+    acts.append(bCheck);
+    if (!st.revealed) {
+      let armed = false;
+      const bHint = h("button", { class: "btn warm", type: "button" }, "👁 Xem bản tiếng Anh");
+      bHint.addEventListener("click", () => {
+        if (!armed) { armed = true; bHint.textContent = "Chắc chưa? Bấm lần nữa: cụm này tính 0 điểm"; setTimeout(() => { armed = false; if (bHint.isConnected) bHint.textContent = "👁 Xem bản tiếng Anh"; }, 5000); return; }
+        st.text = ta.value; st.revealed = true; st.checked = true; saveTr(); draw(); updScore(); say([c.en]);
+      });
+      acts.append(bHint);
+    }
+    right.append(acts);
+    if (st.checked && !st.revealed) {
+      fb.className = "fb " + (st.score >= 0.8 ? "good" : "bad");
+      fb.textContent = st.score >= 0.8 ? "Tốt! Em đã có các ý chính." : "Chưa đủ ý. " + (st.short ? "Câu dịch còn quá ngắn. " : "");
+      right.append(fb);
+      if (st.hit && st.hit.length) right.append(h("div", { class: "mini ok" }, "✓ Đã có: " + st.hit.join(", ")));
+      if (st.miss && st.miss.length) right.append(h("div", { class: "mini bad" }, "✗ Còn thiếu ý: " + st.miss.join(", ")));
+    }
+    row.append(left, right);
+    if (st.checked || st.revealed) {
+      const box = h("div", { class: "analysis" });
+      if (st.revealed) box.append(h("div", { class: "revealed" }, h("div", { class: "mini" }, "Bản tiếng Anh:"), h("div", { class: "en", style: "font-size:1.1rem" }, c.en), h("button", { class: "btn", type: "button", style: "margin-top:6px", onclick: () => say([c.en]) }, "🔊 Nghe")));
+      box.append(h("div", { class: "tags" }, (c.tag || []).map(t => h("span", { class: "tagpill" }, t))), h("div", null, h("strong", null, "Phân tích cấu trúc: "), c.an));
+      row.append(box);
+    }
+  };
+  draw(); return row;
+}
+
+/* =====================================================
+   4. SUBMIT
+   ===================================================== */
+function collect() {
+  const done = CH.filter(c => trOf(c).checked || trOf(c).revealed).length, rev = CH.filter(c => trOf(c).revealed).length;
+  const filled = PLAN_FIELDS.filter(f => wc(PL.f[f.id] || "") >= 3).length;
+  const warn = [];
+  if (!RES.vocab) warn.push("Em chưa làm bài kiểm tra từ vựng (mục 1).");
+  if ((TIME.vocab || 0) < 120) warn.push("Thời gian học từ vựng mới " + fmtT(TIME.vocab || 0) + " (nên học ít nhất 2 phút).");
+  if (filled < PLAN_FIELDS.length) warn.push("Dàn ý còn " + (PLAN_FIELDS.length - filled) + " ô chưa viết (mục 2).");
+  if (done < CH.length) warn.push("Còn " + (CH.length - done) + "/" + CH.length + " cụm chưa dịch (mục 3).");
+  const rows = [];
+  rows.push({ part: "Thời gian học", question: "Từ vựng / Dàn ý / Dịch", answer: fmtT(TIME.vocab || 0) + " / " + fmtT(TIME.plan || 0) + " / " + fmtT(TIME.trans || 0), correct: "", result: "" });
+  if (RES.vocab) rows.push({ part: "Từ vựng · kiểm tra", question: "Điểm", answer: RES.vocab.score + "/" + RES.vocab.total, correct: "", result: "Sai: " + (RES.vocab.wrong.join(", ") || "-") });
+  rows.push({ part: "Dàn ý", question: "Dạng đề em chọn", answer: PL.type === null ? "(chưa chọn)" : TASK_TYPES[PL.type].t, correct: "Thảo luận cả hai quan điểm VÀ nêu ý kiến", result: PL.type !== null && TASK_TYPES[PL.type].ok ? "đúng" : "sai/chưa chọn" });
+  PLAN_FIELDS.forEach(f => rows.push({ part: "Dàn ý · " + f.id, question: f.q, answer: PL.f[f.id] || "(trống)", correct: "", result: wc(PL.f[f.id] || "") + " từ" }));
+  rows.push({ part: "Dàn ý · thứ tự đoạn", question: "Em chọn", answer: ORDER_ITEMS.map((o, i) => PL.ord[i] || "-").join(" "), correct: ORDER_ITEMS.map(o => o.pos).join(" "), result: ORDER_ITEMS.every((o, i) => +PL.ord[i] === o.pos) ? "đúng" : "sai" });
+  CH.forEach((c, i) => { const s = trOf(c); rows.push({ part: "Dịch " + (i + 1), question: c.vi, answer: s.text || "(trống)", correct: c.en, result: s.revealed ? "ĐÃ XEM GỢI Ý · 0%" : s.checked ? Math.round(s.score * 100) + "%" : "chưa làm" }); });
+  return { warn, rows, done, rev, filled, p: pct() };
+}
+let warned = false;
+function renderSubmit() {
+  const root = $("#panel"); root.replaceChildren();
+  const c = collect(), row = (a, b) => h("div", { class: "okrow" }, h("span", null, a), h("strong", null, b));
+  root.append(h("div", { class: "panel" }, h("h2", { class: "q", style: "margin-top:0" }, "Kiểm tra trước khi nộp"),
+    row("Từ vựng: thời gian học", fmtT(TIME.vocab || 0)),
+    row("Kiểm tra từ vựng", RES.vocab ? RES.vocab.score + "/" + RES.vocab.total : "chưa làm"),
+    row("Dàn ý", c.filled + "/" + PLAN_FIELDS.length + " ô"),
+    row("Điểm dịch song song", c.p + "% (xem gợi ý " + c.rev + " cụm)"),
+    row("Số cụm đã làm", c.done + "/" + CH.length)));
+  const status = h("div", { class: "fb", "aria-live": "polite" });
+  if (c.warn.length && warned) root.append(h("div", { class: "panel", style: "margin-top:14px" }, h("strong", null, "Em còn thiếu:"), h("ul", { class: "warnlist" }, c.warn.map(w => h("li", null, w))), h("p", { class: "mini", style: "margin:0" }, "Em có thể quay lại hoàn thành, hoặc vẫn nộp bài như hiện tại.")));
+  const btn = h("button", { class: "btn primary", type: "button", onclick: async () => {
+    if (!getName()) { showGate(); return; }
+    if (c.warn.length && !warned) { warned = true; renderSubmit(); return; }
+    btn.disabled = true; btn.textContent = "Đang nộp…";
+    const ign = c.warn.length > 0;
+    try {
+      await post({ type: "submit", name: getName(), lesson: LESSON, summary: {
+        vocab: "Từ vựng " + (RES.vocab ? RES.vocab.score + "/" + RES.vocab.total : "chưa làm") + " · học " + fmtT(TIME.vocab || 0),
+        gram: "Dàn ý " + c.filled + "/" + PLAN_FIELDS.length + " ô · học " + fmtT(TIME.plan || 0),
+        ctx: "Dịch " + c.p + "% · xem gợi ý " + c.rev + "/" + CH.length + " cụm · học " + fmtT(TIME.trans || 0),
+        rec: "-",
+        para: "Writing-Family-1" + (ign ? " · CHƯA ĐỦ, đã bỏ qua cảnh báo" : " · đã hoàn thành đủ"),
+        feedback: ign ? "Thiếu: " + c.warn.join(" ") : "Đã hoàn thành đủ các phần."
+      }, details: c.rows });
+      status.className = "fb good"; status.textContent = "Đã nộp bài cho cô. Cảm ơn " + getName() + "!"; warned = false;
+      btn.textContent = "Nộp lại"; btn.disabled = false;
+    } catch (e) { status.className = "fb bad"; status.textContent = "Chưa nộp được. Hãy kiểm tra mạng rồi bấm nộp lại."; btn.textContent = ign ? "Vẫn nộp bài" : "Nộp bài cho cô"; btn.disabled = false; }
+  } }, c.warn.length && warned ? "Vẫn nộp bài" : "Nộp bài cho cô");
+  root.append(h("div", { class: "row" }, btn, h("button", { class: "btn", type: "button", onclick: () => { warned = false; renderSubmit(); } }, "Làm mới")), status);
+}
+
+/* ---------- shell ---------- */
+function renderHeader() {
+  const doneMap = { vocab: !!RES.vocab, plan: PLAN_FIELDS.filter(f => wc(PL.f[f.id] || "") >= 3).length === PLAN_FIELDS.length, trans: CH.every(c => trOf(c).checked || trOf(c).revealed), submit: false };
+  const box = $("#steps"); box.replaceChildren();
+  STEPS.forEach(([id, label]) => box.append(h("button", { class: "stepchip" + (doneMap[id] ? " done" : ""), type: "button", role: "tab", "aria-selected": St.tab === id, onclick: () => go(id) }, (doneMap[id] ? "✅ " : "") + label)));
+  const n = ["vocab", "plan", "trans"].filter(k => doneMap[k]).length;
+  $("#progText").textContent = "Hoàn thành " + n + "/3 phần";
+  $("#progBar").style.width = Math.round(n / 3 * 100) + "%";
+}
+function render(auto) {
+  stopSay(); renderHeader(); showTimer();
+  ({ vocab: () => renderVocab(!!auto), plan: renderPlan, trans: renderTrans, submit: renderSubmit })[St.tab]();
+  window.scrollTo(0, 0);
+}
+$("#rename").addEventListener("click", showGate);
+$("#gok").addEventListener("click", () => {
+  const v = $("#gname").value.trim(); if (!v) { $("#gname").focus(); return; }
+  try { localStorage.setItem("wr1_name", v); } catch (e) {}
+  $("#gate").hidden = true; updateWho(); toast("Chào " + v + "!");
+});
+$("#gname").addEventListener("keydown", e => { if (e.key === "Enter") $("#gok").click(); });
+if (!hasTTS) $("#banner").append(h("div", { class: "banner" }, "Trình duyệt này chưa hỗ trợ giọng đọc. Hãy mở trang bằng Chrome hoặc Safari."));
+updateWho(); if (!getName()) showGate();
+render(false);
+
+</script>
+</body>
+</html>
