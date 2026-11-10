@@ -462,8 +462,8 @@ function mcqRun(root, st, items, o) {
 
 
 /* ===== Writing-1 app ===== */
-const STEPS = [["vocab", "1. Từ vựng"], ["plan", "2. Dàn ý"], ["trans", "3. Dịch song song"], ["submit", "4. Nộp bài"]];
-const STEP_NAME = { vocab: "Từ vựng", plan: "Dàn ý", trans: "Dịch song song", submit: "Nộp bài" };
+const STEPS = [["vocab", "1. Từ vựng"], ["plan", "2. Dàn ý"], ["trans", "3. Dịch song song"], ["rewrite", "4. Viết lại từ ý của em"], ["submit", "5. Nộp bài"]];
+const STEP_NAME = { vocab: "Từ vựng", plan: "Dàn ý", trans: "Dịch song song", rewrite: "Viết lại từ ý của em", submit: "Nộp bài" };
 const WORDS = VOC.flatMap(g => g.words.map(w => Object.assign({ g: g.id }, w)));
 
 /* ---------- study time (only counts while the page is visible and the student is active) ---------- */
@@ -630,7 +630,7 @@ function renderTrans() {
     CH.filter(c => c.pi === pi).forEach(c => root.append(chunkRow(c)));
   });
   updScore();
-  root.append(h("div", { class: "row spread" }, h("span", { class: "mini" }, "Bài dịch được tự lưu trên máy này."), h("button", { class: "btn primary", type: "button", onclick: () => go("submit") }, "Sang mục 4 →")));
+  root.append(h("div", { class: "row spread" }, h("span", { class: "mini" }, "Bài dịch được tự lưu trên máy này."), h("button", { class: "btn primary", type: "button", onclick: () => go("rewrite") }, "Sang mục 4 →")));
 }
 function chunkRow(c) {
   const st = trOf(c), row = h("div", { class: "pair", id: "row-" + c.id });
@@ -677,7 +677,148 @@ function chunkRow(c) {
 }
 
 /* =====================================================
-   4. SUBMIT
+   4. REWRITE from the student's own ideas
+   ===================================================== */
+const RW = store.get("rw", { draft: null, locked: false, en: ["", "", "", ""], sc: [null, null, null, null], fr: [false, false, false, false], stanceNote: "" });
+const saveRw = () => store.set("rw", RW);
+const hasVN = s => /[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ]/i.test(s);
+const cleanIdea = s => (s || "").trim().replace(/[.!?;,\s]+$/, "");
+const stripOpin = s => s.replace(/^(theo (em|mình|tôi)\s*(thì)?[, ]*|(em|mình|tôi) (nghĩ|tin|cho|thấy|cảm thấy)( rằng)?[, ]*)/i, "");
+const lowFirst = s => (s ? s[0].toLowerCase() + s.slice(1) : s);
+function ideaQuality(t) {
+  t = t || "";
+  const reason = /vì|do đó|bởi|nên|because|\bso\b|since|therefore|dẫn đến|→/i.test(t);
+  const ex = /ví dụ|chẳng hạn|for example|for instance|e\.g|như là|\bnhư\b/i.test(t);
+  return { reason, ex, len: wc(t), pts: (reason ? 1 : 0) + (ex ? 1 : 0) + Math.min(wc(t), 30) / 30 };
+}
+function stanceOf(op) {
+  const fam = op.search(/sống cùng|ở cùng|gia đình|family|with (their )?(children|family)|live with/i), nur = op.search(/viện|nursing|care home/i);
+  if (fam < 0 && nur < 0) return { s: "family", sure: false };
+  if (nur < 0) return { s: "family", sure: true };
+  if (fam < 0) return { s: "nursing", sure: true };
+  return { s: fam < nur ? "family" : "nursing", sure: true };
+}
+function diagnose() {
+  const F = id => PL.f[id] || "";
+  const st = stanceOf(F("op")), ex = /nhưng|tuy nhiên|ngoại lệ|trừ|nếu|however|except|unless|but|if /i.test(F("op"));
+  const items = ["v1a", "v1b", "v2a", "v2b"].map(id => Object.assign({ id, t: F(id) }, ideaQuality(F(id))));
+  const tips = items.map(it => !it.t.trim() ? "Ô này còn trống." : !it.reason && !it.ex ? "Mới có ý, chưa có lý do và ví dụ. Thêm “vì… nên…” và một ví dụ gần gũi." : it.reason && !it.ex ? "Có lý do. Thêm ví dụ (chẳng hạn…) để thuyết phục hơn." : !it.reason ? "Có ví dụ nhưng chưa giải thích vì sao ví dụ đó chứng minh ý." : "Tốt: ý → lý do → ví dụ đã đủ.");
+  const pts = items.reduce((a, b) => a + Math.min(2, b.pts), 0) + (st.sure ? 1 : 0) + (ex ? 1 : 0), level = pts >= 9 ? "Khá đầy đủ" : pts >= 6 ? "Cơ bản, cần phát triển thêm" : "Còn sơ sài, cần thêm lý do và ví dụ";
+  return { st, ex, items, tips, pts, level };
+}
+function buildDraft() {
+  const F = id => cleanIdea(PL.f[id]), d = diagnose(), nur = d.st.s === "nursing";
+  const sideA = nur ? ["v2a", "v2b", "sống cùng gia đình"] : ["v1a", "v1b", "viện dưỡng lão"];   // the OTHER side
+  const sideB = nur ? ["v1a", "v1b", "viện dưỡng lão"] : ["v2a", "v2b", "sống cùng gia đình"];   // my side
+  const order = (a, b) => (ideaQuality(PL.f[a]).pts > ideaQuality(PL.f[b]).pts ? [b, a] : [a, b]); // strongest idea last
+  const [a1, a2] = order(sideA[0], sideA[1]), [b1, b2] = order(sideB[0], sideB[1]);
+  const opS = stripOpin(cleanIdea((PL.f.op || "").split(/[.!?\n]/)[0]));
+  const para = [
+    "Có hai quan điểm về việc người già nên sống cùng con cái hay ở viện dưỡng lão. Một số người ủng hộ " + sideA[2] + ", trong khi những người khác cho rằng " + sideB[2] + " tốt hơn. " + (opS ? "Theo em, " + lowFirst(opS) + "." : "Theo em, …"),
+    "Những người ủng hộ " + sideA[2] + " có lý do của họ. Thứ nhất, " + lowFirst(F(a1)) + ". Thứ hai, " + lowFirst(F(a2)) + ".",
+    "Tuy nhiên, em tin rằng " + sideB[2] + " có nhiều lợi ích hơn. Trước hết, " + lowFirst(F(b1)) + ". Ngoài ra, " + lowFirst(F(b2)) + ".",
+    "Tóm lại, em nghĩ " + (cleanIdea(PL.f.op) ? lowFirst(stripOpin(cleanIdea(PL.f.op))) : "…") + "."
+  ];
+  RW.stanceNote = d.st.sure ? "" : "Máy chưa thấy em nói rõ chọn bên nào nên tạm xếp là ủng hộ sống cùng gia đình. Hãy sửa lại cho đúng ý em.";
+  return para;
+}
+const RW_CRIT = [
+  [["Nêu hai quan điểm đối lập", /(some|many)[^.]*(other|while|whereas)|whereas|while others|different (opinions|views)|two (views|opinions)/, "Some people think …, while others believe …."],
+   ["Nêu ý kiến của em (thesis)", /in my opinion|i (strongly |firmly )?(believe|think|agree|prefer)|my view|personally|from my/, "In my opinion, … is better in most cases."],
+   ["Có nhượng bộ (although / while)", /although|though|even though|while/, "…, although … is necessary in some situations."]],
+  [["Có câu chủ đề của đoạn", /reason|prefer|believe|argue|think|advantage|benefit/, "There are good reasons why many people prefer …."],
+   ["Có từ nối thứ tự (First, Second…)", /first/, "First, … Second, …"],
+   ["Có lý do → kết quả (so / because)", /\bso\b|because|since|therefore|as a result|which means/, "…, so they need …"],
+   ["Có ví dụ (for example / such as)", /for example|for instance|such as|\blike\b/, "…, for example …"]],
+  [["Có câu chủ đề (However…)", /however|on the other hand|nevertheless|but i/, "However, I believe that … has more benefits."],
+   ["Có từ nối thêm ý (In addition / Also)", /in addition|also|moreover|besides|another|first|second/, "In addition, … / Also, …"],
+   ["Có lý do → kết quả", /\bso\b|because|since|therefore|as a result|which means|this (is|means|can)/, "…, so … / This is very important for …"],
+   ["Có ví dụ", /for example|for instance|such as|\blike\b/, "for instance when they help the children with homework"],
+   ["Dùng từ giảm mức tuyệt đối (may, can, often…)", /\bmay\b|\bmight\b|\bcan\b|\bcould\b|sometimes|often|\bmost\b|usually|tend/, "…can sometimes cause … / … may feel …"]],
+  [["Có từ mở kết bài (In conclusion…)", /in conclusion|to conclude|to sum up|overall|in summary/, "In conclusion, …"],
+   ["Nhắc lại nhượng bộ (although…)", /although|though|while|despite/, "In conclusion, although …, I think …"],
+   ["Nhắc lại ý kiến của em", /i (strongly )?(believe|think|agree)|in my opinion|should|would be/, "I think … are happier when …"]]
+];
+const wordRe = w => new RegExp("\\b" + w.w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/-/g, "[- ]?").replace(/ /g, "\\s+(?:\\w+\\s+)?"), "i");
+function evalEn(i, text) {
+  const t = text.toLowerCase(), words = text.trim().split(/\s+/).filter(Boolean).length, crit = RW_CRIT[i];
+  const res = crit.map(([lab, re, fr]) => ({ lab, fr, ok: re.test(t) }));
+  const need = i === 3 ? 15 : 20;
+  res.push({ lab: "Đủ độ dài (≥ " + need + " từ)", fr: "Hãy phát triển ý: lý do → giải thích → ví dụ.", ok: words >= need });
+  res.push({ lab: "Có câu phức (although, when, who, because…)", fr: "…nurses who can react quickly if something goes wrong", ok: /although|though|while|whereas|\bwho\b|\bwhich\b|\bwhen\b|\bif\b|because|since/.test(t) });
+  const used = WORDS.filter(w => wordRe(w).test(text)).map(w => w.w);
+  res.push({ lab: "Dùng ít nhất 1 từ/cụm đã học ở mục 1", fr: "Thử dùng: " + WORDS.filter(w => w.g === "topic").slice(0, 4).map(w => w.w).join(", "), ok: used.length > 0 });
+  if (hasVN(text)) res.push({ lab: "Không còn tiếng Việt trong bài", fr: "Hãy dịch hết sang tiếng Anh.", ok: false });
+  return { res, used, score: Math.round(res.filter(r => r.ok).length / res.length * 100) / 100, words };
+}
+function renderRewrite() {
+  const root = $("#panel"); root.replaceChildren();
+  root.append(h("div", { class: "scn" }, h("strong", null, "Bước 4: Viết lại từ chính ý của em. "), "Máy đọc dàn ý em đã viết ở mục 2, kiểm tra xem mỗi ý đã có lý do và ví dụ chưa, rồi xếp lại thành 4 đoạn có dòng logic. Em chỉnh bản tiếng Việt, rồi dịch sang tiếng Anh.",
+    h("details", { style: "margin-top:8px" }, h("summary", null, "Cách nâng điểm bài viết (xem nhanh)"), h("ul", { class: "theory" },
+      h("li", null, h("strong", null, "Task Response: "), "nêu rõ em chọn bên nào, và nhắc lại ở kết bài."),
+      h("li", null, h("strong", null, "Coherence: "), "mỗi ý có đủ ba lớp: ý → lý do → ví dụ; nối bằng First, However, In addition, In conclusion."),
+      h("li", null, h("strong", null, "Vocabulary: "), "dùng từ học thuật vừa học (afford, duty, mental health…)."),
+      h("li", null, h("strong", null, "Grammar: "), "có câu phức (although, when, who, because) và từ giảm mức tuyệt đối (may, can, often).")))));
+  const filled = PLAN_FIELDS.filter(f => wc(PL.f[f.id] || "") >= 3).length;
+  if (filled < 5) { root.append(h("div", { class: "panel" }, h("p", null, "Em cần viết ít nhất 5 ô ở mục 2 (Dàn ý) thì máy mới phân tích được. Hiện có " + filled + "/" + PLAN_FIELDS.length + " ô."), h("div", { class: "row" }, h("button", { class: "btn primary", type: "button", onclick: () => go("plan") }, "← Về mục 2")))); return; }
+  // A. diagnosis
+  const d = diagnose();
+  const dbox = h("div", { class: "panel", style: "margin-bottom:14px" }, h("h3", { class: "pg" }, "A. Máy nhận xét dàn ý của em"));
+  dbox.append(h("div", { class: "okrow" }, h("span", null, "Quan điểm của em"), h("strong", null, d.st.sure ? (d.st.s === "family" ? "Ủng hộ sống cùng gia đình" : "Ủng hộ viện dưỡng lão") : "Chưa rõ, máy tạm xếp: sống cùng gia đình")));
+  dbox.append(h("div", { class: "okrow" }, h("span", null, "Có ngoại lệ / nhượng bộ"), h("strong", null, d.ex ? "Có ✓" : "Chưa có ✗ (thêm “nhưng… khi…”)")));
+  const names = ["Viện dưỡng lão · lý do 1", "Viện dưỡng lão · lý do 2", "Sống cùng gia đình · lý do 1", "Sống cùng gia đình · lý do 2"];
+  d.items.forEach((it, i) => dbox.append(h("div", { class: "line", style: "margin:8px 0" }, h("div", null, h("strong", null, names[i]), "  ", h("span", { class: "mini" }, it.len + " từ · Lý do " + (it.reason ? "✓" : "✗") + " · Ví dụ " + (it.ex ? "✓" : "✗"))), h("div", { class: it.reason && it.ex ? "ok" : "mini bad" }, d.tips[i]))));
+  dbox.append(h("p", { style: "margin:10px 0 0" }, h("strong", null, "Mức phát triển ý: "), d.level, h("span", { class: "mini" }, " (ước lượng độ đầy đủ ý, không phải điểm IELTS)")));
+  root.append(dbox);
+  // B. Vietnamese draft
+  root.append(h("h3", { class: "sec" }, "B. Bản tiếng Việt có dòng logic (từ ý của em)"));
+  root.append(h("p", { class: "mini" }, "Máy đã ghép ý của em vào 4 đoạn, thêm từ nối, và xếp ý phát triển tốt hơn xuống cuối mỗi đoạn. Em có thể sửa cho đúng ý mình, và nên bổ sung chỗ máy báo thiếu."));
+  if (!RW.draft) { RW.draft = buildDraft(); saveRw(); }
+  if (RW.stanceNote) root.append(h("div", { class: "banner" }, RW.stanceNote));
+  const titles = ["Đoạn 1 · Mở bài", "Đoạn 2 · Quan điểm đối lập", "Đoạn 3 · Ý kiến của em", "Đoạn 4 · Kết bài"];
+  titles.forEach((tt, i) => {
+    const ta = h("textarea", { rows: "4", "aria-label": tt, disabled: RW.locked ? "" : null }); ta.value = RW.draft[i];
+    ta.addEventListener("input", () => { RW.draft[i] = ta.value; saveRw(); });
+    root.append(h("div", { class: "line" }, h("strong", null, tt), ta));
+  });
+  root.append(h("div", { class: "row" },
+    !RW.locked ? h("button", { class: "btn primary", type: "button", onclick: () => { if (RW.draft.some(x => wc(x) < 8 || /…/.test(x))) { toast("Còn đoạn quá ngắn hoặc còn dấu “…”. Hãy hoàn thiện rồi chốt."); return; } RW.locked = true; saveRw(); renderRewrite(); } }, "✅ Chốt bản tiếng Việt, sang phần dịch") : h("button", { class: "btn", type: "button", onclick: () => { RW.locked = false; saveRw(); renderRewrite(); } }, "Mở khoá để sửa bản tiếng Việt"),
+    !RW.locked ? h("button", { class: "btn", type: "button", onclick: () => { RW.draft = buildDraft(); saveRw(); renderRewrite(); } }, "Tạo lại từ dàn ý") : null));
+  if (!RW.locked) return;
+  // C. translate
+  root.append(h("h3", { class: "sec" }, "C. Dịch bài của chính em sang tiếng Anh"));
+  rwScore = h("div", { class: "stickyscore", "aria-live": "polite" }); root.append(rwScore);
+  titles.forEach((tt, i) => root.append(rwRow(i, tt)));
+  updRwScore();
+  root.append(h("div", { class: "row spread" }, h("span", { class: "mini" }, "Bài của em được tự lưu trên máy này."), h("button", { class: "btn primary", type: "button", onclick: () => go("submit") }, "Sang mục 5 →")));
+}
+let rwScore = null;
+const rwPct = () => Math.round(RW.sc.reduce((a, s) => a + (s ? s.score : 0), 0) / 4 * 100);
+function updRwScore() { if (!rwScore) return; const done = RW.sc.filter(Boolean).length; const used = new Set(RW.sc.flatMap(s => (s ? s.used : []))); rwScore.replaceChildren(h("span", { class: "scorebig" }, rwPct() + "%"), h("span", { class: "mini" }, " Điểm cấu trúc bài viết · đã chấm " + done + "/4 đoạn · từ đã học được dùng: " + used.size + "/" + WORDS.length)); }
+function rwRow(i, tt) {
+  const row = h("div", { class: "pair" });
+  const draw = () => {
+    row.replaceChildren();
+    const ta = h("textarea", { rows: "6", placeholder: "Dịch sang tiếng Anh…", "aria-label": "Bản dịch " + tt }); ta.value = RW.en[i];
+    ta.addEventListener("input", () => { RW.en[i] = ta.value; saveRw(); });
+    const s = RW.sc[i];
+    const chip = h("span", { class: "chipst" + (s ? (s.score >= 0.8 ? " good" : " mid") : "") }, s ? Math.round(s.score * 100) + "%" : "Chưa chấm");
+    const fr = h("div", { class: "mini", style: "margin-top:6px" });
+    const bFr = h("button", { class: "btn warm", type: "button", onclick: () => { RW.fr[i] = !RW.fr[i]; saveRw(); draw(); } }, RW.fr[i] ? "Ẩn khung câu" : "💡 Khung câu gợi ý");
+    row.append(h("div", { class: "vibox" }, h("div", { class: "mini" }, tt + " · bản tiếng Việt của em"), h("div", { class: "vtxt" }, RW.draft[i])),
+      h("div", { class: "entbox" }, h("div", { class: "mini" }, "Bài dịch của em ", chip), ta,
+        h("div", { class: "row", style: "margin-top:8px" }, h("button", { class: "btn primary", type: "button", onclick: () => {
+          if (!ta.value.trim()) { toast("Em hãy dịch thử trước khi chấm nhé."); ta.focus(); return; }
+          RW.en[i] = ta.value; const r = evalEn(i, ta.value); RW.sc[i] = { score: r.score, res: r.res, used: r.used, words: r.words }; saveRw(); draw(); updRwScore();
+        } }, s ? "Chấm lại" : "Chấm cấu trúc"), bFr), fr));
+    if (RW.fr[i]) row.append(h("div", { class: "analysis" }, h("strong", null, "Khung câu gợi ý (xem sẽ được ghi nhận là em đã dùng gợi ý): "), h("ul", { class: "theory" }, RW_CRIT[i].map(c => h("li", null, c[2])))));
+    if (s) row.append(h("div", { class: "analysis" }, h("strong", null, "Kết quả chấm cấu trúc (" + s.words + " từ):"), ...s.res.map(r => h("div", { class: r.ok ? "ok" : "bad" }, (r.ok ? "✓ " : "✗ ") + r.lab + (r.ok ? "" : " → gợi ý: " + r.fr))), s.used.length ? h("div", { class: "mini" }, "Từ đã học em đã dùng: " + s.used.join(", ")) : null));
+  };
+  draw(); return row;
+}
+
+/* =====================================================
+   5. SUBMIT
    ===================================================== */
 function collect() {
   const done = CH.filter(c => trOf(c).checked || trOf(c).revealed).length, rev = CH.filter(c => trOf(c).revealed).length;
@@ -687,14 +828,18 @@ function collect() {
   if ((TIME.vocab || 0) < 120) warn.push("Thời gian học từ vựng mới " + fmtT(TIME.vocab || 0) + " (nên học ít nhất 2 phút).");
   if (filled < PLAN_FIELDS.length) warn.push("Dàn ý còn " + (PLAN_FIELDS.length - filled) + " ô chưa viết (mục 2).");
   if (done < CH.length) warn.push("Còn " + (CH.length - done) + "/" + CH.length + " cụm chưa dịch (mục 3).");
+  const rwDone = RW.sc.filter(Boolean).length;
+  if (rwDone < 4) warn.push("Phần viết lại từ ý của em mới chấm " + rwDone + "/4 đoạn (mục 4).");
   const rows = [];
-  rows.push({ part: "Thời gian học", question: "Từ vựng / Dàn ý / Dịch", answer: fmtT(TIME.vocab || 0) + " / " + fmtT(TIME.plan || 0) + " / " + fmtT(TIME.trans || 0), correct: "", result: "" });
+  rows.push({ part: "Thời gian học", question: "Từ vựng / Dàn ý / Dịch", answer: fmtT(TIME.vocab || 0) + " / " + fmtT(TIME.plan || 0) + " / " + fmtT(TIME.trans || 0) + " / " + fmtT(TIME.rewrite || 0) + " (viết lại)", correct: "", result: "" });
   if (RES.vocab) rows.push({ part: "Từ vựng · kiểm tra", question: "Điểm", answer: RES.vocab.score + "/" + RES.vocab.total, correct: "", result: "Sai: " + (RES.vocab.wrong.join(", ") || "-") });
   rows.push({ part: "Dàn ý", question: "Dạng đề em chọn", answer: PL.type === null ? "(chưa chọn)" : TASK_TYPES[PL.type].t, correct: "Thảo luận cả hai quan điểm VÀ nêu ý kiến", result: PL.type !== null && TASK_TYPES[PL.type].ok ? "đúng" : "sai/chưa chọn" });
   PLAN_FIELDS.forEach(f => rows.push({ part: "Dàn ý · " + f.id, question: f.q, answer: PL.f[f.id] || "(trống)", correct: "", result: wc(PL.f[f.id] || "") + " từ" }));
   rows.push({ part: "Dàn ý · thứ tự đoạn", question: "Em chọn", answer: ORDER_ITEMS.map((o, i) => PL.ord[i] || "-").join(" "), correct: ORDER_ITEMS.map(o => o.pos).join(" "), result: ORDER_ITEMS.every((o, i) => +PL.ord[i] === o.pos) ? "đúng" : "sai" });
   CH.forEach((c, i) => { const s = trOf(c); rows.push({ part: "Dịch " + (i + 1), question: c.vi, answer: s.text || "(trống)", correct: c.en, result: s.revealed ? "ĐÃ XEM GỢI Ý · 0%" : s.checked ? Math.round(s.score * 100) + "%" : "chưa làm" }); });
-  return { warn, rows, done, rev, filled, p: pct() };
+  if (PL.f.op) { const d = diagnose(); rows.push({ part: "Viết lại · nhận xét dàn ý", question: "Mức phát triển ý", answer: d.level, correct: "", result: "Quan điểm: " + d.st.s + (d.st.sure ? "" : " (chưa rõ)") + " · ngoại lệ " + (d.ex ? "có" : "chưa") }); }
+  ["Mở bài", "Quan điểm đối lập", "Ý kiến của em", "Kết bài"].forEach((n, i) => { const s = RW.sc[i]; rows.push({ part: "Viết lại · Đoạn " + (i + 1) + " " + n, question: (RW.draft ? RW.draft[i] : "(chưa tạo bản tiếng Việt)"), answer: RW.en[i] || "(trống)", correct: "", result: (s ? Math.round(s.score * 100) + "% · thiếu: " + (s.res.filter(r => !r.ok).map(r => r.lab).join("; ") || "-") + " · từ đã học: " + (s.used.join(", ") || "-") : "chưa chấm") + (RW.fr[i] ? " · đã xem khung câu" : "") }); });
+  return { warn, rows, done, rev, filled, p: pct(), rwp: rwPct(), rwDone };
 }
 let warned = false;
 function renderSubmit() {
@@ -705,7 +850,8 @@ function renderSubmit() {
     row("Kiểm tra từ vựng", RES.vocab ? RES.vocab.score + "/" + RES.vocab.total : "chưa làm"),
     row("Dàn ý", c.filled + "/" + PLAN_FIELDS.length + " ô"),
     row("Điểm dịch song song", c.p + "% (xem gợi ý " + c.rev + " cụm)"),
-    row("Số cụm đã làm", c.done + "/" + CH.length)));
+    row("Số cụm đã làm", c.done + "/" + CH.length),
+    row("Viết lại từ ý của em", c.rwp + "% (" + c.rwDone + "/4 đoạn đã chấm)")));
   const status = h("div", { class: "fb", "aria-live": "polite" });
   if (c.warn.length && warned) root.append(h("div", { class: "panel", style: "margin-top:14px" }, h("strong", null, "Em còn thiếu:"), h("ul", { class: "warnlist" }, c.warn.map(w => h("li", null, w))), h("p", { class: "mini", style: "margin:0" }, "Em có thể quay lại hoàn thành, hoặc vẫn nộp bài như hiện tại.")));
   const btn = h("button", { class: "btn primary", type: "button", onclick: async () => {
@@ -718,7 +864,7 @@ function renderSubmit() {
         vocab: "Từ vựng " + (RES.vocab ? RES.vocab.score + "/" + RES.vocab.total : "chưa làm") + " · học " + fmtT(TIME.vocab || 0),
         gram: "Dàn ý " + c.filled + "/" + PLAN_FIELDS.length + " ô · học " + fmtT(TIME.plan || 0),
         ctx: "Dịch " + c.p + "% · xem gợi ý " + c.rev + "/" + CH.length + " cụm · học " + fmtT(TIME.trans || 0),
-        rec: "-",
+        rec: "Viết lại " + c.rwp + "% · " + c.rwDone + "/4 đoạn · học " + fmtT(TIME.rewrite || 0),
         para: "Writing-Family-1" + (ign ? " · CHƯA ĐỦ, đã bỏ qua cảnh báo" : " · đã hoàn thành đủ"),
         feedback: ign ? "Thiếu: " + c.warn.join(" ") : "Đã hoàn thành đủ các phần."
       }, details: c.rows });
@@ -731,16 +877,16 @@ function renderSubmit() {
 
 /* ---------- shell ---------- */
 function renderHeader() {
-  const doneMap = { vocab: !!RES.vocab, plan: PLAN_FIELDS.filter(f => wc(PL.f[f.id] || "") >= 3).length === PLAN_FIELDS.length, trans: CH.every(c => trOf(c).checked || trOf(c).revealed), submit: false };
+  const doneMap = { vocab: !!RES.vocab, plan: PLAN_FIELDS.filter(f => wc(PL.f[f.id] || "") >= 3).length === PLAN_FIELDS.length, trans: CH.every(c => trOf(c).checked || trOf(c).revealed), rewrite: RW.sc.every(Boolean), submit: false };
   const box = $("#steps"); box.replaceChildren();
   STEPS.forEach(([id, label]) => box.append(h("button", { class: "stepchip" + (doneMap[id] ? " done" : ""), type: "button", role: "tab", "aria-selected": St.tab === id, onclick: () => go(id) }, (doneMap[id] ? "✅ " : "") + label)));
-  const n = ["vocab", "plan", "trans"].filter(k => doneMap[k]).length;
-  $("#progText").textContent = "Hoàn thành " + n + "/3 phần";
-  $("#progBar").style.width = Math.round(n / 3 * 100) + "%";
+  const n = ["vocab", "plan", "trans", "rewrite"].filter(k => doneMap[k]).length;
+  $("#progText").textContent = "Hoàn thành " + n + "/4 phần";
+  $("#progBar").style.width = Math.round(n / 4 * 100) + "%";
 }
 function render(auto) {
   stopSay(); renderHeader(); showTimer();
-  ({ vocab: () => renderVocab(!!auto), plan: renderPlan, trans: renderTrans, submit: renderSubmit })[St.tab]();
+  ({ vocab: () => renderVocab(!!auto), plan: renderPlan, trans: renderTrans, rewrite: renderRewrite, submit: renderSubmit })[St.tab]();
   window.scrollTo(0, 0);
 }
 $("#rename").addEventListener("click", showGate);
