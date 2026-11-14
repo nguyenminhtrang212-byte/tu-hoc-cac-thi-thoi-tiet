@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Writing 2 · Work: Saying no politely (Sandwich Method)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f7f6;--surface:#fff;--ink:#14282b;--muted:#566b6e;--line:#d4e1df;--accent:#0e7c7b;--accent-ink:#fff;--soft:#e1f0ee;--warm:#c8531f;--good:#1b7f45;--bad:#b83227;--mark:#fff0c2;
+--font-display:'Bricolage Grotesque','Be Vietnam Pro',system-ui,sans-serif;--font-body:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1b1d;--surface:#172a2d;--ink:#e6f1ef;--muted:#9bb2b4;--line:#27403f;--accent:#4cc3bd;--accent-ink:#06201f;--soft:#1d3a3b;--warm:#f0925f;--good:#5dd28c;--bad:#ff8a7a;--mark:#4a3d12;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);line-height:1.6;font-size:16px}
+.wrap{max-width:720px;margin:0 auto;padding:18px 16px 80px}
+h1,h2,h3{font-family:var(--font-display);margin:0 0 8px;line-height:1.25}
+h1{font-size:1.5rem}h2{font-size:1.2rem}h3{font-size:1.05rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+.muted{color:var(--muted);font-size:.92rem}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 14px}
+button.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+input[type=text],textarea{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px}
+textarea{min-height:90px;resize:vertical}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bar{height:8px;background:var(--soft);border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.chip{padding:6px 12px;border-radius:99px;font-size:.88rem}
+.chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chip.ok::after{content:" ✓";color:var(--good)}.chip.on.ok::after{color:var(--accent-ink)}
+.hero{display:flex;gap:12px;align-items:center}.hero .ic{font-size:2rem}
+.gate{text-align:center;padding:28px 16px}
+.flash{min-height:230px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;cursor:pointer;background:var(--soft);border-radius:14px;padding:18px}
+.flash .w{font-family:var(--font-display);font-size:1.7rem;font-weight:700}
+.flash .ipa{color:var(--muted)}.flash .vi{font-size:1.2rem;color:var(--accent);font-weight:600}
+.flash .ex{font-style:italic}
+.tag{display:inline-block;background:var(--mark);border-radius:6px;padding:1px 8px;font-size:.78rem;margin-right:4px}
+.opt{display:block;width:100%;text-align:left;margin:6px 0}
+.opt.good{background:var(--good);color:#fff;border-color:var(--good)}.opt.bad{background:var(--bad);color:#fff;border-color:var(--bad)}
+.ok{color:var(--good)}.no{color:var(--bad)}
+.vi-line{font-size:1.05rem;font-weight:500}
+.fb{margin-top:8px;padding:10px;border-radius:10px;background:var(--soft)}
+.model{background:var(--mark);border-radius:10px;padding:10px;margin-top:8px}
+.bread{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.bread button{flex:1;min-width:110px;font-size:.88rem}
+table{border-collapse:collapse;width:100%}td,th{border:1px solid var(--line);padding:6px 8px;text-align:left;font-size:.92rem}
+.sticky{position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5}
+.chk span{display:inline-block;margin:2px 8px 2px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div id="gate" class="card gate" hidden>
+  <div style="font-size:2.2rem">✍️</div>
+  <h2>Em tên là gì?</h2>
+  <p class="muted">Cô cần biết tên để nhận bài của em.</p>
+  <label for="nm" class="muted">Họ và tên</label>
+  <input id="nm" type="text" autocomplete="name" style="max-width:320px;margin:6px auto;display:block">
+  <button class="pri" id="go">Bắt đầu</button>
+</div>
+
+<div id="app" hidden>
+  <div class="sticky">
+    <div class="hero"><div class="ic">🥪</div><div><h1>Writing · Work: Saying no politely</h1><div class="muted">Học từ vựng, nghĩ ý bằng tiếng mẹ đẻ rồi dịch một email theo từng cụm. Xem gợi ý sẽ bị trừ điểm.</div></div></div>
+    <div class="muted" style="margin-top:6px"><span id="who"></span> <button id="rename" style="padding:2px 8px;font-size:.8rem">Đổi tên</button></div>
+    <div class="row" style="margin-top:6px"><div class="bar" style="flex:1"><i id="pbar"></i></div><span class="muted" id="ptxt"></span></div>
+    <div class="muted" id="timer"></div>
+    <div class="chips" id="chips"></div>
+  </div>
+  <div id="main"></div>
+</div>
+</div>
+
+<script>
+/* ===== DATA ===== */
+const VOC=[
+{id:'g1',title:'Từ để từ chối & giải thích',words:[
+{w:'decline',ipa:'dɪˈklaɪn',vi:'từ chối (lịch sự)',ex:'I have to decline the invitation.'},
+{w:'request',ipa:'rɪˈkwest',vi:'lời yêu cầu, lời nhờ',ex:'Thank you for your request.'},
+{w:'appreciate',ipa:'əˈpriːʃieɪt',vi:'trân trọng, cảm kích',ex:'I really appreciate your offer.'},
+{w:'unfortunately',ipa:'ʌnˈfɔːtʃənətli',vi:'rất tiếc là',ex:'Unfortunately, I can\'t join the project.'},
+{w:'be fully booked',ipa:'biː ˈfʊli bʊkt',vi:'kín lịch',ex:'I\'m fully booked this week.'},
+{w:'take on',ipa:'teɪk ɒn',vi:'nhận thêm (việc)',ex:'I can\'t take on any more tasks.'},
+{w:'deadline',ipa:'ˈdedlaɪn',vi:'hạn chót',ex:'I have two deadlines on Friday.'},
+{w:'priority',ipa:'praɪˈɒrəti',vi:'việc ưu tiên',ex:'My priority this week is the sales report.'},
+{w:'workload',ipa:'ˈwɜːkləʊd',vi:'khối lượng công việc',ex:'My workload is very heavy now.'},
+{w:'rush',ipa:'rʌʃ',vi:'làm vội vàng',ex:'I don\'t want to rush the work.'},
+{w:'alternative',ipa:'ɔːlˈtɜːnətɪv',vi:'phương án thay thế',ex:'Can I offer an alternative?'},
+{w:'colleague',ipa:'ˈkɒliːɡ',vi:'đồng nghiệp',ex:'Maybe a colleague can help you.'}]},
+{id:'g2',title:'Cụm để mở và kết thư',words:[
+{w:'Thank you for thinking of me.',ipa:'θæŋk juː fə ˈθɪŋkɪŋ əv miː',vi:'Cảm ơn bạn đã nghĩ đến tôi.',ex:'Thank you for thinking of me for this project.'},
+{w:'I\'d love to help, but…',ipa:'aɪd lʌv tə help bət',vi:'Tôi rất muốn giúp, nhưng…',ex:'I\'d love to help, but I\'m very busy.'},
+{w:'I\'m afraid I can\'t…',ipa:'aɪm əˈfreɪd aɪ kɑːnt',vi:'Tôi e là tôi không thể…',ex:'I\'m afraid I can\'t work on Sunday.'},
+{w:'Would it be possible to…?',ipa:'wʊd ɪt biː ˈpɒsəbl tə',vi:'Liệu có thể… được không?',ex:'Would it be possible to finish it on Monday?'},
+{w:'I could help you next week.',ipa:'aɪ kʊd help juː nekst wiːk',vi:'Tuần sau tôi có thể giúp bạn.',ex:'I could help you next week, if that works.'},
+{w:'Let me know if…',ipa:'let miː nəʊ ɪf',vi:'Hãy cho tôi biết nếu…',ex:'Let me know if that works for you.'},
+{w:'I hope you understand.',ipa:'aɪ həʊp juː ˌʌndəˈstænd',vi:'Hy vọng bạn thông cảm.',ex:'I hope you understand my situation.'},
+{w:'Thanks for understanding.',ipa:'θæŋks fər ˌʌndəˈstændɪŋ',vi:'Cảm ơn bạn đã thông cảm.',ex:'Thanks for understanding. Best regards, Linh.'},
+{w:'polite',ipa:'pəˈlaɪt',vi:'lịch sự',ex:'A polite email keeps good relationships.'},
+{w:'firm',ipa:'fɜːm',vi:'rõ ràng, kiên quyết',ex:'Be polite but firm.'},
+{w:'regards',ipa:'rɪˈɡɑːdz',vi:'trân trọng (cuối thư)',ex:'Best regards, Linh.'},
+{w:'commitment',ipa:'kəˈmɪtmənt',vi:'việc đã cam kết, đã có lịch',ex:'I have a family commitment on Sunday.'}]}
+];
+const ALL=VOC.flatMap(g=>g.words.map(w=>({...w,g:g.id})));
+
+const CLS=[
+{t:'Thank you for thinking of me.',a:0},{t:'I really appreciate your offer.',a:0},{t:'I\'m glad you asked.',a:0},
+{t:'Unfortunately, I can\'t take on this task.',a:1},{t:'I\'m fully booked this week.',a:1},{t:'I have two deadlines on Friday.',a:1},
+{t:'Maybe a colleague can help you.',a:2},{t:'I could help you next Monday.',a:2},{t:'I hope you understand.',a:2}];
+const BREAD=['🍞 Bread 1: lời mở tích cực','🥬 Filling: "no" + lý do ngắn','🍞 Bread 2: phương án / lời kết tốt'];
+
+const SITUATION='Đồng nghiệp tên Mai nhờ em làm giúp báo cáo doanh số vào thứ Sáu. Nhưng tuần này em có hai hạn chót và không thể nhận thêm việc.';
+const PLAN_FIELDS=[
+{id:'ask',g:'A. Hiểu tình huống',q:'Mai đang nhờ em điều gì? Em muốn nói gì với Mai? (viết bằng tiếng Việt cũng được)',ph:'Mai nhờ em… Em muốn từ chối vì…'},
+{id:'b1',g:'B. Bread 1',q:'Em sẽ cảm ơn / khen / thể hiện thiện chí thế nào?',ph:'Cảm ơn Mai đã nghĩ đến mình, mình trân trọng…'},
+{id:'fill',g:'C. Filling',q:'Câu từ chối của em là gì? Lý do ngắn gọn là gì?',ph:'Rất tiếc mình không thể… vì…'},
+{id:'b2',g:'D. Bread 2',q:'Em sẽ đề nghị phương án thay thế nào và kết thư ra sao?',ph:'Thứ Hai tuần sau mình giúp được; hoặc nhờ…'}];
+const SAMPLE_PLAN=[
+'Bread 1: chào Mai → cảm ơn vì đã nghĩ đến mình → trân trọng lời nhờ.',
+'Filling: rất tiếc không thể giúp báo cáo vào thứ Sáu → lịch kín vì hai hạn chót → không muốn làm vội, nộp kém chất lượng.',
+'Bread 2: nếu thứ Hai tuần sau vẫn được thì mình giúp; hoặc nhờ Nam vì bạn ấy rảnh hơn → hy vọng Mai thông cảm → cảm ơn, ký tên.'];
+
+/* chunks: vi, en, k=[regex,hint], tag, an */
+const PARAS=[
+{title:'Đoạn 1 · Bread 1 (mở đầu tích cực)',chunks:[
+{vi:'Chào Mai,',en:'Hi Mai,',k:[['^\\s*(hi|hello|dear)\\b','lời chào (Hi / Dear)'],['mai','tên Mai']],tag:['Lời chào'],an:'Thư công việc thân mật mở bằng Hi + tên và dấu phẩy. Dùng Dear + tên nếu trang trọng hơn.'},
+{vi:'Cảm ơn bạn đã nghĩ đến mình.',en:'Thank you for thinking of me.',k:[['thank|thanks|grateful','cảm ơn'],['think|thought','nghĩ đến'],['\\bme\\b','mình (me)']],tag:['Bread 1'],an:'Câu cảm ơn mở đầu làm người nghe dễ chịu trước khi nghe lời từ chối. thank you for + V-ing.'},
+{vi:'Mình rất trân trọng lời đề nghị của bạn.',en:'I really appreciate your request.',k:[['appreciate|grateful|value|glad','trân trọng'],['request|offer|ask|trust','lời nhờ / đề nghị']],tag:['Bread 1'],an:'appreciate + danh từ (your request/offer). Không nói appreciate to your offer.'}]},
+{title:'Đoạn 2 · Filling ("no" + lý do)',chunks:[
+{vi:'Tuy nhiên, mình rất tiếc là không thể giúp bạn làm báo cáo vào thứ Sáu.',en:'Unfortunately, I can\'t help you with the report on Friday.',k:[['unfortunately|sorry|afraid|regret|however','rất tiếc / tuy nhiên'],['can.?t|cannot|can not|unable|not able|won.?t be able','không thể'],['help','giúp'],['report','báo cáo'],['friday','thứ Sáu']],tag:['Filling','Lời từ chối rõ ràng'],an:'Đây là "filling": câu từ chối phải RÕ (can\'t / won\'t be able to) nhưng mềm nhờ Unfortunately. help someone with something.'},
+{vi:'Tuần này lịch của mình kín vì mình có hai hạn chót.',en:'My schedule is full this week because I have two deadlines.',k:[['schedule|calendar|booked|busy|workload','lịch / bận'],['full|booked|busy|heavy|packed','kín'],['week','tuần này'],['because|as |since|due to','vì'],['two|2','hai'],['deadline','hạn chót']],tag:['Lý do ngắn'],an:'Chỉ cần 1 lý do ngắn, cụ thể (two deadlines). because + mệnh đề; due to + danh từ.'},
+{vi:'Mình không muốn làm vội và nộp một bản kém chất lượng.',en:'I don\'t want to rush and give you poor work.',k:[['don.?t want|do not want|would not|wouldn.?t|prefer not','không muốn'],['rush|hurry|hurried','làm vội'],['poor|bad|low|weak|mistake|quality|worse','kém chất lượng']],tag:['Lý do'],an:'Lý do thể hiện bạn quan tâm chất lượng công việc, nên lời từ chối nghe chuyên nghiệp hơn. want to + V.'}]},
+{title:'Đoạn 3 · Bread 2 (phương án + kết thư)',chunks:[
+{vi:'Nếu thứ Hai tuần sau vẫn được, mình sẵn lòng giúp bạn.',en:'If next Monday is still okay, I\'d be happy to help you.',k:[['\\bif\\b','nếu'],['monday','thứ Hai'],['okay|ok|fine|possible|works|still|good|free','vẫn được'],['happy|glad|pleased|willing|love|delighted','sẵn lòng'],['help','giúp']],tag:['Bread 2','Câu điều kiện'],an:'Đưa phương án thay thế: If + hiện tại đơn, I\'d be happy to + V. Đây là phần giữ quan hệ.'},
+{vi:'Hoặc bạn có thể hỏi Nam, vì bạn ấy có nhiều thời gian rảnh hơn.',en:'Or you could ask Nam, because he has more free time.',k:[['\\bor\\b|alternatively','hoặc'],['ask|talk|contact|check','hỏi'],['\\bnam\\b','Nam'],['because|as |since|he.?s|he is|has','vì'],['free|available|less busy|more time|spare','rảnh']],tag:['Phương án thay thế'],an:'could + V để gợi ý lịch sự. more free time = nhiều thời gian rảnh hơn (more + danh từ không đếm được).'},
+{vi:'Hy vọng bạn thông cảm.',en:'I hope you understand.',k:[['hope','hy vọng'],['understand','thông cảm']],tag:['Lời kết'],an:'I hope you understand là câu kết quen thuộc, giữ thái độ tôn trọng.'},
+{vi:'Cảm ơn bạn nhiều, Linh.',en:'Thanks a lot, Linh.',k:[['thank|thanks|regards|best','cảm ơn / lời kết'],['linh','tên Linh']],tag:['Ký tên'],an:'Kết thư bằng cảm ơn + tên. Có thể dùng Best regards, Linh.'}]}
+];
+const W_SITUATION='Sếp của em, ông Tom, nhờ em đi làm vào Chủ nhật để hoàn thành bài thuyết trình. Em đã có việc gia đình không thể đổi. Hãy viết email 60–120 từ theo sandwich method.';
+const W_SAMPLE='Dear Mr. Tom,\n\nThank you for thinking of me for this task. I really appreciate your trust.\n\nUnfortunately, I can\'t work this Sunday because I have a family commitment that I can\'t change.\n\nHowever, I can finish my part of the presentation by Friday evening, and I could check the slides on Monday morning. Would that work for you?\n\nThank you for understanding.\n\nBest regards,\nLinh';
+const W_CHECKS=[
+['Chào (Dear / Hi)','^\\s*(dear|hi|hello)\\b'],
+['Cảm ơn / trân trọng (Bread 1)','thank|appreciate|grateful'],
+['Từ chối rõ ràng (Filling)','unfortunately|sorry|afraid|can.?t|cannot|unable|not able|won.?t be able'],
+['Có lý do (because / since…)','because|since|\\bas i\\b|due to|so i'],
+['Phương án thay thế (Bread 2)','instead|could|would|how about|maybe|perhaps|\\bif\\b|offer|\\bby\\b'],
+['Kết thư (hope / understand / regards)','hope|understand|regards|sincerely|best|thanks']];
+
+/* ===== APP ===== */
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwnf8X3_Xfk9F_8HQtBwSFU_s28sRjxKb0aFaHCA4ybmMJvgaztBAbdvaFzITdbVXBt/exec';
+const LESSON='Writing-Sandwich-1';
+const PASS=0.8, KEY='wsw1:'+LESSON;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
+let S=Object.assign({name:'',known:{},quiz:null,cls:null,plan:{},planDone:false,tr:{},wr:'',wrDone:false,time:0,sent:false},load());
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const STEPS=[['voc','1. Từ vựng'],['plan','2. Dàn ý'],['tr','3. Dịch song song'],['wr','4. Viết lại từ ý của em'],['sub','5. Nộp bài']];
+const CH=PARAS.flatMap((p,pi)=>p.chunks.map((c,ci)=>({...c,pi,ci})));
+let cur='voc';
+
+/* speech */
+function say(t){try{if(!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-GB';u.rate=.9;speechSynthesis.speak(u)}catch(e){}}
+
+/* scoring */
+function gradeChunk(c,txt){
+  const t=txt.trim(),low=t.toLowerCase();let hit=0;const miss=[];
+  c.k.forEach(([re,h])=>{if(new RegExp(re,'i').test(low))hit++;else miss.push(h)});
+  const ratio=c.k.length?hit/c.k.length:0;let err=0;const errs=[];
+  if(t&&!/^[A-Z]/.test(t)){err++;errs.push('Chữ cái đầu câu cần viết hoa.')}
+  if(t&&!/[.,!?]$/.test(t)){err++;errs.push('Cuối câu cần có dấu câu.')}
+  if(/\bi\b/.test(t)){err++;errs.push('Chữ "I" luôn viết hoa.')}
+  return {ratio,miss,err,errs,raw:Math.max(0,ratio-0.1*err)};
+}
+function chunkScore(i){const r=S.tr[i];if(!r||!r.done)return 0;return r.score}
+function trTotal(){let s=0;CH.forEach((_,i)=>s+=chunkScore(i));return CH.length?s/CH.length*10:0}
+function isDone(id){
+  if(id==='voc')return !!(S.quiz&&S.quiz.done);
+  if(id==='plan')return !!(S.cls&&S.cls.done&&S.planDone);
+  if(id==='tr')return CH.every((_,i)=>S.tr[i]&&S.tr[i].done);
+  if(id==='wr')return !!S.wrDone;
+  return !!S.sent;
+}
+function topbar(){
+  const n=['voc','plan','tr','wr'].filter(isDone).length;
+  $('#pbar').style.width=(n/4*100)+'%';$('#ptxt').textContent='Hoàn thành '+n+'/4 phần';
+  $('#chips').innerHTML=STEPS.map(([id,t])=>`<button class="chip ${id===cur?'on':''} ${isDone(id)?'ok':''}" data-s="${id}">${t}</button>`).join('');
+  document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{cur=b.dataset.s;render()});
+}
+function fmtT(s){const m=Math.floor(s/60);return m?m+' phút '+(s%60)+' giây':s+' giây'}
+setInterval(()=>{if(!document.hidden&&S.name){S.time++;const t=$('#timer');if(t)t.textContent='⏱ Tổng thời gian học: '+fmtT(S.time);if(S.time%10===0)save()}},1000);
+
+function render(){topbar();({voc:rVoc,plan:rPlan,tr:rTr,wr:rWr,sub:rSub})[cur]();window.scrollTo({top:0})}
+
+/* ---- Step 1 ---- */
+let vf='all',vi=0,flip=false,qz=null;
+function deck(){return vf==='all'?ALL:ALL.filter(w=>w.g===vf)}
+function rVoc(){
+  if(qz)return rQuiz();
+  const d=deck();if(vi>=d.length)vi=0;const w=d[vi];const k=Object.keys(S.known).filter(x=>S.known[x]).length;
+  $('#main').innerHTML=`<div class="card"><p>Bước 1: Học từ vựng bằng thẻ. Mỗi lần chuyển thẻ, máy tự đọc từ và câu ví dụ. Chạm vào thẻ để xem nghĩa.</p>
+  <p class="muted">Em đã đánh dấu “Đã nhớ”: <b>${k}/${ALL.length}</b> từ.</p>
+  <div class="row"><button class="${vf==='all'?'chip on':'chip'}" data-f="all">Tất cả (${ALL.length})</button>${VOC.map(g=>`<button class="chip ${vf===g.id?'on':''}" data-f="${g.id}">${g.title}</button>`).join('')}</div>
+  <div class="muted" style="margin-top:8px">${w.g==='g1'?'TỪ ĐỂ TỪ CHỐI & GIẢI THÍCH':'CỤM ĐỂ MỞ VÀ KẾT THƯ'} · ${vi+1}/${d.length}</div>
+  <div class="flash" id="fl" role="button" tabindex="0"></div>
+  <div class="row" style="justify-content:center;margin-top:10px"><button id="pv">⏮</button><button id="sy">🔊 Nghe lại</button><button id="fp">🔄 Xem nghĩa</button><button id="nx">⏭</button></div>
+  <div class="row" style="justify-content:center;margin-top:8px"><button id="kn0">Chưa nhớ</button><button id="kn1" class="pri">✅ Đã nhớ</button></div></div>
+  <div class="card"><p class="muted">Học xong thì làm bài kiểm tra nhé.</p><button class="pri" id="tq">Kiểm tra từ vựng →</button> ${S.quiz&&S.quiz.done?'<span class="ok">✓ đã đạt '+S.quiz.score+'/'+S.quiz.total+'</span>':''}</div>`;
+  const draw=()=>{$('#fl').innerHTML=flip?`<div class="vi">${esc(w.vi)}</div><div class="ex">“${esc(w.ex)}”</div>`:`<div class="w">${esc(w.w)}</div><div class="ipa">/${esc(w.ipa)}/</div>`;$('#fp').textContent=flip?'🔄 Xem từ':'🔄 Xem nghĩa'};
+  draw();
+  const go=n=>{vi=(vi+n+d.length)%d.length;flip=false;rVoc();const x=deck()[vi];say(x.w+'. '+x.ex)};
+  $('#fl').onclick=$('#fp').onclick=()=>{flip=!flip;draw()};
+  $('#sy').onclick=()=>say(w.w+'. '+w.ex);$('#pv').onclick=()=>go(-1);$('#nx').onclick=()=>go(1);
+  $('#kn1').onclick=()=>{S.known[w.w]=true;save();go(1)};$('#kn0').onclick=()=>{S.known[w.w]=false;save();go(1)};
+  document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{vf=b.dataset.f;vi=0;flip=false;rVoc()});
+  $('#tq').onclick=()=>{const pool=shuffle(ALL).slice(0,8);qz={i:0,first:0,tries:0,pool,items:pool.map(w=>({w,opts:shuffle([w.vi,...shuffle(ALL.filter(x=>x.w!==w.w)).slice(0,2).map(x=>x.vi)]),res:null}))};rVoc()};
+}
+function rQuiz(){
+  const q=qz,it=q.items[q.i];
+  if(q.i>=q.items.length){
+    const ok=q.items.filter(x=>x.res==='ok').length,pass=ok>=6;
+    if(!S.quiz||!S.quiz.first&&S.quiz.first!==0)S.quiz={first:ok,total:q.items.length,done:false,score:0};
+    if(pass){S.quiz.done=true;S.quiz.score=ok;S.quiz.total=q.items.length}save();topbar();
+    $('#main').innerHTML=`<div class="card"><h2>Kết quả: ${ok}/${q.items.length}</h2><p>${pass?'<span class="ok">Đạt rồi! Em đã hoàn thành phần từ vựng.</span>':'<span class="no">Cần ít nhất 6/8. Em ôn thẻ rồi làm lại nhé.</span>'}</p><div class="row"><button id="rt">Làm lại</button><button class="pri" id="bk">Về thẻ từ</button>${pass?'<button class="pri" id="nxs">Sang bước 2 →</button>':''}</div></div>`;
+    $('#rt').onclick=()=>{qz=null;vf='all';rVoc();$('#tq').click()};$('#bk').onclick=()=>{qz=null;rVoc()};
+    if(pass)$('#nxs').onclick=()=>{qz=null;cur='plan';render()};return;
+  }
+  $('#main').innerHTML=`<div class="card"><div class="muted">Câu ${q.i+1}/${q.items.length}</div><h3>Nghĩa tiếng Việt của: <span style="color:var(--accent)">${esc(it.w.w)}</span> <button id="sq" style="padding:2px 8px">🔊</button></h3>${it.opts.map((o,i)=>`<button class="opt" data-o="${i}">${esc(o)}</button>`).join('')}<div id="qf"></div></div>`;
+  $('#sq').onclick=()=>say(it.w.w);
+  document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+    const good=it.opts[+b.dataset.o]===it.w.vi;
+    document.querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(it.opts[+x.dataset.o]===it.w.vi)x.classList.add('good')});
+    if(!good)b.classList.add('bad');it.res=good?'ok':'no';
+    $('#qf').innerHTML=`<div class="fb">${good?'✅ Đúng!':'❌ Chưa đúng.'} <i>${esc(it.w.ex)}</i><div style="margin-top:8px"><button class="pri" id="qn">Tiếp →</button></div></div>`;
+    $('#qn').onclick=()=>{q.i++;rQuiz()};
+  });
+}
+
+/* ---- Step 2 ---- */
+let clsOrder=null,clsState=null;
+function rPlan(){
+  if(!clsOrder){clsOrder=shuffle(CLS.map((_,i)=>i));clsState={};}
+  const fin=S.cls&&S.cls.done;
+  const items=clsOrder.map(i=>{const it=CLS[i],st=fin?{ok:true}:clsState[i];return `<div class="card" style="margin:8px 0;padding:10px"><div>“${esc(it.t)}” <button data-say="${i}" style="padding:1px 8px">🔊</button></div>${st&&st.ok?`<div class="ok">✅ ${BREAD[it.a]}</div>`:`<div class="bread">${BREAD.map((b,bi)=>`<button data-i="${i}" data-b="${bi}">${b}</button>`).join('')}</div>${st&&st.bad?'<div class="no">Chưa đúng, thử lại.</div>':''}`}</div>`}).join('');
+  const f=S.plan;
+  $('#main').innerHTML=`<div class="card"><h2>Bước 2: Dàn ý</h2><p><b>Phần A.</b> Mỗi câu sau thuộc phần nào của chiếc sandwich?</p><div class="muted">Điểm tính theo lần chọn đầu tiên.</div>${items}<div id="cres"></div></div>
+  <div class="card"><p><b>Phần B.</b> Lập dàn ý cho email.</p><div class="fb"><b>Tình huống:</b> ${esc(SITUATION)}</div>${PLAN_FIELDS.map(p=>`<div style="margin-top:10px"><div class="muted">${p.g}</div><label for="pf_${p.id}">${p.q}</label><textarea id="pf_${p.id}" placeholder="${esc(p.ph)}">${esc(f[p.id]||'')}</textarea></div>`).join('')}
+  <div class="row" style="margin-top:10px"><button id="sp">Xem dàn ý mẫu</button><button class="pri" id="np" ${isDone('plan')?'':'disabled'}>Sang bước 3 →</button></div><div id="spb"></div></div>`;
+  document.querySelectorAll('[data-say]').forEach(b=>b.onclick=()=>say(CLS[+b.dataset.say].t));
+  document.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.i,ok=CLS[i].a===+b.dataset.b;
+    if(!fin){const st=clsState[i]||(clsState[i]={tries:0});st.tries++;if(ok){st.ok=true;st.bad=false}else st.bad=true}
+    const all=CLS.every((_,k)=>clsState[k]&&clsState[k].ok);
+    if(all&&!fin){const first=CLS.filter((_,k)=>clsState[k].tries===1).length;S.cls={done:true,first,total:CLS.length};save()}
+    rPlan();
+  });
+  const chk=()=>{PLAN_FIELDS.forEach(p=>S.plan[p.id]=$('#pf_'+p.id).value);S.planDone=PLAN_FIELDS.every(p=>(S.plan[p.id]||'').trim().length>=8);save();$('#np').disabled=!isDone('plan');topbar()};
+  PLAN_FIELDS.forEach(p=>$('#pf_'+p.id).oninput=chk);
+  $('#sp').onclick=()=>{$('#spb').innerHTML='<div class="model"><b>Dàn ý mẫu</b><ul>'+SAMPLE_PLAN.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>'};
+  $('#np').onclick=()=>{cur='tr';render()};
+  if(fin)$('#cres').innerHTML=`<div class="fb ok">Phần A xong: đúng ngay lần đầu ${S.cls.first}/${S.cls.total} câu.</div>`;
+}
+
+/* ---- Step 3 ---- */
+function rTr(){
+  let idx=0;const parts=PARAS.map((p,pi)=>`<h3 style="margin-top:14px">${p.title}</h3>`+p.chunks.map((c,ci)=>{const i=idx++;return chunkHTML(i,c)}).join('')).join('');
+  $('#main').innerHTML=`<div class="card"><h2>Bước 3: Dịch song song</h2><p>Dịch từng cụm từ tiếng Việt sang tiếng Anh. Máy kiểm tra các ý chính (từ khoá) và lỗi viết hoa, dấu câu. Đạt từ 80% là qua.</p><p class="muted">⚠️ Xem gợi ý −0,2 điểm. Xem câu mẫu: tối đa 0,5 điểm/câu.</p><div class="muted">Điểm dịch hiện tại: <b id="ts">${trTotal().toFixed(1)}</b>/10</div></div>${parts}<div class="row"><button class="pri" id="n4" ${isDone('tr')?'':'disabled'}>Sang bước 4 →</button></div>`;
+  CH.forEach((c,i)=>bindChunk(i));
+  $('#n4').onclick=()=>{cur='wr';render()};
+}
+function chunkHTML(i,c){
+  const r=S.tr[i]||{};
+  return `<div class="card" id="c${i}"><div class="vi-line">${esc(c.vi)}</div>${c.tag.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}
+  <textarea id="t${i}" rows="2" placeholder="Viết tiếng Anh…" ${r.done?'readonly':''}>${esc(r.ans||'')}</textarea>
+  <div class="row" style="margin-top:6px"><button class="pri" data-k="${i}" ${r.done?'disabled':''}>Kiểm tra</button><button data-h="${i}" ${r.done?'disabled':''}>💡 Gợi ý (−0,2)</button><button data-m="${i}" ${r.done?'disabled':''}>👁 Câu mẫu</button><button data-sy="${i}">🔊</button></div><div id="f${i}">${r.done?doneHTML(i,c):''}</div></div>`;
+}
+function doneHTML(i,c){const r=S.tr[i];return `<div class="fb"><b class="ok">${r.shown?'Đã xem câu mẫu':'✅ Đạt'}</b> · ${r.score.toFixed(2)} điểm</div><div class="model"><b>Câu mẫu:</b> ${esc(c.en)}<div class="muted" style="margin-top:6px">${esc(c.an)}</div></div>`}
+function bindChunk(i){
+  const c=CH[i];
+  const st=()=>S.tr[i]||(S.tr[i]={hint:0,shown:false,done:false,ans:'',score:0,tries:0});
+  const kb=document.querySelector(`[data-k="${i}"]`);
+  kb.onclick=()=>{
+    const r=st(),txt=$('#t'+i).value;r.ans=txt;r.tries++;
+    if(!txt.trim()){$('#f'+i).innerHTML='<div class="fb no">Em chưa viết gì.</div>';return}
+    const g=gradeChunk(c,txt);
+    if(g.raw>=PASS){r.done=true;r.score=Math.max(0,g.raw-0.2*r.hint);save();upd(i,c)}
+    else{save();$('#f'+i).innerHTML=`<div class="fb"><b class="no">Chưa đủ ý</b>: đạt ${Math.round(g.raw*100)}% (cần ≥ 80%). Thiếu ${g.miss.length} ý chính.${g.errs.map(e=>'<div class="no">• '+e+'</div>').join('')}</div>`}
+  };
+  document.querySelector(`[data-h="${i}"]`).onclick=()=>{
+    const r=st();const first=!r.hint;if(first)r.hint=1;save();
+    const g=gradeChunk(c,$('#t'+i).value);
+    $('#f'+i).innerHTML=`<div class="fb">💡 ${first?'(đã trừ 0,2 điểm)':''} Các ý cần có:<ul>${c.k.map(k=>`<li>${esc(k[1])}</li>`).join('')}</ul></div>`;
+  };
+  document.querySelector(`[data-m="${i}"]`).onclick=()=>{const r=st();r.shown=true;r.done=true;r.ans=$('#t'+i).value;r.score=Math.min(0.5,Math.max(0,gradeChunk(c,r.ans).raw-0.2*r.hint));save();upd(i,c)};
+  document.querySelector(`[data-sy="${i}"]`).onclick=()=>say(c.en);
+}
+function upd(i,c){
+  $('#f'+i).innerHTML=doneHTML(i,c);$('#t'+i).readOnly=true;
+  ['k','h','m'].forEach(a=>{const b=document.querySelector(`[data-${a}="${i}"]`);if(b)b.disabled=true});
+  $('#ts').textContent=trTotal().toFixed(1);$('#n4').disabled=!isDone('tr');topbar();
+}
+
+/* ---- Step 4 ---- */
+function wc(t){return (t.trim().match(/[A-Za-zÀ-ỹ']+/g)||[]).length}
+function wChecks(t){return W_CHECKS.map(([l,re])=>[l,new RegExp(re,'i').test(t)])}
+function rWr(){
+  $('#main').innerHTML=`<div class="card"><h2>Bước 4: Viết lại từ ý của em</h2><div class="fb"><b>Tình huống mới:</b> ${esc(W_SITUATION)}</div>
+  <p class="muted">Nhìn lại dàn ý ở bước 2 và các cụm ở bước 3, nhưng hãy dùng ý và từ của riêng em.</p>
+  <textarea id="wt" style="min-height:220px" placeholder="Dear Mr. Tom,…">${esc(S.wr||'')}</textarea>
+  <div class="muted" id="wcnt"></div><div class="chk" id="wck"></div>
+  <div class="row" style="margin-top:10px"><button class="pri" id="wd">Hoàn thành phần này</button><button id="ws">Xem bài mẫu</button><button id="w5" class="pri" ${S.wrDone?'':'disabled'}>Sang bước 5 →</button></div><div id="wf"></div></div>`;
+  const up=()=>{const t=$('#wt').value;S.wr=t;save();const n=wc(t);$('#wcnt').textContent=n+' từ (cần 60–120 từ)';$('#wck').innerHTML=wChecks(t).map(([l,o])=>`<span class="${o?'ok':'muted'}">${o?'✅':'⬜'} ${l}</span>`).join('<br>')};
+  $('#wt').oninput=up;up();
+  $('#wd').onclick=()=>{const t=$('#wt').value,n=wc(t),ck=wChecks(t),core=ck[1][1]&&ck[2][1]&&ck[4][1];
+    if(n<50||!core){$('#wf').innerHTML=`<div class="fb no">Chưa đủ: cần ít nhất 50 từ và có đủ Bread 1 (cảm ơn), Filling (từ chối) và Bread 2 (phương án thay thế).</div>`;return}
+    S.wrDone=true;save();$('#wf').innerHTML=`<div class="fb ok">✅ Đã hoàn thành: ${n} từ, ${ck.filter(x=>x[1]).length}/${ck.length} mục. ${n>120?'Hơi dài, thử viết gọn lại.':''}</div>`;$('#w5').disabled=false;topbar()};
+  $('#ws').onclick=()=>{$('#wf').innerHTML=`<div class="model"><b>Bài mẫu</b><pre style="white-space:pre-wrap;font-family:inherit;margin:6px 0 0">${esc(W_SAMPLE)}</pre></div>`};
+  $('#w5').onclick=()=>{cur='sub';render()};
+}
+
+/* ---- Step 5 ---- */
+function summary(){
+  const ck=wChecks(S.wr||'');
+  return {vocab:S.quiz?`Từ vựng: ${S.quiz.score||0}/${S.quiz.total} (lần đầu ${S.quiz.first})`:'chưa làm',
+    gram:S.cls?`Phân loại sandwich: lần đầu đúng ${S.cls.first}/${S.cls.total}`:'chưa làm',
+    ctx:`Dàn ý: ${S.planDone?'đã điền đủ':'chưa đủ'}`,
+    rec:`Thời gian: ${fmtT(S.time)}`,
+    para:`Dịch: ${trTotal().toFixed(1)}/10; gợi ý ${Object.values(S.tr).filter(r=>r.hint).length} câu; xem mẫu ${Object.values(S.tr).filter(r=>r.shown).length} câu; Viết lại: ${wc(S.wr||'')} từ, ${ck.filter(x=>x[1]).length}/${ck.length} mục`,
+    feedback:'Bài Writing Sandwich Method'};
+}
+function rSub(){
+  const s=summary(),miss=['voc','plan','tr','wr'].filter(x=>!isDone(x));
+  $('#main').innerHTML=`<div class="card"><h2>Bước 5: Nộp bài</h2><table>${Object.entries({'Từ vựng':s.vocab,'Phân loại':s.gram,'Dàn ý':s.ctx,'Thời gian':s.rec,'Dịch & viết':s.para}).map(([k,v])=>`<tr><th>${k}</th><td>${esc(v)}</td></tr>`).join('')}</table>
+  ${miss.length&&!S.sent?`<div class="fb no" style="margin-top:10px">Em chưa hoàn thành: ${miss.map(x=>STEPS.find(y=>y[0]===x)[1]).join(', ')}. Cô vẫn nhận bài, nhưng em nên làm xong trước.</div>`:''}
+  <div class="row" style="margin-top:12px"><button class="pri" id="sb">${S.sent?'Nộp lại':'Nộp bài'}</button></div><div id="sr">${S.sent?'<div class="fb ok">✅ Em đã nộp bài. Cô sẽ nhận xét sớm.</div>':''}</div></div>`;
+  $('#sb').onclick=async()=>{
+    $('#sb').disabled=true;$('#sr').innerHTML='<div class="fb">Đang gửi…</div>';
+    const details=[];
+    CH.forEach((c,i)=>{const r=S.tr[i]||{};details.push({part:'Dịch song song',question:c.vi,answer:r.ans||'',correct:c.en,result:r.done?(r.shown?'xem mẫu · ':'đạt · ')+(r.score||0).toFixed(2)+(r.hint?' · có gợi ý':''):'chưa làm'})});
+    details.push({part:'Viết lại',question:W_SITUATION,answer:S.wr||'',correct:W_SAMPLE,result:S.wrDone?'hoàn thành':'chưa đạt yêu cầu'});
+    PLAN_FIELDS.forEach(p=>details.push({part:'Dàn ý',question:p.q,answer:S.plan[p.id]||'',correct:'',result:''}));
+    try{
+      const r=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({type:'submit',name:S.name,lesson:LESSON,summary:s,details})});
+      let ok=r.ok;try{const j=await r.json();ok=j.ok!==false}catch(e){}
+      if(!ok)throw new Error('server');
+      S.sent=true;save();topbar();rSub();
+    }catch(e){$('#sr').innerHTML='<div class="fb no">Chưa gửi được. Em kiểm tra mạng rồi bấm lại nhé.</div>';$('#sb').disabled=false}
+  };
+}
+
+/* ---- gate ---- */
+function showApp(){$('#gate').hidden=true;$('#app').hidden=false;$('#who').textContent='Học sinh: '+S.name;$('#timer').textContent='⏱ Tổng thời gian học: '+fmtT(S.time);render()}
+$('#go').onclick=()=>{const v=$('#nm').value.trim();if(!v){$('#nm').focus();return}S.name=v;save();showApp()};
+$('#nm').onkeydown=e=>{if(e.key==='Enter')$('#go').click()};
+$('#rename').onclick=()=>{S.name='';save();$('#app').hidden=true;$('#gate').hidden=false;$('#nm').value='';$('#nm').focus()};
+if(S.name)showApp();else $('#gate').hidden=false;
+</script>
+</body>
+</html>

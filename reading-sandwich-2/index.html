@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reading 2 · The Sandwich Technique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f7f6;--surface:#fff;--ink:#14282b;--muted:#566b6e;--line:#d4e1df;--accent:#0e7c7b;--accent-ink:#fff;--soft:#e1f0ee;--warm:#c8531f;--good:#1b7f45;--bad:#b83227;--mark:#fff0c2;
+--font-display:'Bricolage Grotesque','Be Vietnam Pro',system-ui,sans-serif;--font-body:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1b1d;--surface:#172a2d;--ink:#e6f1ef;--muted:#9bb2b4;--line:#27403f;--accent:#4cc3bd;--accent-ink:#06201f;--soft:#1d3a3b;--warm:#f0925f;--good:#5dd28c;--bad:#ff8a7a;--mark:#4a3d12;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);line-height:1.7;font-size:16px}
+.wrap{max-width:720px;margin:0 auto;padding:18px 16px 200px}
+h1,h2,h3{font-family:var(--font-display);margin:0 0 8px;line-height:1.25}
+h1{font-size:1.45rem}h2{font-size:1.2rem}h3{font-size:1.05rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+.muted{color:var(--muted);font-size:.92rem}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 14px}
+button.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,textarea:focus-visible,input:focus-visible,.w:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+input[type=text],textarea{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px}
+textarea{min-height:70px;resize:vertical}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bar{height:8px;background:var(--soft);border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.chip{padding:6px 12px;border-radius:99px;font-size:.88rem}
+.chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chip.dn::after{content:" ✓";color:var(--good)}.chip.on.dn::after{color:var(--accent-ink)}
+.hero{display:flex;gap:12px;align-items:center}.hero .ic{font-size:2rem}
+.gate{text-align:center;padding:28px 16px}
+.sticky{position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5}
+.ok{color:var(--good)}.no{color:var(--bad)}
+.fb{margin-top:8px;padding:10px;border-radius:10px;background:var(--soft)}
+.model{background:var(--mark);border-radius:10px;padding:10px;margin-top:8px}
+.tag{display:inline-block;background:var(--mark);border-radius:6px;padding:1px 8px;font-size:.78rem;margin-right:4px}
+.vi-line{font-size:1.05rem;font-weight:500}
+/* reading */
+.para{margin:0 0 14px;font-size:1.12rem}
+.w{cursor:pointer;border-radius:4px;padding:0 1px;border-bottom:1px dotted var(--muted)}
+.w:hover,.w.sel{background:var(--mark)}
+.w.seen{border-bottom-color:var(--accent)}
+.mini{padding:0 6px;font-size:.8rem;margin:0 2px;vertical-align:baseline;border-radius:6px}
+.trs{display:block;margin:4px 0 8px;padding:6px 10px;background:var(--soft);border-radius:8px;font-size:.95rem;color:var(--muted)}
+.sheet{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:2px solid var(--accent);padding:12px 16px;z-index:20;box-shadow:0 -6px 24px rgba(0,0,0,.15)}
+.sheet .in{max-width:720px;margin:0 auto}
+.sheet .big{font-family:var(--font-display);font-size:1.5rem;font-weight:700}
+.pairhead{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-weight:600;font-size:.9rem;margin:10px 0 4px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 10px;align-items:stretch}
+.pair .src{background:var(--soft);border-radius:10px;padding:10px;font-size:.98rem}
+.pair textarea{height:100%;min-height:110px;font-size:.98rem}
+.num{display:inline-block;background:var(--accent);color:var(--accent-ink);border-radius:99px;min-width:22px;height:22px;text-align:center;font-size:.8rem;line-height:22px;margin-right:6px;font-weight:600}
+.sr{position:absolute;left:-9999px}
+.th{border:1px solid var(--line);padding:6px;text-align:left}.td{border:1px solid var(--line);padding:6px}
+.rec{width:14px;height:14px;border-radius:50%;background:var(--bad);display:inline-block;animation:p 1s infinite}
+@keyframes p{50%{opacity:.25}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div id="gate" class="card gate" hidden>
+  <div style="font-size:2.2rem">📖</div>
+  <h2>Em tên là gì?</h2>
+  <p class="muted">Cô cần biết tên để nhận bài của em.</p>
+  <label for="nm" class="muted">Họ và tên</label>
+  <input id="nm" type="text" autocomplete="name" style="max-width:320px;margin:6px auto;display:block">
+  <button class="pri" id="go">Bắt đầu</button>
+</div>
+
+<div id="app" hidden>
+  <div class="sticky">
+    <div class="hero"><div class="ic">🥪</div><div><h1>Reading · The Sandwich Technique</h1><div class="muted">Read, translate, record, then submit. Em có thể làm các bước theo thứ tự bất kỳ.</div></div></div>
+    <div class="muted" style="margin-top:6px"><span id="who"></span> <button id="rename" style="padding:2px 8px;font-size:.8rem">Đổi tên</button></div>
+    <div class="row" style="margin-top:6px"><div class="bar" style="flex:1"><i id="pbar"></i></div><span class="muted" id="ptxt"></span></div>
+    <div class="chips" id="chips"></div>
+  </div>
+  <div id="main"></div>
+</div>
+</div>
+<div class="sheet" id="sheet" hidden><div class="in" id="sheetin"></div></div>
+
+<script>
+/* ===== DATA ===== */
+const TITLE='The Sandwich Technique: Say Hard Things Kindly';
+const PASSAGE=[
+[{en:'Sometimes we must tell a coworker that something is wrong.'},
+ {en:'A report may have mistakes, or a plan may not work.'},
+ {en:'If we speak too directly, the other person may feel hurt and start an argument.'}],
+[{en:'The sandwich technique can help.'},
+ {en:'First, say something positive.'},
+ {en:'For example, “You worked hard on this report, and the design is clear.”'},
+ {en:'This shows respect and makes the person ready to listen.'}],
+[{en:'Next, give the problem in a calm and clear way.'},
+ {en:'Talk about the work, not the person.'},
+ {en:'You can say, “The numbers on page two need checking.”'},
+ {en:'Then suggest a solution, so the conversation stays useful.'}],
+[{en:'Finally, end with something positive again.'},
+ {en:'You might say, “I\'m sure the final version will be excellent. Let me know if I can help.”'}],
+[{en:'With this technique, people feel less defensive, so there are fewer arguments and less negative energy.'},
+ {en:'However, be honest: the positive words must be real, or the person will not trust you.'}]];
+
+/* word: [IPA, nghĩa trong bài] */
+const DICT={
+'sometimes':['ˈsʌmtaɪmz','đôi khi'],'we':['wiː','chúng ta'],'must':['mʌst','phải'],'tell':['tel','nói với, bảo'],'a':['ə','một'],
+'coworker':['ˈkəʊwɜːkə','đồng nghiệp'],'that':['ðæt','rằng'],'something':['ˈsʌmθɪŋ','điều gì đó'],'is':['ɪz','thì, là'],'wrong':['rɒŋ','sai, không ổn'],
+'report':['rɪˈpɔːt','bản báo cáo'],'may':['meɪ','có thể'],'have':['hæv','có'],'mistakes':['mɪˈsteɪks','những lỗi sai'],'or':['ɔː','hoặc'],
+'plan':['plæn','kế hoạch'],'not':['nɒt','không'],'work':['wɜːk','hoạt động / công việc'],'if':['ɪf','nếu'],'speak':['spiːk','nói'],
+'too':['tuː','quá'],'directly':['dəˈrektli','thẳng thừng, trực tiếp'],'the':['ðə','(mạo từ xác định)'],'other':['ˈʌðə','khác, kia'],
+'person':['ˈpɜːsn','người'],'feel':['fiːl','cảm thấy'],'hurt':['hɜːt','bị tổn thương'],'and':['ænd','và'],'start':['stɑːt','bắt đầu'],
+'an':['æn','một'],'argument':['ˈɑːɡjumənt','cuộc tranh cãi'],'sandwich':['ˈsænwɪdʒ','bánh sandwich'],'technique':['tekˈniːk','kỹ thuật'],
+'can':['kæn','có thể'],'help':['help','giúp'],'first':['fɜːst','đầu tiên'],'say':['seɪ','nói'],'positive':['ˈpɒzətɪv','tích cực'],
+'for':['fɔː','cho, chẳng hạn'],'example':['ɪɡˈzɑːmpl','ví dụ'],'you':['juː','bạn'],'worked':['wɜːkt','đã làm việc'],'hard':['hɑːd','chăm chỉ'],
+'on':['ɒn','về, trên'],'this':['ðɪs','này'],'design':['dɪˈzaɪn','thiết kế'],'clear':['klɪə','rõ ràng'],'shows':['ʃəʊz','cho thấy'],
+'respect':['rɪˈspekt','sự tôn trọng'],'makes':['meɪks','làm cho, khiến'],'ready':['ˈredi','sẵn sàng'],'to':['tuː','để'],'listen':['ˈlɪsn','lắng nghe'],
+'next':['nekst','tiếp theo'],'give':['ɡɪv','đưa ra, nêu'],'problem':['ˈprɒbləm','vấn đề'],'in':['ɪn','theo, trong'],'calm':['kɑːm','bình tĩnh'],
+'way':['weɪ','cách'],'talk':['tɔːk','nói chuyện'],'about':['əˈbaʊt','về'],'numbers':['ˈnʌmbəz','các con số'],'page':['peɪdʒ','trang'],
+'two':['tuː','hai'],'need':['niːd','cần'],'checking':['ˈtʃekɪŋ','việc kiểm tra'],'then':['ðen','sau đó'],'suggest':['səˈdʒest','đề xuất'],
+'solution':['səˈluːʃn','giải pháp'],'so':['səʊ','nên, vì vậy'],'conversation':['ˌkɒnvəˈseɪʃn','cuộc trò chuyện'],'stays':['steɪz','vẫn, giữ nguyên'],
+'useful':['ˈjuːsfl','hữu ích'],'finally':['ˈfaɪnəli','cuối cùng'],'end':['end','kết thúc'],'with':['wɪð','bằng, với'],'again':['əˈɡen','một lần nữa'],
+'might':['maɪt','có thể (ít chắc hơn may)'],'i\'m':['aɪm','tôi là / tôi'],'sure':['ʃɔː','chắc chắn'],'final':['ˈfaɪnl','cuối cùng'],
+'version':['ˈvɜːʃn','phiên bản'],'will':['wɪl','sẽ'],'be':['biː','thì, là'],'excellent':['ˈeksələnt','xuất sắc'],'let':['let','để, cho phép'],
+'me':['miː','tôi'],'know':['nəʊ','biết'],'i':['aɪ','tôi'],'people':['ˈpiːpl','mọi người'],'less':['les','ít hơn'],'defensive':['dɪˈfensɪv','có tâm lý phòng thủ'],
+'there':['ðeə','có (there are)'],'are':['ɑː','thì, là'],'fewer':['ˈfjuːə','ít hơn (đếm được)'],'arguments':['ˈɑːɡjumənts','những cuộc tranh cãi'],
+'negative':['ˈneɡətɪv','tiêu cực'],'energy':['ˈenədʒi','năng lượng'],'however':['haʊˈevə','tuy nhiên'],'honest':['ˈɒnɪst','trung thực'],
+'words':['wɜːdz','lời nói'],'real':['rɪəl','thật lòng'],'trust':['trʌst','tin tưởng'],'of':['əv','của']
+};
+
+const SUMMARY=[
+{vi:'Kỹ thuật sandwich giúp chúng ta nói những điều khó nghe một cách nhẹ nhàng.',
+ k:[['technique|method|sandwich','kỹ thuật sandwich'],['help','giúp'],['\\bus\\b|\\bwe\\b|people|you','chúng ta'],['say|tell|speak|give|talk','nói'],['difficult|hard|tough|bad|negative|unpleasant|sensitive','điều khó nghe'],['kind|gentl|polite|soft|nice|gently','nhẹ nhàng']]},
+{vi:'Đầu tiên, hãy nói điều tích cực để người nghe cảm thấy được tôn trọng.',
+ k:[['first|begin|start','đầu tiên'],['say|tell|give|speak|share','nói'],['positive|good|nice|kind|compliment|praise','điều tích cực'],['\\bso\\b|so that|to make|makes?|in order to|because','để'],['listen|person|other|colleague|coworker|people|hear','người nghe'],['respect|value|appreciat','được tôn trọng']]},
+{vi:'Sau đó, nêu vấn đề một cách bình tĩnh và đề xuất cách giải quyết.',
+ k:[['then|next|after','sau đó'],['explain|describe|state|give|talk|mention|present|show|point|raise','nêu'],['problem|issue|mistake|difficulty','vấn đề'],['calm|quiet|gentl|clear|polite|patient','bình tĩnh'],['suggest|propose|offer|recommend','đề xuất'],['solution|way|fix|answer|idea|option','cách giải quyết']]},
+{vi:'Cuối cùng, kết thúc bằng một lời tích cực khác.',
+ k:[['final|last|end|finish|lastly','cuối cùng'],['end|finish|close|conclude','kết thúc'],['another|again|more|second|one more','một… khác'],['positive|good|nice|kind|compliment|praise|encourag','tích cực'],['comment|word|remark|sentence|message|note|praise|thing|statement|compliment','lời']]},
+{vi:'Nhờ vậy, mọi người ít phòng thủ hơn nên có ít tranh cãi và ít năng lượng tiêu cực hơn.',
+ k:[['this way|because of this|thanks to|as a result|\\bso\\b|with this|therefore','nhờ vậy'],['people|everyone|they|person|colleague','mọi người'],['less defens|not defens|less angry|more relax|less upset|feel safe|comfortable','ít phòng thủ'],['fewer|less|few|reduce|avoid|\\bno\\b','ít hơn'],['argument|fight|conflict|disagree|quarrel','tranh cãi'],['negativ|bad|tension|stress','tiêu cực']]},
+{vi:'Nhưng lời khen phải chân thành, nếu không người khác sẽ không tin bạn.',
+ k:[['\\bbut\\b|however|though|yet','nhưng'],['praise|compliment|positive|word|comment|kind','lời khen'],['must|should|need|have to|has to','phải'],['sincere|honest|real|true|genuine','chân thành'],['trust|believe','tin'],['not|n.t|never|\\bno ','không']]}
+];
+
+/* ===== APP ===== */
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwnf8X3_Xfk9F_8HQtBwSFU_s28sRjxKb0aFaHCA4ybmMJvgaztBAbdvaFzITdbVXBt/exec';
+const LESSON='Reading-Sandwich-2';
+const KEY='rsw3:'+LESSON;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
+let S=Object.assign({name:'',look:{},tr:{},audioSent:null,sent:false,time:0},load());
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const STEPS=[['read','1. Read'],['tr','2. Translate'],['rec','3. Record'],['sub','4. Submit']];
+let cur='read';
+
+function say(t,rate){try{if(!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-GB';u.rate=rate||.9;speechSynthesis.speak(u)}catch(e){}}
+function fmtT(s){const m=Math.floor(s/60);return m?m+' phút '+(s%60)+' giây':s+' giây'}
+setInterval(()=>{if(!document.hidden&&S.name){S.time++;if(S.time%10===0)save()}},1000);
+
+/* chấm ngầm cho giáo viên (học sinh không thấy) */
+function gradeChunk(c,txt){
+  const t=txt.trim(),low=t.toLowerCase();let hit=0;const miss=[];
+  c.k.forEach(([re,h])=>{if(new RegExp(re,'i').test(low))hit++;else miss.push(h)});
+  const ratio=c.k.length?hit/c.k.length:0;let err=0;
+  if(t&&!/^[A-Z]/.test(t))err++;if(t&&!/[.,!?]$/.test(t))err++;if(/\bi\b/.test(t))err++;
+  return {ratio,miss,err,raw:t?Math.max(0,ratio-0.1*err):0};
+}
+function trTotal(){let s=0;SUMMARY.forEach((c,i)=>s+=gradeChunk(c,S.tr[i]||'').raw);return s/SUMMARY.length*10}
+function nLook(){return Object.keys(S.look).length}
+function nTr(){return SUMMARY.filter((_,i)=>(S.tr[i]||'').trim()).length}
+function touched(id){return id==='read'?nLook()>0:id==='tr'?nTr()>0:id==='rec'?!!(R.blob||S.audioSent):!!S.sent}
+
+function topbar(){
+  const n=['read','tr','rec'].filter(touched).length;
+  $('#pbar').style.width=(n/3*100)+'%';$('#ptxt').textContent='Đã làm '+n+'/3 phần';
+  $('#chips').innerHTML=STEPS.map(([id,t])=>`<button class="chip ${id===cur?'on':''} ${touched(id)?'dn':''}" data-s="${id}">${t}</button>`).join('');
+  document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{cur=b.dataset.s;render()});
+}
+function render(){closeSheet();topbar();({read:rRead,tr:rTr,rec:rRec,sub:rSub})[cur]();window.scrollTo({top:0})}
+
+/* ---- word sheet ---- */
+function closeSheet(){$('#sheet').hidden=true;document.querySelectorAll('.w.sel').forEach(x=>x.classList.remove('sel'))}
+function showWord(el){
+  const raw=el.dataset.w,k=raw.toLowerCase().replace(/^'+|'+$/g,''),d=DICT[k];
+  document.querySelectorAll('.w.sel').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');el.classList.add('seen');
+  if(!S.look[k]){S.look[k]=1;save();topbar()}
+  $('#sheetin').innerHTML=`<div class="row" style="justify-content:space-between"><div><span class="big">${esc(raw)}</span> <span class="muted">/${esc(d?d[0]:'?')}/</span></div><button id="sc" style="padding:2px 10px" aria-label="Close">✕</button></div>
+  <div style="font-size:1.1rem"><b>${esc(d?d[1]:'—')}</b></div><div class="row" style="margin-top:6px"><button id="sw">🔊 Listen</button><button id="sws">🐢 Slowly</button></div>`;
+  $('#sheet').hidden=false;$('#sc').onclick=closeSheet;$('#sw').onclick=()=>say(raw,.9);$('#sws').onclick=()=>say(raw,.55);say(raw,.9);
+}
+
+/* ---- Step 1 ---- */
+function wrapWords(t){return esc(t).replace(/[A-Za-z']+/g,m=>`<span class="w ${S.look[m.toLowerCase()]?'seen':''}" data-w="${m}" role="button" tabindex="0">${m}</span>`)}
+function rRead(){
+  const body=PASSAGE.map((p,pi)=>`<p class="para">${p.map((s,si)=>`<span>${wrapWords(s.en)}</span> <button class="mini" data-sp="${pi}-${si}" aria-label="Listen to sentence">🔊</button>`).join(' ')}</p>`).join('');
+  $('#main').innerHTML=`<div class="card"><h2>${TITLE}</h2>
+  <p class="muted">👆 Chạm vào bất kỳ từ nào để nghe, xem phiên âm (IPA) và nghĩa tiếng Việt. Nút 🔊 cuối câu để nghe cả câu.</p>
+  <div class="row" style="margin-bottom:12px"><button id="pa">🔊 Listen to the whole text</button></div>${body}</div>
+  <div class="row"><button class="pri" id="n2">Next: Translate →</button></div>`;
+  document.querySelectorAll('.w').forEach(w=>{w.onclick=()=>showWord(w);w.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showWord(w)}}});
+  document.querySelectorAll('[data-sp]').forEach(b=>b.onclick=()=>{const [a,c]=b.dataset.sp.split('-');say(PASSAGE[a][c].en,.85)});
+  $('#pa').onclick=()=>say(PASSAGE.map(p=>p.map(s=>s.en).join(' ')).join(' '),.85);
+  $('#n2').onclick=()=>{cur='tr';render()};
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.w')&&!e.target.closest('#sheet'))closeSheet()});
+
+/* ---- Step 2: parallel translation ---- */
+function rTr(){
+  const rows=SUMMARY.map((c,i)=>`<div class="pair"><div class="src"><span class="num">${i+1}</span>${esc(c.vi)}</div><div><label class="sr" for="t${i}">English ${i+1}</label><textarea id="t${i}" placeholder="Write in English…">${esc(S.tr[i]||'')}</textarea></div></div>`).join('');
+  $('#main').innerHTML=`<div class="card"><h2>Translate the summary</h2>
+  <p>Bên trái là bản tóm tắt tiếng Việt về cách dùng sandwich technique để tránh tranh cãi và tiêu cực. Hãy dịch từng câu sang tiếng Anh ở cột bên phải. Em có thể quay lại bước 1 để xem bài đọc.</p>
+  <div class="pairhead"><span>🇻🇳 Tiếng Việt</span><span>🇬🇧 English</span></div>${rows}</div>
+  <div class="row"><button id="b1">← Read</button><button class="pri" id="n3">Next: Record →</button></div>`;
+  SUMMARY.forEach((_,i)=>{$('#t'+i).oninput=e=>{S.tr[i]=e.target.value;save();topbar()}});
+  $('#b1').onclick=()=>{cur='read';render()};$('#n3').onclick=()=>{cur='rec';render()};
+}
+
+/* ---- Step 3: recording ---- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let R={mr:null,rc:null,stream:null,chunks:[],blob:null,url:null,t0:0,dur:0,tr:'',score:null,live:false,busy:false,uploaded:false,target:''};
+function norm(t){return t.toLowerCase().replace(/[^a-z' ]/g,' ').split(/\s+/).filter(Boolean)}
+function simScore(target,said){
+  const a=norm(target),b=norm(said);if(!a.length||!b.length)return 0;
+  const dp=Array.from({length:a.length+1},()=>new Array(b.length+1).fill(0));
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]+1:Math.max(dp[i-1][j],dp[i][j-1]);
+  return Math.round(dp[a.length][b.length]/a.length*100);
+}
+function myText(){return SUMMARY.map((_,i)=>(S.tr[i]||'').trim()).filter(Boolean).join(' ')}
+function rRec(){
+  const mine=myText(),target=mine||PASSAGE.map(p=>p.map(s=>s.en).join(' ')).join(' ');
+  $('#main').innerHTML=`<div class="card"><h2>Read aloud and record</h2>
+  <p>${mine?'Đọc to bản dịch tiếng Anh của chính em dưới đây.':'Em chưa dịch phần nào ở bước 2, nên hãy đọc to bài đọc. (Em có thể quay lại bước 2 để dịch trước.)'} Ghi âm bao nhiêu lần cũng được, bản ghi cuối cùng sẽ được nộp ở bước 4.</p>
+  <div class="model" style="font-size:1.1rem" id="tgt">${esc(target)}</div>
+  <div class="row" style="margin:10px 0"><button id="lm">🔊 Listen first</button><button id="lm2">🐢 Slowly</button></div>
+  <div class="row"><button class="pri" id="rb">🎙 Start recording</button><button id="rs" disabled>⏹ Stop</button><span id="rst" class="muted"></span></div>
+  <div id="rp" style="margin-top:10px"></div></div>
+  <div class="row"><button id="b2">← Translate</button><button class="pri" id="n4">Next: Submit →</button></div>`;
+  R.target=target;
+  $('#lm').onclick=()=>say(target,.85);$('#lm2').onclick=()=>say(target,.6);
+  $('#rb').onclick=startRec;$('#rs').onclick=stopRec;
+  $('#b2').onclick=()=>{cur='tr';render()};$('#n4').onclick=()=>{cur='sub';render()};
+  if(R.blob)showRec();else if(S.audioSent)$('#rp').innerHTML='<div class="fb">Em đã nộp một bản ghi âm trước đó. Ghi lại nếu muốn thay bằng bản mới.</div>';
+}
+async function startRec(){
+  if(R.live||R.busy)return;R.busy=true;
+  try{
+    try{speechSynthesis.cancel()}catch(e){}
+    R.stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    R.chunks=[];R.tr='';R.score=null;R.blob=null;R.uploaded=false;if(R.url){URL.revokeObjectURL(R.url);R.url=null}
+    const mr=new MediaRecorder(R.stream);R.mr=mr;
+    mr.ondataavailable=e=>{if(e.data&&e.data.size)R.chunks.push(e.data)};
+    mr.onstop=()=>{R.stream.getTracks().forEach(t=>t.stop());R.blob=new Blob(R.chunks,{type:mr.mimeType||'audio/webm'});R.url=URL.createObjectURL(R.blob);R.dur=Math.round((Date.now()-R.t0)/1000);R.live=false;
+      R.score=R.tr.trim()?simScore(R.target,R.tr):null;showRec();topbar()};
+    if(SR){try{const rc=new SR();rc.lang='en-US';rc.continuous=true;rc.interimResults=false;rc.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal)R.tr+=' '+e.results[i][0].transcript};rc.onerror=()=>{};R.rc=rc;rc.start()}catch(e){R.rc=null}}
+    R.t0=Date.now();mr.start();R.live=true;
+    $('#rb').disabled=true;$('#rs').disabled=false;$('#rst').innerHTML='<span class="rec"></span> Recording…';
+  }catch(e){$('#rp').innerHTML='<div class="fb no">Không mở được micro. Em hãy bấm “Cho phép” micro cho trang này (dùng Chrome hoặc Safari) rồi thử lại.</div>'}
+  R.busy=false;
+}
+function stopRec(){
+  if(!R.live)return;$('#rs').disabled=true;$('#rst').textContent='Processing…';
+  try{R.rc&&R.rc.stop()}catch(e){}
+  setTimeout(()=>{try{R.mr.stop()}catch(e){}},R.rc?900:0);
+}
+function showRec(){
+  if(!$('#rp'))return;$('#rb').disabled=false;$('#rb').textContent='🎙 Record again';$('#rs').disabled=true;$('#rst').textContent='';
+  $('#rp').innerHTML=`<audio controls src="${R.url}" style="width:100%"></audio><div class="muted">${R.dur}s · Bản ghi này sẽ được nộp cùng bài ở bước 4.</div>${R.score!=null?`<div class="fb">Máy nghe được: <i>${esc(R.tr.trim())}</i><br>Độ khớp với văn bản: <b>${R.score}%</b></div>`:''}`;
+}
+function blobB64(b){return new Promise((res,rej)=>{const f=new FileReader();f.onload=()=>res(String(f.result).split(',')[1]);f.onerror=rej;f.readAsDataURL(b)})}
+
+/* ---- Step 4: gom + nộp ---- */
+function rSub(){
+  const miss=[];if(nTr()<SUMMARY.length)miss.push('bản dịch ('+nTr()+'/'+SUMMARY.length+' câu)');if(!(R.blob||S.audioSent))miss.push('bản ghi âm');
+  $('#main').innerHTML=`<div class="card"><h2>Submit</h2><p>Hệ thống sẽ gom bài dịch, bản ghi âm và danh sách từ đã tra rồi gửi về cho cô.</p>
+  <table style="border-collapse:collapse;width:100%">
+  <tr><th class="th">Từ đã tra</th><td class="td">${nLook()} từ</td></tr>
+  <tr><th class="th">Bài dịch</th><td class="td">${nTr()}/${SUMMARY.length} câu</td></tr>
+  <tr><th class="th">Ghi âm</th><td class="td">${R.blob?'Có (' + R.dur + ' giây)':S.audioSent?'Đã nộp trước đó':'Chưa có'}</td></tr>
+  <tr><th class="th">Thời gian học</th><td class="td">${fmtT(S.time)}</td></tr></table>
+  ${miss.length&&!S.sent?`<div class="fb" style="margin-top:10px">Em còn thiếu: ${miss.join(', ')}. Em vẫn nộp được, hoặc quay lại làm thêm.</div>`:''}
+  <div class="row" style="margin:12px 0"><button id="b3">← Record</button><button class="pri" id="sb">${S.sent?'Submit again':'Submit to teacher'}</button></div><div id="sr">${S.sent?'<div class="fb ok">✅ Em đã nộp bài. Cô sẽ nhận xét sớm.</div>':''}</div></div>`;
+  $('#b3').onclick=()=>{cur='rec';render()};$('#sb').onclick=submitAll;
+}
+async function post(body){
+  const r=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(body)});let ok=r.ok;try{const j=await r.json();ok=j.ok!==false}catch(e){}
+  if(!ok)throw new Error('server');
+}
+async function submitAll(){
+  $('#sb').disabled=true;$('#sr').innerHTML='<div class="fb">Đang gom bài và gửi cho cô…</div>';
+  try{
+    if(R.blob&&!R.uploaded){
+      const ext=R.blob.type.includes('mp4')?'m4a':R.blob.type.includes('ogg')?'ogg':'webm';
+      await post({type:'audio',name:S.name,lesson:LESSON,file:'DocToBanDich_01.'+ext,label:'Đọc to bản dịch tóm tắt Sandwich',audio:await blobB64(R.blob),mime:R.blob.type||'audio/webm',dur:R.dur,score:R.score,target:R.target,transcript:R.tr.trim()});
+      R.uploaded=true;S.audioSent={dur:R.dur,score:R.score};save();
+    }
+    const total=trTotal();
+    const summary={vocab:`Đã tra ${nLook()} từ trong bài đọc`,gram:`Dịch tóm tắt: ${nTr()}/${SUMMARY.length} câu · điểm máy gợi ý ${total.toFixed(1)}/10`,ctx:`Thời gian học: ${fmtT(S.time)}`,
+      rec:S.audioSent?`Đã nộp ghi âm (${S.audioSent.dur}s${S.audioSent.score!=null?', khớp '+S.audioSent.score+'%':''})`:'Không có ghi âm',para:'Reading Sandwich Technique: dịch Việt→Anh + đọc to',feedback:'Cô chấm bản dịch (điểm máy chỉ để tham khảo)'};
+    const details=SUMMARY.map((c,i)=>{const t=S.tr[i]||'',g=gradeChunk(c,t);return {part:'Dịch Việt→Anh',question:c.vi,answer:t,correct:'',result:t.trim()?`máy: ${Math.round(g.raw*100)}%`+(g.miss.length?' · có thể thiếu: '+g.miss.join(', '):''):'bỏ trống'}});
+    details.push({part:'Ghi âm',question:'Đọc to bản dịch của em',answer:R.tr.trim(),correct:R.target||'',result:S.audioSent?'đã gửi file ghi âm'+(S.audioSent.score!=null?' · khớp '+S.audioSent.score+'%':''):'không có'});
+    details.push({part:'Tra từ',question:'Các từ đã tra',answer:Object.keys(S.look).join(', '),correct:'',result:nLook()+' từ'});
+    await post({type:'submit',name:S.name,lesson:LESSON,summary,details});
+    S.sent=true;save();topbar();rSub();
+  }catch(e){$('#sr').innerHTML='<div class="fb no">Chưa gửi được. Em kiểm tra mạng rồi bấm lại nhé. Bài của em vẫn được giữ nguyên.</div>';$('#sb').disabled=false}
+}
+
+/* ---- gate ---- */
+function showApp(){$('#gate').hidden=true;$('#app').hidden=false;$('#who').textContent='Học sinh: '+S.name;render()}
+$('#go').onclick=()=>{const v=$('#nm').value.trim();if(!v){$('#nm').focus();return}S.name=v;save();showApp()};
+$('#nm').onkeydown=e=>{if(e.key==='Enter')$('#go').click()};
+$('#rename').onclick=()=>{S.name='';save();$('#app').hidden=true;$('#gate').hidden=false;$('#nm').value='';$('#nm').focus()};
+if(S.name)showApp();else $('#gate').hidden=false;
+
+</script>
+</body>
+</html>
