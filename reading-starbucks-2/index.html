@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reading 2 · Starbucks: selling a place, not just coffee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f7f6;--surface:#fff;--ink:#14282b;--muted:#566b6e;--line:#d4e1df;--accent:#0e7c7b;--accent-ink:#fff;--soft:#e1f0ee;--warm:#c8531f;--good:#1b7f45;--bad:#b83227;--mark:#fff0c2;
+--font-display:'Bricolage Grotesque','Be Vietnam Pro',system-ui,sans-serif;--font-body:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1b1d;--surface:#172a2d;--ink:#e6f1ef;--muted:#9bb2b4;--line:#27403f;--accent:#4cc3bd;--accent-ink:#06201f;--soft:#1d3a3b;--warm:#f0925f;--good:#5dd28c;--bad:#ff8a7a;--mark:#4a3d12;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);line-height:1.7;font-size:16px}
+.wrap{max-width:720px;margin:0 auto;padding:18px 16px 200px}
+h1,h2,h3{font-family:var(--font-display);margin:0 0 8px;line-height:1.25}
+h1{font-size:1.45rem}h2{font-size:1.2rem}h3{font-size:1.05rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+.muted{color:var(--muted);font-size:.92rem}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 14px}
+button.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,textarea:focus-visible,input:focus-visible,.w:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+input[type=text],textarea{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px}
+textarea{min-height:70px;resize:vertical}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bar{height:8px;background:var(--soft);border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.chips{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;margin:8px 0;padding-bottom:4px}.chips .chip{white-space:nowrap}
+.chip{padding:6px 12px;border-radius:99px;font-size:.88rem}
+.chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chip.dn::after{content:" ✓";color:var(--good)}.chip.on.dn::after{color:var(--accent-ink)}
+.hero{display:flex;gap:12px;align-items:center}.hero .ic{font-size:2rem}
+.gate{text-align:center;padding:28px 16px}
+.sticky{position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5}
+.ok{color:var(--good)}.no{color:var(--bad)}
+.fb{margin-top:8px;padding:10px;border-radius:10px;background:var(--soft)}
+.model{background:var(--mark);border-radius:10px;padding:10px;margin-top:8px}
+.tag{display:inline-block;background:var(--mark);border-radius:6px;padding:1px 8px;font-size:.78rem;margin-right:4px}
+.vi-line{font-size:1.05rem;font-weight:500}
+/* reading */
+.para{margin:0 0 14px;font-size:1.12rem}
+.w{cursor:pointer;border-radius:4px;padding:0 1px;border-bottom:1px dotted var(--muted)}
+.w:hover,.w.sel{background:var(--mark)}
+.w.seen{border-bottom-color:var(--accent)}
+.mini{padding:0 6px;font-size:.8rem;margin:0 2px;vertical-align:baseline;border-radius:6px}
+.trs{display:block;margin:4px 0 8px;padding:6px 10px;background:var(--soft);border-radius:8px;font-size:.95rem;color:var(--muted)}
+.sheet{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:2px solid var(--accent);padding:12px 16px;z-index:20;box-shadow:0 -6px 24px rgba(0,0,0,.15)}
+.sheet .in{max-width:720px;margin:0 auto}
+.sheet .big{font-family:var(--font-display);font-size:1.5rem;font-weight:700}
+.pairhead{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-weight:600;font-size:.9rem;margin:10px 0 4px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 10px;align-items:stretch}
+.pair .src{background:var(--soft);border-radius:10px;padding:10px;font-size:.98rem}
+.pair textarea{height:100%;min-height:110px;font-size:.98rem}
+.num{display:inline-block;background:var(--accent);color:var(--accent-ink);border-radius:99px;min-width:22px;height:22px;text-align:center;font-size:.8rem;line-height:22px;margin-right:6px;font-weight:600}
+.sr{position:absolute;left:-9999px}
+.th{border:1px solid var(--line);padding:6px;text-align:left}.td{border:1px solid var(--line);padding:6px}
+.rec{width:14px;height:14px;border-radius:50%;background:var(--bad);display:inline-block;animation:p 1s infinite}
+@keyframes p{50%{opacity:.25}}
+.pl{display:inline-block;background:var(--accent);color:var(--accent-ink);border-radius:6px;min-width:24px;text-align:center;margin-right:8px;font-family:var(--font-display)}
+.line{display:grid;grid-template-columns:1fr minmax(120px,40%);gap:10px;align-items:center;margin:8px 0}
+.line select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px;width:100%}
+.bank{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}.bank span{background:var(--mark);border-radius:8px;padding:2px 10px}
+.th{border:1px solid var(--line);padding:6px;text-align:left}.td{border:1px solid var(--line);padding:6px}
+.wrap.wide{max-width:1180px}
+.lk{border-radius:4px;padding:0 2px}
+.lk-time,.lkx.lk-time{background:#cfe8ff;color:#0b3a66}.lk-contrast,.lkx.lk-contrast{background:#ffd9c9;color:#6b2308}.lk-result,.lkx.lk-result{background:#d6f3d3;color:#14501a}.lk-expl,.lkx.lk-expl{background:#e9dcff;color:#3b1c73}.lk-purpose,.lkx.lk-purpose{background:#fff0b3;color:#5b4300}
+.nolk .lk{background:none;color:inherit}
+.lkx{display:inline-block;border-radius:6px;padding:0 8px;margin:2px 4px 2px 0;font-size:.82rem}
+.legend{margin:6px 0 10px}
+.split{display:grid;grid-template-columns:1fr;gap:12px}
+.split[data-pane=text] .right{display:none}.split[data-pane=q] .left{display:none}
+.mobtog{display:flex;gap:8px;margin:8px 0}.mobtog .chip{flex:1;text-align:center}
+@media (min-width:900px){.split{grid-template-columns:1fr 1fr;align-items:start}.split .left,.split .right{display:block!important}.mobtog{display:none}.split .left{position:sticky;top:var(--hh,160px);max-height:calc(100vh - var(--hh,160px) - 12px);overflow:auto;margin-top:0}}
+.goalhero{background:linear-gradient(135deg,var(--accent),#0a5a59);color:#fff;border-radius:16px;padding:20px;margin:12px 0}
+.goalhero h2{color:#fff}.goalhero .gk{font-size:.9rem;opacity:.85;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.keyidea{background:rgba(255,255,255,.14);border-radius:12px;padding:12px;margin-top:10px}.keyidea .muted{color:#e1f0ee}
+.goals{display:grid;gap:10px;margin:12px 0}.goal{display:flex;gap:12px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:12px;padding:12px}.gi{font-size:1.8rem}
+.path{font-family:var(--font-display);font-weight:600;color:var(--accent)}
+.tb{border-radius:12px;padding:10px;margin:10px 0;border:1px solid var(--line)}.tbh{margin-bottom:6px}
+.phr{font:inherit;text-align:left;border-radius:10px;padding:6px 10px;margin:3px 4px 3px 0;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.phr small{display:block;font-size:.72rem;color:var(--muted)}
+button.phr.lk-time{background:#cfe8ff;color:#0b3a66}button.phr.lk-contrast{background:#ffd9c9;color:#6b2308}button.phr.lk-reason,button.phr.lk-expl{background:#e9dcff;color:#3b1c73}button.phr.lk-result{background:#d6f3d3;color:#14501a}button.phr.lk-example{background:#fff0b3;color:#5b4300}button.phr.lk-sum{background:#d4f1ef;color:#0b4a49}
+button.phr small{color:inherit;opacity:.75}
+.ex{margin-top:6px;font-style:italic}
+.fp{border-left:4px solid var(--accent);padding:8px 10px;margin:12px 0;background:var(--soft);border-radius:0 10px 10px 0}.fph{font-size:1.05rem}
+.chipsrow{margin:6px 0}.fp textarea{min-height:64px}
+.talkmap{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:8px 0;font-weight:600}.talkmap span{background:var(--accent);color:var(--accent-ink);border-radius:99px;padding:3px 12px}.talkmap i{font-style:normal;color:var(--muted)}
+.lkm{background:var(--mark);border-radius:4px;padding:0 2px}
+.chk{display:block;margin:6px 0}
+details{margin:10px 0}summary{cursor:pointer}
+.goalhero .lead{margin:6px 0;font-size:1.05rem;line-height:1.6}
+.goal{display:flex;gap:12px;align-items:flex-start}
+.gb{flex:1}.gt{font-family:var(--font-display);font-size:1.15rem;margin-bottom:6px}
+.gr{margin:8px 0;line-height:1.6}
+.gl{display:inline-block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;border-radius:6px;padding:1px 8px;margin-right:8px}
+.gl.why{background:#ffd9c9;color:#6b2308}.gl.learn{background:#cfe8ff;color:#0b3a66}.gl.use{background:#d6f3d3;color:#14501a}
+.take{margin:6px 0;padding-left:20px}.take li{margin:6px 0}
+.lk-reason,.lkx.lk-reason{background:#e9dcff;color:#3b1c73}.lk-example,.lkx.lk-example{background:#fff0b3;color:#5b4300}.lk-sum,.lkx.lk-sum{background:#c9efe9;color:#0b4a49}
+.slide{border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:12px;padding:12px;margin:12px 0;background:var(--surface)}
+.sh{display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:1.1rem}.sn{background:var(--accent);color:var(--accent-ink);border-radius:99px;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+.script{font-size:1.12rem;line-height:1.85;background:var(--soft);border-radius:10px;padding:10px 12px}.script mark.lk{padding:1px 5px;font-weight:600}
+.sn2{margin:6px 0;font-size:.92rem}.lkl{margin:8px 0}.viz{margin-top:8px;padding:8px 10px;background:var(--mark);border-radius:8px;font-size:.95rem}
+.coreline{font-weight:600;margin:4px 0 8px}.coregrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-top:10px}
+.corebox{background:var(--soft);border-radius:10px;padding:10px}.corebox .ci{font-size:1.4rem}.corebox b{display:block;margin:2px 0 4px}
+.reuse{width:100%;border-collapse:collapse}.reuse th{text-align:left;vertical-align:top;padding:8px 10px 8px 0;white-space:nowrap}.reuse td{padding:8px 0;border-top:1px solid var(--line)}.reuse tr:first-child td{border-top:0}
+.ctxred{border:2px solid #d32f2f;background:#fff1f0;border-radius:12px;padding:12px 14px;margin:0 0 14px;color:#c62828;font-weight:600;line-height:1.6}.ctxred p{margin:6px 0;color:#c62828}.ctxred .ctxh{font-size:1.1rem;font-weight:800}.ctxred u{text-decoration-thickness:2px}
+.flow{display:flex;flex-direction:column;gap:4px;margin:8px 0}.flow span{background:var(--soft);border-radius:8px;padding:6px 10px;font-size:.93rem}.flow b{display:inline-flex;width:20px;height:20px;border-radius:99px;background:var(--accent);color:var(--accent-ink);align-items:center;justify-content:center;font-size:.8rem;margin-right:6px}
+@media (prefers-color-scheme:dark){.ctxred{background:#3a1414;border-color:#ff6b6b}.ctxred,.ctxred p{color:#ff8a80}}
+.lk-apply,.lkx.lk-apply{background:#ffd9c2;color:#6b2d00}
+.src{padding-left:18px;margin:6px 0}.src li{margin:8px 0}.src a{font-weight:600}
+</style></head>
+<body>
+<div class="wrap">
+<div id="gate" class="card gate" hidden>
+  <div style="font-size:2.2rem">☕</div>
+  <h2>Em tên là gì?</h2>
+  <p class="muted">Cô cần biết tên để nhận bài của em.</p>
+  <label for="nm" class="muted">Họ và tên</label>
+  <input id="nm" type="text" autocomplete="name" style="max-width:320px;margin:6px auto;display:block">
+  <button class="pri" id="go">Bắt đầu</button>
+</div>
+<div id="app" hidden>
+  <div class="sticky">
+    <div class="hero"><div class="ic">☕</div><div><h1>Reading · Starbucks</h1><div class="muted">Chọn phần bất kỳ để làm; nộp một lần ở bước 6.</div></div></div>
+    <div class="muted" style="margin-top:6px"><span id="who"></span> <button id="rename" style="padding:2px 8px;font-size:.8rem">Đổi tên</button></div>
+    <div class="row" style="margin-top:6px"><div class="bar" style="flex:1"><i id="pbar"></i></div><span class="muted" id="ptxt"></span></div>
+    <div class="chips" id="chips"></div>
+  </div>
+  <div id="main"></div>
+</div>
+</div>
+<div class="sheet" id="sheet" hidden><div class="in" id="sheetin"></div></div>
+<script>
+const TITLE='Starbucks: selling a place, not just coffee';
+const PRE=['Have you ever been to a Starbucks? What do you think of its brand image?','Why do people pay more for coffee in some shops?'];
+const GLOSS=[['coffee beans','ˈkɒfi biːnz','hạt cà phê'],['trade show','ˈtreɪd ʃəʊ','hội chợ thương mại'],['barista','bəˈrɪstə','nhân viên pha chế cà phê'],['human connection','ˈhjuːmən kəˈnekʃn','sự kết nối giữa con người'],['third place','θɜːd pleɪs','“nơi thứ ba”, ngoài nhà và nơi làm việc'],['experience','ɪkˈspɪəriəns','trải nghiệm']];
+const DICT={
+'a':['ə','một'],'about':['əˈbaʊt','khoảng, về'],'advertising':['ˈædvətaɪzɪŋ','quảng cáo'],'and':['ænd','và'],'appeal':['əˈpiːl','thu hút, hấp dẫn'],'as':['æz','với tư cách là'],'at':['æt','ở, tại'],
+'back':['bæk','trở lại'],'bar':['bɑː','quán (bar)'],'barista':['bəˈrɪstə','nhân viên pha chế cà phê'],'bars':['bɑːz','các quán'],'be':['biː','thì, là'],'beans':['biːnz','hạt (cà phê, đậu)'],
+'big':['bɪɡ','lớn'],'book':['bʊk','cuốn sách'],'bought':['bɔːt','đã mua'],'brand':['brænd','thương hiệu'],'brands':['brændz','các thương hiệu'],'build':['bɪld','xây dựng'],'but':['bʌt','nhưng'],'buy':['baɪ','mua'],'by':['baɪ','bởi, của (tác giả)'],
+'café':['ˈkæfeɪ','quán cà phê'],'called':['kɔːld','được gọi là'],'came':['keɪm','đã đến từ'],'campaigns':['kæmˈpeɪnz','các chiến dịch'],'central':['ˈsentrəl','miền trung, trung tâm'],'chairs':['tʃeəz','những chiếc ghế'],'chatted':['ˈtʃætɪd','đã trò chuyện'],'chi':['tʃiː','Chí (trong Hồ Chí Minh)'],
+'city':['ˈsɪti','thành phố'],'coffee':['ˈkɒfi','cà phê'],'comfortable':['ˈkʌmftəbl','thoải mái'],'company':['ˈkʌmpəni','công ty'],'connection':['kəˈnekʃn','sự kết nối'],'countries':['ˈkʌntriz','các quốc gia'],'customers':['ˈkʌstəməz','khách hàng'],
+'did':['dɪd','đã (trợ động từ quá khứ)'],'didn\'t':['ˈdɪdnt','đã không'],'drink':['drɪŋk','đồ uống'],'drinks':['drɪŋks','đồ uống'],'every':['ˈevri','mỗi, mọi'],'experience':['ɪkˈspɪəriəns','trải nghiệm'],
+'famous':['ˈfeɪməs','nổi tiếng'],'february':['ˈfebruəri','tháng Hai'],'felt':['felt','đã cảm thấy'],'first':['fɜːst','đầu tiên, thứ nhất'],'friendly':['ˈfrendli','thân thiện'],'friends':['frendz','bạn bè'],'from':['frɒm','từ'],
+'giornale':['dʒɔːˈnɑːleɪ','(tiếng Ý) tờ báo; tên quán Il Giornale'],'good':['ɡʊd','tốt'],'great':['ɡreɪt','tuyệt vời'],'grew':['ɡruː','đã lớn lên, phát triển'],
+'had':['hæd','có (quá khứ)'],'hanoi':['hæˈnɔɪ','Hà Nội'],'happy':['ˈhæpi','hài lòng, vui'],'he':['hiː','anh ấy'],'head':['hed','người đứng đầu'],'highlands':['ˈhaɪləndz','vùng cao nguyên'],'his':['hɪz','của anh ấy'],'ho':['həʊ','Hồ (trong Hồ Chí Minh)'],'home':['həʊm','nhà'],'howard':['ˈhaʊəd','Howard (tên riêng)'],'human':['ˈhjuːmən','(thuộc) con người'],
+'idea':['aɪˈdɪə','ý tưởng'],'il':['ɪl','(tiếng Ý) cái, người (mạo từ)'],'image':['ˈɪmɪdʒ','hình ảnh (thương hiệu)'],'in':['ɪn','trong, vào'],'into':['ˈɪntuː','thành, vào trong'],'is':['ɪz','thì, là'],'it':['ɪt','nó'],'italy':['ˈɪtəli','nước Ý'],'its':['ɪts','của nó'],
+'joined':['dʒɔɪnd','đã gia nhập, hợp nhất với'],'just':['dʒʌst','chỉ, đơn thuần'],'kept':['kept','đã giữ'],'later':['ˈleɪtə','sau đó'],'launched':['lɔːntʃt','đã ra mắt'],'left':['left','đã rời đi'],'local':['ˈləʊkl','địa phương'],
+'made':['meɪd','đã làm, đã pha'],'man':['mæn','người đàn ông'],'market':['ˈmɑːkɪt','chợ'],'marketing':['ˈmɑːkɪtɪŋ','tiếp thị'],'meet':['miːt','gặp'],'met':['met','đã gặp'],'milan':['mɪˈlæn','Milan (thành phố ở Ý)'],'minh':['mɪn','Minh (trong Hồ Chí Minh)'],'moments':['ˈməʊmənts','những khoảnh khắc'],'more':['mɔː','hơn, nhiều hơn'],'most':['məʊst','nhất'],'mouth':['maʊθ','cái miệng (word of mouth: truyền miệng)'],'music':['ˈmjuːzɪk','âm nhạc'],
+'name':['neɪm','tên'],'near':['nɪə','gần'],'no':['nəʊ','không'],'not':['nɒt','không'],'of':['əv','của'],'oldenburg':['ˈəʊldənbɜːɡ','Oldenburg (tên riêng)'],'one':['wʌn','một'],'opened':['ˈəʊpənd','đã mở'],'or':['ɔː','hoặc'],'own':['əʊn','của riêng mình'],'owners':['ˈəʊnəz','các chủ sở hữu'],
+'people':['ˈpiːpl','mọi người'],'pike':['paɪk','Pike (tên chợ)'],'place':['pleɪs','nơi, địa điểm'],'ray':['reɪ','Ray (tên riêng)'],'relax':['rɪˈlæks','thư giãn'],'rest':['rest','phần còn lại'],
+'said':['sed','đã nói'],'saw':['sɔː','đã thấy'],'schultz':['ʃʊlts','Schultz (tên riêng)'],'schultz\'s':['ˈʃʊltsɪz','của Schultz'],'seattle':['siˈætl','Seattle (thành phố ở Mỹ)'],'second':['ˈsekənd','thứ hai'],'sell':['sel','bán'],'shop':['ʃɒp','cửa hàng'],'should':['ʃʊd','nên'],'show':['ʃəʊ','buổi trưng bày (trade show: hội chợ)'],'small':['smɔːl','nhỏ'],'smell':['smel','mùi'],'so':['səʊ','nên, vì vậy'],'sold':['səʊld','đã bán'],'spring':['sprɪŋ','mùa xuân'],'staff':['stɑːf','nhân viên'],'starbucks':['ˈstɑːbʌks','Starbucks (tên thương hiệu)'],'store':['stɔː','cửa hàng'],'stores':['stɔːz','các cửa hàng'],'surprised':['səˈpraɪzd','ngạc nhiên'],
+'than':['ðæn','hơn (so sánh)'],'the':['ðə','(mạo từ xác định)'],'their':['ðeə','của họ'],'then':['ðen','khi đó, sau đó'],'there':['ðeə','ở đó'],'they':['ðeɪ','họ'],'third':['θɜːd','thứ ba'],'three':['θriː','ba'],'through':['θruː','thông qua'],'to':['tuː','để, đến'],'today':['təˈdeɪ','ngày nay'],'told':['təʊld','đã kể, đã nói với'],'trade':['treɪd','thương mại'],'turn':['tɜːn','biến thành, chuyển thành'],'two':['tuː','hai'],
+'usa':['ˌjuː es ˈeɪ','nước Mỹ'],'vietnam':['ˌvjetˈnæm','Việt Nam'],'vietnam\'s':['ˌvjetˈnæmz','của Việt Nam'],'vietnamese':['ˌvjetnəˈmiːz','(thuộc) Việt Nam'],
+'wanted':['ˈwɒntɪd','đã muốn'],'warm':['wɔːm','ấm áp'],'was':['wɒz','thì, là (quá khứ)'],'went':['went','đã đi'],'which':['wɪtʃ','mà, nơi mà'],'with':['wɪð','với, bằng'],'word':['wɜːd','từ, lời'],'work':['wɜːk','công việc, làm việc'],'world':['wɜːld','thế giới'],'years':['jɪəz','năm'],'young':['jʌŋ','trẻ']
+};
+
+/* ---- Exercises (đáp án chỉ hiện sau khi nộp) ---- */
+const HEADINGS=['i. A big idea: the third place','ii. A visit to Italy','iii. Growing without big advertising','iv. The first small shop','v. A disagreement and a new start','vi. A global brand arrives in Vietnam','vii. A new coffee recipe'];
+const HEAD_ANS={A:'iv',B:'ii',C:'v',D:'i',E:'iii',F:'vi'};
+const TFNG=[
+['Starbucks was a café when it opened in 1971.','F'],
+['Milan had about 1,500 coffee bars when Schultz visited.','T'],
+['The owners of Starbucks liked Schultz’s idea of selling drinks.','F'],
+['Il Giornale had more stores than Starbucks in 1987.','N'],
+['Schultz got the idea of the “third place” from a book.','T'],
+['Starbucks spent a lot of money on big advertising campaigns.','F'],
+['The Hanoi store launched a coffee from Vietnam’s Central Highlands.','T']];
+const EVENTS=[
+['Three friends open a coffee-bean shop in Seattle.',1],
+['Schultz visits a trade show in Milan.',2],
+['Schultz leaves and opens Il Giornale.',3],
+['Il Giornale joins Starbucks.',4],
+['Starbucks opens its first store in Ho Chi Minh City.',5],
+['Starbucks opens its 100th Vietnamese store in Hanoi.',6]];
+const EV_ORDER=[3,0,5,2,4,1];
+const SHORT=[
+{q:'What did Starbucks sell in 1971, and how was it different from a café?',model:'It sold coffee beans, not drinks. Customers made their coffee at home.',k:[['bean','sold coffee beans'],['home|themselves|not (a )?caf|didn.?t sell|no drink|not drink','made coffee at home / not a café']]},
+{q:'What is the “third place”?',model:'A place that is not home or work: warm, comfortable and friendly, where people relax, meet people or work.',k:[['home','not home'],['work|office','not work'],['warm|comfort|friendly|relax|meet','warm, comfortable place']]},
+{q:'How did Starbucks build its image?',model:'Not with big advertising, but through the experience (smell, music, staff, chairs). Happy customers told friends: word of mouth.',k:[['experience|smell|music|staff|chairs|atmosphere','the experience'],['word of mouth|friends|told|recommend|customers','word of mouth'],['not|without|no |didn.?t|instead','not advertising']]}];
+const CLOZE_BANK=['barista','coffee beans','experience','human connection','trade show','third place','word of mouth','brand image'];
+const CLOZE=[
+['Our team is going to a ___ in Frankfurt next month to meet new suppliers.','trade show'],
+['The ___ made me a perfect cappuccino with a heart on top.','barista'],
+['Many small shops sell ___ that you grind and brew at home.','coffee beans'],
+['A good hotel sells a great ___, not just a room for the night.','experience'],
+['For many people, a café is a ___: not home, and not the office.','third place'],
+['Working only online can weaken the ___ between team members.','human connection']];
+
+const PARAS_M=[
+'[[time|In 1971]], three friends opened a small shop near Pike Place Market in Seattle, USA. It was called Starbucks, and it sold coffee beans. It was not a café[[expl|:]] customers bought beans and made their coffee at home.',
+'[[time|In 1982]], a young man called Howard Schultz joined the company as head of marketing. [[time|In spring 1983]], he went to a trade show in Milan, Italy. He was surprised[[expl|:]] the city had about 1,500 coffee bars. People [[contrast|didn’t just]] buy a drink there. They met friends, chatted with the barista and felt at home. Schultz saw “moments of human connection” in every bar.',
+'[[time|Back in Seattle]], Schultz wanted to turn Starbucks into a café, [[contrast|but]] the owners said no. They wanted to sell beans, [[contrast|not]] drinks. [[result|So]] [[time|in 1985]] Schultz left and opened his own coffee bars, called Il Giornale. [[time|Two years later]], [[time|in 1987]], he joined Il Giornale with Starbucks, which then had 17 stores, and kept the Starbucks name.',
+'Schultz’s big idea was the “third place”. Home is the first place and work is the second. A Starbucks café should be a third place[[expl|:]] warm, comfortable and friendly, a place to relax, meet people or work. The idea came from a 1989 book, The Great Good Place, by Ray Oldenburg.',
+'Starbucks did not build its image with big advertising campaigns. Schultz said the brand grew “through the experience”[[expl|:]] the smell of coffee, the music, the friendly staff and the comfortable chairs. Happy customers told their friends, [[result|so]] word of mouth did the rest.',
+'[[time|Today]], Starbucks is one of the most famous brands in the world, with more than 35,000 stores in about 80 countries (2022). It opened its first store in Vietnam [[time|in February 2013]], in Ho Chi Minh City, and its 100th Vietnamese store [[time|in 2023]], in Hanoi. [[purpose|To appeal to local customers]], the Hanoi store launched a coffee from Vietnam’s Central Highlands.'];
+const PARAS=PARAS_M.map(p=>p.replace(/\[\[\w+\|([^\]]*)\]\]/g,'$1'));
+const LK_NAME={time:'Time & order',contrast:'Contrast',result:'Result',expl:'Explanation (:)',purpose:'Purpose'};
+const GOALS=[
+{ic:'🔗',t:'Move smoothly from one idea to the next',
+ why:'Nhiều người có ý tưởng rất hay, nhưng khi nói thì các ý rời rạc như những mảnh ghép chưa khớp. Người nghe phải tự đoán mối liên hệ giữa chúng, và rất dễ mất tập trung. Cụm liên kết giống như đèn tín hiệu giao thông: nó báo trước ý tiếp theo sẽ đi đâu (thêm ý, đối lập hay kết quả).',
+ learn:'6 nhóm cụm liên kết: thời gian, đối lập, lý do, kết quả, ví dụ, kết luận. Em sẽ thấy chúng hoạt động thật trong câu chuyện Starbucks (được tô màu ngay trong bài đọc), rồi tự luyện chọn từ nối đúng.',
+ use:'Dùng trong báo cáo miệng, họp nhóm, email: First… However… As a result… To sum up…'},
+{ic:'📖',t:'Understand a business story and retell it',
+ why:'Starbucks không thắng nhờ cà phê ngon hơn. Họ thắng vì hiểu rằng khách hàng trả tiền cho trải nghiệm, không chỉ cho sản phẩm. Khi hiểu một câu chuyện được sắp xếp thế nào (mốc thời gian, vấn đề, ý tưởng lớn, kết quả), em có thể kể câu chuyện của công ty mình theo cùng cách.',
+ learn:'Tìm ý chính, mốc thời gian và tên riêng; phân biệt True / False / Not Given; từ vựng kinh doanh như brand image, word of mouth, third place.',
+ use:'Giới thiệu công ty hoặc sản phẩm với khách hàng, đối tác; kể “câu chuyện thương hiệu” trong buổi gặp.'},
+{ic:'✍️',t:'Write a clear 4-part paragraph',
+ why:'Khó nhất khi viết là bắt đầu. Khung 4 phần cho em một “bộ xương” sẵn có: đã có câu mở, em chỉ cần điền ý của mình vào. Đoạn văn có cấu trúc rõ ràng giúp người đọc hiểu nhanh và tin em hơn.',
+ learn:'Topic → Detail → Reason / Result → Conclusion, và cách nối từng phần bằng cụm liên kết, để mỗi câu dẫn tự nhiên sang câu sau.',
+ use:'Email báo cáo, tin nhắn gửi sếp, đề xuất ngắn, mô tả sản phẩm.'},
+{ic:'🎤',t:'Give a 1–2 minute talk with confidence',
+ why:'Sự tự tin khi nói đến từ việc biết mình sẽ nói gì tiếp theo. Một bản đồ 4 phần giúp em không bị “đứng hình”, và người nghe luôn biết em đang ở đâu trong bài nói.',
+ learn:'Hook → Introduction → Body → Conclusion: cách mở đầu thu hút (hook), giới thiệu chủ đề, chuyển ý ở phần thân và kết thúc mạnh mẽ.',
+ use:'Họp tuần, báo cáo tiến độ, giới thiệu ý tưởng, phỏng vấn xin việc, thuyết trình ngắn.'}];
+const TOOLBOX=[
+{id:'time',name:'Time & order',vi:'Kể theo thứ tự',items:[['First,','Đầu tiên,'],['Then, / After that,','Sau đó,'],['Two years later,','Hai năm sau,'],['Finally,','Cuối cùng,'],['Today,','Ngày nay,']],ex:'In 1983, Schultz visited Milan. Two years later, he opened his own coffee bars.'},
+{id:'contrast',name:'Contrast',vi:'Đối lập',items:[['but','nhưng'],['However,','Tuy nhiên,'],['not … but …','không phải … mà là …'],['didn’t just …','không chỉ …']],ex:'Schultz wanted to sell drinks, but the owners wanted to sell beans.'},
+{id:'reason',name:'Reason',vi:'Lý do',items:[['because','bởi vì'],['This is because…','Đó là vì…'],['The reason is…','Lý do là…']],ex:'People pay more because the café feels warm and friendly.'},
+{id:'result',name:'Result',vi:'Kết quả',items:[['so','vì vậy'],['As a result,','Kết quả là,'],['That’s why…','Đó là lý do…']],ex:'Happy customers told their friends, so word of mouth did the rest.'},
+{id:'example',name:'Example',vi:'Ví dụ',items:[['For example,','Ví dụ,'],['For instance,','Chẳng hạn,'],['such as','chẳng hạn như']],ex:'A third place is comfortable. For example, it has soft chairs and nice music.'},
+{id:'sum',name:'Sum up',vi:'Kết luận',items:[['In short,','Tóm lại,'],['To sum up,','Tổng kết lại,'],['So the lesson is…','Bài học là…']],ex:'To sum up, customers pay for the experience, not only for the coffee.'}];
+const LINK_BANK=['but','so','because','for example','then','however','in short','first'];
+const LINKQ=[
+['Schultz wanted to sell drinks, ___ the owners said no.','but'],
+['Schultz loved the Milan coffee bars, ___ he wanted to open cafés in Seattle.','so'],
+['Starbucks did not use big advertising. ___, happy customers told their friends.','however'],
+['Many people pay more ___ the shop feels warm and comfortable.','because'],
+['A café should feel like home. ___, it has comfortable chairs and friendly staff.','for example'],
+['Schultz joined Starbucks in 1982. ___ he went to Milan in 1983.','then'],
+['Starbucks sells coffee, a place and a feeling. ___, it sells an experience.','in short'],
+['___, think about the customer. Then think about the place.','first']];
+const LINK_RE=[['First','\\bfirst\\b'],['Then / After that','\\bthen\\b|after that'],['Later','\\blater\\b'],['Finally','\\bfinally\\b'],['Today','\\btoday\\b'],['but','\\bbut\\b'],['However','\\bhowever\\b'],['Although','\\balthough\\b'],['because','\\bbecause\\b'],['so','\\bso\\b'],['As a result','as a result'],['That’s why','that.?s why|this is why'],['For example','for example|for instance|such as'],['In addition / Also','in addition|\\balso\\b'],['In short / To sum up','in short|to sum up|in conclusion|to conclude']];
+const WFRAME={
+task:'Write a short paragraph (60–90 words) about a business that sells an experience, not just a product. Use at least 4 linking phrases.',
+parts:[
+{h:'1 · Topic',tip:'Say which business and your main idea.',chips:['One business that sells an experience is…','I would like to write about…','This business sells a feeling, not just a product.']},
+{h:'2 · Detail',tip:'Describe the experience. Give one example.',chips:['What makes it special is…','For example, …','First, … Then, …']},
+{h:'3 · Reason / Result',tip:'Why do customers pay more? What happens?',chips:['Customers pay more because…','As a result, …','That’s why…']},
+{h:'4 · Conclusion',tip:'Finish with one clear sentence.',chips:['In short, …','To sum up, …','So the lesson is…']}]};
+const SFRAME={
+task:'Present an idea (about 2–3 minutes): How can we build a brand image for our new product, Home Lunch? Use the Biti’s Hunter case as evidence.',
+parts:[{h:'1 · Hook'},{h:'2 · Introduction'},{h:'3 · Body'},{h:'4 · Conclusion'}]};
+const CONTEXT={
+title:'📍 Bối cảnh và lý do của bài thuyết trình này',
+body:'Công ty em sắp ra mắt <u>Home Lunch</u>, cơm hộp kiểu nhà làm cho nhân viên văn phòng sống xa gia đình. Món ăn tươi, giá hợp lý. Nhưng thị trường có rất nhiều bữa trưa văn phòng trông giống nhau, nên sản phẩm tốt chưa đủ để khách chọn mình.',
+why:'Góc nhìn kinh tế: khách hàng không trả tiền cho tính năng, mà cho giá trị họ cảm nhận được. Hình ảnh thương hiệu giúp khách nhận ra giá trị đó và phân biệt mình với sản phẩm tương tự. Sếp yêu cầu mọi đề xuất phải có bằng chứng, nên em dùng một trường hợp thật đã thành công ở Việt Nam là Biti’s Hunter. Em rút ra ba bài học rồi áp dụng cho Home Lunch.',
+flow:['Hook: sản phẩm tốt vẫn chưa đủ','Introduction: lý do đề xuất và trường hợp Biti’s Hunter','Body: 3 bài học (biết khách hàng → bán một ý nghĩa → để khách lan truyền), mỗi bài áp dụng cho Home Lunch','Conclusion: đề xuất và bước thử nhỏ']};
+const LK_TYPES={time:'Time & order',contrast:'Contrast',reason:'Reason',result:'Result',example:'Example',sum:'Sum up / lesson',apply:'Apply to our product'};
+const CORE=[
+['⚖️','Sản phẩm tốt là điều kiện cần, chưa phải điều kiện đủ.','Hàng chất lượng và giá hợp lý vẫn chưa đảm bảo khách chọn mình.'],
+['🎯','Khách trả tiền cho giá trị họ cảm nhận. Brand image giúp họ nhận ra và phân biệt.','Một ý nghĩa rõ ràng khiến sản phẩm khác với những sản phẩm trông giống nhau.'],
+['📈','Học từ bằng chứng thật, rồi áp dụng vào hiện tại.','Biti’s Hunter cho ba bài học. Ba bài học đó trở thành ba hành động cho Home Lunch.']];
+const MODEL_PARTS=[
+{h:'Hook',t:'20 sec',core:'Đặt ra một vấn đề thật, rồi nối thẳng sang ý tưởng của em.',
+ script:'Hello, everyone! Imagine our new product, Home Lunch. The food is fresh and the price is fair. Will office workers choose it? Maybe not. [[reason|Because]] they already have many lunch choices, and most of them look the same. [[result|So]] today I want to share an idea: how to build a brand image for Home Lunch.',
+ why:'Mở bằng đúng bối cảnh: sản phẩm tốt nhưng chưa chắc được chọn. Câu cuối dùng So để nối vấn đề với đề xuất của em, nên phần mở đầu liền mạch.',tip:'Hỏi “Will office workers choose it?” rồi dừng 2 giây. Nói “Maybe not” chậm để gây chú ý.',
+ vi:'Chào mọi người. Hãy tưởng tượng sản phẩm mới của ta, Home Lunch: món tươi, giá hợp lý. Nhân viên văn phòng sẽ chọn chứ? Chưa chắc, vì họ có nhiều lựa chọn và phần lớn trông giống nhau. Vậy hôm nay tôi chia sẻ ý tưởng xây dựng hình ảnh thương hiệu cho Home Lunch.'},
+{h:'Introduction',t:'25 sec',core:'Nói vì sao em đề xuất và dựa vào đâu, rồi báo ba bước.',
+ script:'Why this idea? [[reason|Because]] customers do not buy only a product. They buy what it means to them. To show this, I will use a Vietnamese case: Biti’s Hunter. [[time|First]], I will show how Biti’s understood its customers. [[time|Then]], I will explain the message it chose. [[time|Finally]], I will show how the message spread. After each point, I will give one idea for Home Lunch.',
+ why:'Trả lời “Vì sao đề xuất này?” và “Dựa vào đâu?”. Có bằng chứng thật thì ý tưởng mới thuyết phục. Sau đó báo trước thứ tự để người nghe theo kịp.',tip:'Đưa ngón tay lên khi nói First, Then, Finally (1, 2, 3).',
+ vi:'Vì sao đề xuất? Vì khách hàng không chỉ mua sản phẩm mà mua ý nghĩa của nó. Tôi dùng trường hợp Biti’s Hunter làm bằng chứng. Trước hết Biti’s hiểu khách hàng thế nào, sau đó thông điệp họ chọn là gì, cuối cùng thông điệp lan ra ra sao. Sau mỗi ý có một gợi ý cho Home Lunch.'},
+{h:'Body',t:'90 sec',core:'Ba bài học, mỗi bài theo mẫu: Biti’s làm gì → kết quả → bài học → áp dụng cho Home Lunch.',
+ script:'[[time|First]], know your customer. For many years, Biti’s shoes were good, [[contrast|but]] young people saw Biti’s as a brand for their parents. [[result|So]] in 2016, Biti’s launched a new line, Biti’s Hunter, for people aged 18 to 24. [[sum|The lesson:]] choose one group of customers and understand them. [[apply|For Home Lunch,]] our group is office workers who live far from their families. They do not only want fast and healthy food. They miss home.\n[[time|Second]], sell a meaning, not only a product. Biti’s Hunter used the message “Đi để trở về”, or “Go away to come home”. It spoke to young people who leave home to explore and still want to return. [[result|As a result]], customers did not see just shoes. They saw their own story. [[sum|The lesson:]] connect your product to a feeling your customer already has. [[apply|For Home Lunch,]] our message can be: “A little home at your desk.”\n[[time|Third]], let customers spread the message. Biti’s had a small budget, about three billion dong. [[contrast|However]], young people shared the music video on social media, [[result|so]] sales reached 300% of the target in just seven days. [[sum|The lesson:]] when people feel the message is about them, they share it. [[apply|For Home Lunch,]] we can put a short handwritten note in every box and ask customers to share it with one hashtag.',
+ why:'Mỗi bài học đi theo cùng một nhịp: điều Biti’s làm, kết quả, bài học, rồi áp dụng. Ba bài nối nhau theo logic kinh tế: chọn khách hàng mục tiêu, định vị bằng một ý nghĩa, để khách lan truyền với ngân sách nhỏ.',tip:'Dừng ngắn sau First, Second, Third. Nói “The lesson” và “For Home Lunch” chậm hơn để người nghe biết đó là ý chính.',
+ vi:'Một: biết khách hàng. Giày Biti’s tốt nhưng giới trẻ coi là nhãn hiệu của ba mẹ, nên năm 2016 Biti’s ra dòng Biti’s Hunter cho người 18–24 tuổi. Bài học: chọn một nhóm khách và hiểu họ. Với Home Lunch: nhân viên văn phòng xa nhà, họ nhớ nhà chứ không chỉ cần đồ ăn nhanh và lành. Hai: bán một ý nghĩa. Thông điệp “Đi để trở về” nói với người trẻ rời nhà để khám phá nhưng vẫn muốn quay về. Bài học: gắn sản phẩm với cảm xúc khách đã có. Với Home Lunch: “Một chút nhà ngay bàn làm việc.” Ba: để khách lan truyền. Ngân sách nhỏ, khoảng 3 tỷ đồng, nhưng giới trẻ chia sẻ MV trên mạng xã hội và doanh số đạt 300% mục tiêu trong 7 ngày. Bài học: khi thấy thông điệp nói về mình, người ta sẽ chia sẻ. Với Home Lunch: tờ giấy viết tay trong mỗi hộp và một hashtag.'},
+{h:'Conclusion',t:'25 sec',core:'Tóm tắt, đưa đề xuất rõ ràng và một bước thử nhỏ.',
+ script:'[[sum|To sum up]], a good product is the start, not the end. Biti’s Hunter shows that we need to know our customer, sell a meaning, and let customers share. [[result|So]] my proposal is simple: build Home Lunch around one feeling, “a little home at your desk”. [[time|Next week]], let’s test it in one office. Thank you for listening. Do you have any questions?',
+ why:'Quay lại vấn đề ở Hook (sản phẩm tốt chưa đủ), gom ba bài học thành một đề xuất và xin một bước thử nhỏ để sếp dễ đồng ý.',tip:'Nói chậm ở phần đề xuất. Mỉm cười khi hỏi “Do you have any questions?”',
+ vi:'Tóm lại, sản phẩm tốt là điểm bắt đầu. Biti’s Hunter cho thấy ta cần hiểu khách, bán một ý nghĩa và để khách chia sẻ. Đề xuất: xây Home Lunch quanh một cảm giác, “một chút nhà ngay bàn làm việc”. Tuần sau thử ở một văn phòng. Cảm ơn và mời đặt câu hỏi.'}];
+const SOURCES=[
+['The Brief #2: Biti’s Hunter – Đi để trở về (BrandsVietnam)','https://www.brandsvietnam.com/14695-The-Brief-2-Biti-s-Hunter-Di-de-tro-ve','Anh Hùng Võ (Biti’s) chia sẻ về chiến dịch: ngân sách, thách thức và thông điệp.'],
+['Chiến dịch “Đi để trở về” | Biti’s Hunter (Advertising Vietnam)','https://advertisingvietnam.com/article/chien-dich-di-de-tro-ve-biti-s-hunter-p15819','Kết quả chiến dịch: doanh số đạt 300% mục tiêu trong 7 ngày.'],
+['Case study: Thành công của Biti’s Hunter (Diễn đàn Doanh nghiệp)','https://diendandoanhnghiep.vn/case-study-thanh-cong-cua-biti-s-hunter-10050650.html','Vì sao Biti’s bị coi là “nhãn hàng của ba mẹ” và vì sao chọn khách hàng 18–24 tuổi.'],
+['Điểm lại chiến dịch thành công của Biti’s (Advertising Vietnam)','https://advertisingvietnam.com/article/diem-lai-kho-chien-dich-thanh-cong-cua-biti-s-tu-thuong-hieu-lau-doi-thanh-ngua-o-sang-tao-p20771','Tổng quan quá trình tái định vị thương hiệu từ 2016.'],
+['Xu hướng & Thời thượng – Hãy nhanh như Biti’s Hunter (BrandsVietnam)','https://www.brandsvietnam.com/congdong/topic/10642-xu-huong-thoi-thuong-hay-nhanh-nhu-biti-s-hunter','Giới trẻ lan tỏa sản phẩm qua mạng xã hội.']];
+const REUSE=[
+['Hook','Imagine we have … It is good. Will customers …? Maybe not. Because … So today …','Nêu vấn đề rồi nối sang ý tưởng của em'],
+['Introduction','Why this idea? Because … To show this, I will use … First, … Then, … Finally, …','Nêu lý do đề xuất và bằng chứng sẽ dùng'],
+['Body','First, … (the case). So … The lesson: … For our product, …','Đề xuất ý tưởng, giới thiệu sản phẩm, báo cáo dự án'],
+['Conclusion','To sum up, … So my proposal is … Next week, let’s … Thank you.','Kết bằng đề xuất và một bước thử nhỏ']];
+const stripM=s=>s.replace(/\[\[\w+\|([^\]]*)\]\]/g,'$1');
+const MODEL_TALK=MODEL_PARTS.map(p=>stripM(p.script).replace(/\n/g,' ')).join(' ');
+const SELFCHECK=['I can use linking phrases to move from one idea to the next.','I can retell the Starbucks story with dates and names.','I can write a 4-part paragraph with a frame.','I can give a short talk: Hook → Introduction → Body → Conclusion.'];
+
+/* ===== APP ===== */
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwnf8X3_Xfk9F_8HQtBwSFU_s28sRjxKb0aFaHCA4ybmMJvgaztBAbdvaFzITdbVXBt/exec';
+const LESSON='Reading-Starbucks-2';
+const KEY='sbk2:'+LESSON;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
+let S=Object.assign({name:'',look:{},pre:{},h:{},t:{},o:{},d:{},c:{},l:{},wp:{},sp:{},g:{},sawGoal:false,hl:true,audioSent:null,sent:false,time:0},load());
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const STEPS=[['goal','🎯 Goals'],['pre','1. Warm-up'],['chk','2. Read & Check'],['voc','3. Words & Links'],['wri','4. Write'],['spk','5. Speak'],['sub','6. Submit']];
+const label=id=>STEPS.find(s=>s[0]===id)[1].replace(/^\d\. /,'');
+let cur='goal',pane='text';
+function say(t,rate){try{if(!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-GB';u.rate=rate||.9;speechSynthesis.speak(u)}catch(e){}}
+function fmtT(s){const m=Math.floor(s/60);return m?m+' phút '+(s%60)+' giây':s+' giây'}
+setInterval(()=>{if(!document.hidden&&S.name){S.time++;if(S.time%10===0)save()}},1000);
+const nLook=()=>Object.keys(S.look).length;
+const cnt=o=>Object.values(o).filter(v=>String(v).trim()).length;
+const wc=t=>(t.trim().match(/[A-Za-zÀ-ỹ']+/g)||[]).length;
+const wText=()=>[0,1,2,3].map(i=>(S.wp[i]||'').trim()).filter(Boolean).join(' ');
+function detectLinks(t){const low=t.toLowerCase();return LINK_RE.filter(([,re])=>new RegExp(re,'i').test(low)).map(x=>x[0])}
+function touched(id){return {goal:S.sawGoal,pre:cnt(S.pre)>0,chk:cnt(S.h)+cnt(S.t)+cnt(S.o)+cnt(S.d)>0,voc:cnt(S.c)+cnt(S.l)>0,wri:cnt(S.wp)>0,spk:!!(cnt(S.sp)||R.blob||S.audioSent),sub:!!S.sent}[id]}
+function topbar(){
+  const ids=['pre','chk','voc','wri','spk'],n=ids.filter(touched).length;
+  $('#pbar').style.width=(n/5*100)+'%';$('#ptxt').textContent='Đã làm '+n+'/5';
+  const box=$('#chips');
+  if(box.children.length!==STEPS.length){box.innerHTML=STEPS.map(([id,t])=>`<button class="chip" data-s="${id}">${t}</button>`).join('');box.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{cur=b.dataset.s;render()})}
+  box.querySelectorAll('.chip').forEach(b=>{const id=b.dataset.s;b.className='chip'+(id===cur?' on':'')+(touched(id)?' dn':'')});
+  const hh=$('.sticky').offsetHeight;document.documentElement.style.setProperty('--hh',(hh+8)+'px');
+}
+function render(){closeSheet();$('.wrap').classList.toggle('wide',cur==='chk');({goal:rGoal,pre:rPre,chk:rChk,voc:rVoc,wri:rWri,spk:rSpk,sub:rSub})[cur]();topbar();window.scrollTo({top:0})}
+function nav(prev,next){return `<div class="row" style="margin:12px 0">${prev?`<button id="bp">← ${label(prev)}</button>`:''}${next?`<button class="pri" id="bn">Next: ${label(next)} →</button>`:''}</div>`}
+function bindNav(prev,next){if(prev)$('#bp').onclick=()=>{cur=prev;render()};if(next)$('#bn').onclick=()=>{cur=next;render()}}
+function bindVal(sel,obj){document.querySelectorAll(sel).forEach(el=>{el.oninput=el.onchange=()=>{obj[el.dataset.k]=el.value;save();topbar()}})}
+
+/* ---- word sheet ---- */
+function closeSheet(){$('#sheet').hidden=true;document.querySelectorAll('.w.sel').forEach(x=>x.classList.remove('sel'))}
+function showWord(el){
+  const raw=el.dataset.w,k=raw.toLowerCase().replace(/’/g,"'").replace(/^'+|'+$/g,''),d=DICT[k];
+  document.querySelectorAll('.w.sel').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');el.classList.add('seen');
+  if(!S.look[k]){S.look[k]=1;save();topbar()}
+  $('#sheetin').innerHTML=`<div class="row" style="justify-content:space-between"><div><span class="big">${esc(raw)}</span> <span class="muted">/${esc(d?d[0]:'?')}/</span></div><button id="sc" style="padding:2px 10px" aria-label="Close">✕</button></div>
+  <div style="font-size:1.1rem"><b>${esc(d?d[1]:'—')}</b></div><div class="row" style="margin-top:6px"><button id="sw">🔊 Listen</button><button id="sws">🐢 Slowly</button></div>`;
+  $('#sheet').hidden=false;$('#sc').onclick=closeSheet;$('#sw').onclick=()=>say(raw,.9);$('#sws').onclick=()=>say(raw,.55);say(raw,.9);
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.w')&&!e.target.closest('#sheet'))closeSheet()});
+function wrapWords(t){return esc(t).replace(/(\d[\d,.]*\w*)|([\p{L}][\p{L}'’]*)/gu,(m,n,w)=>n?m:`<span class="w ${S.look[w.toLowerCase().replace(/’/g,"'")]?'seen':''}" data-w="${w}" role="button" tabindex="0">${w}</span>`)}
+function renderMarked(p){let out='',last=0;p.replace(/\[\[(\w+)\|([^\]]*)\]\]/g,(m,c,t,i)=>{out+=wrapWords(p.slice(last,i))+`<mark class="lk lk-${c}" title="${LK_NAME[c]}">${wrapWords(t)}</mark>`;last=i+m.length;return m});return out+wrapWords(p.slice(last))}
+function chipsRow(arr,onClick){return arr.map((c,i)=>`<button class="phr" data-i="${i}">${esc(c)}</button>`).join('')}
+
+/* ---- Goals ---- */
+function rGoal(){
+  S.sawGoal=true;save();
+  $('#main').innerHTML=`<div class="goalhero"><div class="gk">After this session you will be able to…</div><h2 style="font-size:1.45rem">Sau buổi học này, em sẽ làm được gì?</h2>
+  <p class="lead">Em đã có ý tưởng. Điều còn thiếu là cách <b>nối</b> các ý tưởng đó lại, để người nghe đi theo em từ đầu đến cuối mà không lạc.</p>
+  <div class="keyidea">💡 <b>Key idea:</b> Linking phrases are the bridge that carries your listener from one idea to the next.<div class="muted">Cụm liên kết là cây cầu đưa người nghe đi từ ý này sang ý khác.</div></div></div>
+  <div class="goals">${GOALS.map((g,i)=>`<div class="goal"><div class="gi">${g.ic}</div><div class="gb"><div class="gt">${i+1}. ${g.t}</div>
+  <div class="gr"><span class="gl why">Vì sao quan trọng</span>${g.why}</div>
+  <div class="gr"><span class="gl learn">Em sẽ học</span>${g.learn}</div>
+  <div class="gr"><span class="gl use">Dùng ở đâu</span>${g.use}</div></div></div>`).join('')}</div>
+  <div class="card"><h3>Em mang về được gì?</h3><ul class="take"><li><b>Một bộ cụm liên kết</b> để nhớ và dùng lại: <span class="lkx lk-time">First,</span> <span class="lkx lk-contrast">However,</span> <span class="lkx lk-result">As a result,</span> <span class="lkx lk-expl">For example,</span> <span class="lkx lk-purpose">To sum up,</span></li><li><b>Một khung viết 4 phần</b> dùng được cho email và báo cáo.</li><li><b>Một bản đồ bài nói 4 phần</b> cùng bản ghi âm của chính em, để luyện lại trước những buổi họp thật.</li></ul>
+  <h3 style="margin-top:12px">Lộ trình</h3><p class="path">Warm-up → Read & Check → Words & Links → Write → Speak → Submit</p></div>
+  <div class="row"><button class="pri" id="bn">Start the lesson →</button></div>`;
+  $('#bn').onclick=()=>{cur='pre';render()};
+}
+
+/* ---- 1 Warm-up ---- */
+function rPre(){
+  $('#main').innerHTML=`<div class="card"><h2>Warm-up · Before you read</h2><p class="muted">Trả lời bằng tiếng Anh (1–3 câu). Dùng <b>because</b> hoặc <b>so</b> để nối ý.</p>
+  ${PRE.map((q,i)=>`<div style="margin-top:12px"><label for="p${i}"><b>${i+1}.</b> ${esc(q)}</label><textarea id="p${i}" data-k="${i}">${esc(S.pre[i]||'')}</textarea></div>`).join('')}</div>${nav('goal','chk')}`;
+  bindVal('[id^=p][data-k]',S.pre);bindNav('goal','chk');
+}
+
+/* ---- 2 Read & Check (song song) ---- */
+function rChk(){
+  const L='ABCDEF',heads='<option value="">—</option>'+HEADINGS.map(h=>`<option value="${h.split('.')[0]}">${esc(h)}</option>`).join('');
+  const left=`<div class="card left"><h2>${TITLE}</h2>
+  <p class="muted">👆 Chạm vào từ để nghe, xem IPA và nghĩa. Cụm liên kết được tô màu.</p>
+  <div class="row" style="margin-bottom:8px"><button id="pa">🔊 Listen</button><button id="hl" class="${S.hl?'pri':''}">🖍 Linking phrases: ${S.hl?'ON':'OFF'}</button></div>
+  <div class="legend">${Object.entries(LK_NAME).map(([k,v])=>`<span class="lkx lk-${k}">${v}</span>`).join('')}</div>
+  <div id="txt" class="${S.hl?'':'nolk'}">${PARAS_M.map((p,i)=>`<p class="para"><b class="pl">${L[i]}</b>${renderMarked(p)} <button class="mini" data-sp="${i}" aria-label="Listen to paragraph ${L[i]}">🔊</button></p>`).join('')}</div>
+  <details><summary><b>Glossary</b></summary><table style="border-collapse:collapse;width:100%">${GLOSS.map((g,i)=>`<tr><td class="td"><b>${g[0]}</b> <button class="mini" data-gl="${i}" aria-label="Listen">🔊</button><div class="muted">/${g[1]}/</div></td><td class="td">${g[2]}</td></tr>`).join('')}</table></details></div>`;
+  const right=`<div class="right"><div class="card"><h3>A · Headings</h3><p class="muted">Match each paragraph with a heading. One heading is extra.</p>
+  ${L.split('').map(l=>`<div class="line"><label for="h${l}"><b>Paragraph ${l}</b></label><select id="h${l}" data-k="${l}">${heads.replace(`value="${S.h[l]||'__'}"`,`value="${S.h[l]}" selected`)}</select></div>`).join('')}</div>
+  <div class="card"><h3>B · True, False or Not Given</h3>${TFNG.map((t,i)=>`<div class="line"><label for="t${i}">${i+1}. ${esc(t[0])}</label><select id="t${i}" data-k="${i}">${['','T','F','N'].map(v=>`<option value="${v}" ${S.t[i]===v?'selected':''}>${{'':'—',T:'True',F:'False',N:'Not Given'}[v]}</option>`).join('')}</select></div>`).join('')}</div>
+  <div class="card"><h3>C · Timeline</h3><p class="muted">Put the events in order (1 = first, 6 = last). Look at the <span class="lkx lk-time">time phrases</span>.</p>
+  ${EV_ORDER.map((ei,i)=>`<div class="line"><label for="o${i}">${esc(EVENTS[ei][0])}</label><select id="o${i}" data-k="${i}"><option value="">—</option>${[1,2,3,4,5,6].map(n=>`<option value="${n}" ${String(S.o[i])===String(n)?'selected':''}>${n}</option>`).join('')}</select></div>`).join('')}</div>
+  <div class="card"><h3>D · Short answers</h3><p class="muted">Write a short answer in your own words.</p>
+  ${SHORT.map((s,i)=>`<div style="margin-top:10px"><label for="d${i}"><b>${i+1}.</b> ${esc(s.q)}</label><textarea id="d${i}" data-k="${i}">${esc(S.d[i]||'')}</textarea></div>`).join('')}</div></div>`;
+  $('#main').innerHTML=`<div class="mobtog"><button class="chip ${pane==='text'?'on':''}" data-p="text">📖 Text</button><button class="chip ${pane==='q'?'on':''}" data-p="q">✏️ Questions</button></div><div class="split" data-pane="${pane}">${left}${right}</div>${nav('pre','voc')}`;
+  document.querySelectorAll('.w').forEach(w=>{w.onclick=()=>showWord(w);w.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showWord(w)}}});
+  document.querySelectorAll('[data-sp]').forEach(b=>b.onclick=()=>say(PARAS[+b.dataset.sp],.85));
+  document.querySelectorAll('[data-gl]').forEach(b=>b.onclick=()=>say(GLOSS[+b.dataset.gl][0],.8));
+  $('#pa').onclick=()=>say(PARAS.join(' '),.85);
+  $('#hl').onclick=()=>{S.hl=!S.hl;save();rChk()};
+  document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{pane=b.dataset.p;document.querySelector('.split').dataset.pane=pane;document.querySelectorAll('[data-p]').forEach(x=>x.classList.toggle('on',x===b));window.scrollTo({top:0})});
+  bindVal('select[id^=h]',S.h);bindVal('select[id^=t]',S.t);bindVal('select[id^=o]',S.o);bindVal('textarea[id^=d]',S.d);bindNav('pre','voc');
+}
+
+/* ---- 3 Words & Links ---- */
+function rVoc(){
+  $('#main').innerHTML=`<div class="card"><h2>Linking phrases toolbox</h2><p>Tap a phrase to hear it. Each group answers one question your listener has.</p>
+  ${TOOLBOX.map(g=>`<div class="tb lk-${g.id}-b"><div class="tbh"><b>${g.name}</b> <span class="muted">· ${g.vi}</span></div><div class="row">${g.items.map((it,i)=>`<button class="phr lk-${g.id}" data-g="${g.id}" data-i="${i}">${esc(it[0])}<small>${esc(it[1])}</small></button>`).join('')}</div><div class="ex">“${esc(g.ex)}” <button class="mini" data-ex="${g.id}" aria-label="Listen">🔊</button></div></div>`).join('')}</div>
+  <div class="card"><h2>Practice · Choose the best linking word</h2><div class="bank">${LINK_BANK.map(w=>`<span>${w}</span>`).join('')}</div>
+  ${LINKQ.map((c,i)=>`<div class="line"><label for="l${i}">${i+1}. ${esc(c[0]).replace('___','<b>…</b>')}</label><select id="l${i}" data-k="${i}"><option value="">—</option>${LINK_BANK.map(w=>`<option ${S.l[i]===w?'selected':''}>${w}</option>`).join('')}</select></div>`).join('')}</div>
+  <div class="card"><h2>Vocabulary</h2><p>Complete each sentence with a word or phrase from the box. There are two extra items.</p><div class="bank">${CLOZE_BANK.map(w=>`<span>${w}</span>`).join('')}</div>
+  ${CLOZE.map((c,i)=>{const [a,b]=c[0].split('___');return `<div class="line"><label for="c${i}">${i+1}. ${esc(a)}<b>…</b>${esc(b)}</label><select id="c${i}" data-k="${i}"><option value="">—</option>${CLOZE_BANK.map(w=>`<option ${S.c[i]===w?'selected':''}>${w}</option>`).join('')}</select></div>`}).join('')}</div>${nav('chk','wri')}`;
+  document.querySelectorAll('.phr[data-g]').forEach(b=>b.onclick=()=>{const g=TOOLBOX.find(x=>x.id===b.dataset.g);say(g.items[+b.dataset.i][0].replace(/…/g,''),.8)});
+  document.querySelectorAll('[data-ex]').forEach(b=>b.onclick=()=>say(TOOLBOX.find(x=>x.id===b.dataset.ex).ex,.85));
+  bindVal('select[id^=l]',S.l);bindVal('select[id^=c]',S.c);bindNav('chk','wri');
+}
+
+/* ---- frame builder (writing) ---- */
+function frameHTML(F,store,pre){
+  return F.parts.map((p,i)=>`<div class="fp"><div class="fph"><b>${p.h}</b>${p.t?` <span class="tag">${p.t}</span>`:''}</div><div class="muted">${p.tip}</div>
+  <div class="chipsrow">${p.chips.map((c,j)=>`<button class="phr" data-pre="${pre}" data-i="${i}" data-j="${j}">${esc(c)}</button>`).join('')}</div>
+  <textarea id="${pre}${i}" data-k="${i}" placeholder="${pre==='w'?'Write your sentences…':'Write key words / sentences for this part…'}">${esc(store[i]||'')}</textarea></div>`).join('');
+}
+function bindFrame(F,store,pre,after){
+  bindVal(`textarea[id^=${pre}][data-k]`,store);
+  document.querySelectorAll(`.phr[data-pre="${pre}"]`).forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.i,t=F.parts[i].chips[+b.dataset.j].replace(/ \/ .*$/,''),ta=$('#'+pre+i);
+    ta.value=(ta.value.trim()?ta.value.replace(/\s*$/,' '):'')+t+' ';store[i]=ta.value;save();ta.focus();topbar();after&&after()});
+  document.querySelectorAll(`textarea[id^=${pre}]`).forEach(t=>t.addEventListener('input',()=>after&&after()));
+}
+
+/* ---- 4 Write ---- */
+function rWri(){
+  $('#main').innerHTML=`<div class="card"><h2>Write a 4-part paragraph</h2><p>${esc(WFRAME.task)}</p><p class="muted">Tap a starter to add it, then finish the sentence. Mỗi phần chỉ cần 1–2 câu.</p>${frameHTML(WFRAME,S.wp,'w')}
+  <div class="fb" id="wst"></div></div>${nav('voc','spk')}`;
+  const up=()=>{const t=wText(),l=detectLinks(t);$('#wst').innerHTML=`<b>${wc(t)}</b> words (aim for 60–90) · Linking phrases used: <b>${l.length}</b> ${l.length?'('+l.map(esc).join(', ')+')':''}${l.length<4?' — try to use at least 4.':' ✅'}`};up();
+  bindFrame(WFRAME,S.wp,'w',up);bindNav('voc','spk');
+}
+
+/* ---- recording ---- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let R={mr:null,rc:null,stream:null,chunks:[],blob:null,url:null,t0:0,dur:0,tr:'',live:false,busy:false,uploaded:false};
+function blobB64(b){return new Promise((res,rej)=>{const f=new FileReader();f.onload=()=>res(String(f.result).split(',')[1]);f.onerror=rej;f.readAsDataURL(b)})}
+
+/* ---- 5 Speak ---- */
+const markLinks=s=>esc(s).replace(/\[\[(\w+)\|([^\]]*)\]\]/g,'<mark class="lk lk-$1" title="Linking word">$2</mark>').replace(/\n/g,'<br><br>');
+function rSpk(){
+  const slides=MODEL_PARTS.map((p,i)=>{
+    const links=[...p.script.matchAll(/\[\[(\w+)\|([^\]]*)\]\]/g)].map(m=>[m[1],m[2]]);
+    const seen=new Set(),uniq=links.filter(l=>{const k=l[1].toLowerCase();if(seen.has(k))return false;seen.add(k);return true});
+    return `<div class="slide"><div class="sh"><span class="sn">${i+1}</span><b>${p.h}</b><span class="tag">${p.t}</span></div>
+    <div class="coreline">💡 ${p.core}</div>
+    <div class="script">${markLinks(p.script)}</div>
+    <div class="sn2"><b>Vì sao viết vậy:</b> ${p.why}</div><div class="sn2"><b>Mẹo nói:</b> ${p.tip}</div>
+    <div class="lkl"><b>Linking words:</b> ${uniq.map(l=>`<span class="lkx lk-${l[0]}">${esc(l[1])}</span>`).join(' ')}</div>
+    <div class="row"><button data-lp="${i}">🔊 Listen</button><button data-ls="${i}">🐢 Slowly</button><button data-vi="${i}">🇻🇳 Tóm tắt</button></div><div class="viz" id="vz${i}" hidden>${esc(p.vi)}</div></div>`}).join('');
+  $('#main').innerHTML=`<div class="ctxred"><div class="ctxh">${CONTEXT.title}</div><p>${CONTEXT.body}</p><p>${CONTEXT.why}</p></div>
+  <div class="card"><h2>Share it like a talk</h2><p>${esc(SFRAME.task)}</p>
+  <div class="flow">${CONTEXT.flow.map((f,i)=>`<span><b>${i+1}</b> ${f}</span>`).join('')}</div>
+  <div class="talkmap">${SFRAME.parts.map((p,i)=>`<span>${p.h.slice(4)}</span>${i<3?'<i>→</i>':''}`).join('')}</div>
+  <div class="coregrid">${CORE.map(c=>`<div class="corebox"><div class="ci">${c[0]}</div><b>${c[1]}</b><div class="muted">${c[2]}</div></div>`).join('')}</div></div>
+  <div class="card"><h2>A · Listen to the model talk</h2><p class="muted">Bài chia sẻ mẫu khoảng 2 phút, từ vựng A2–B1. Các từ nối được tô màu. Nghe từng phần và chú ý cách chúng dẫn người nghe đi từ ý này sang ý khác.</p>
+  <div class="legend">${Object.entries(LK_TYPES).map(([k,v])=>`<span class="lkx lk-${k}">${v}</span>`).join('')}</div>
+  <div class="row" style="margin-bottom:8px"><button class="pri" id="pm">🔊 Listen to the whole talk</button><button id="pm2">🐢 Slowly</button></div>${slides}</div>
+  <div class="card"><h2>Want to learn more?</h2><p class="muted">Nguồn thông tin về trường hợp Biti’s Hunter. Các con số (3 tỷ đồng, 300% trong 7 ngày) do doanh nghiệp và báo chí marketing công bố, hãy đọc thêm để tự kiểm chứng.</p>
+  <ul class="src">${SOURCES.map(s=>`<li><a href="${s[1]}" target="_blank" rel="noopener noreferrer">${esc(s[0])}</a><div class="muted">${esc(s[2])}</div></li>`).join('')}</ul></div>
+  <div class="card"><h2>B · Use this structure at work</h2><p class="muted">Cùng bộ khung này dùng cho nhiều tình huống thật. Chỉ cần thay nội dung.</p>
+  <table class="reuse">${REUSE.map(r=>`<tr><th>${r[0]}</th><td><i>${esc(r[1])}</i><div class="muted">${esc(r[2])}</div></td></tr>`).join('')}</table></div>
+  <div class="card"><h2>C · Record your talk</h2><p class="muted">Đọc bài mẫu hoặc nói lại theo cách của em, từ Hook đến Conclusion. Nhớ dùng ít nhất 4 từ nối. Ghi âm bao nhiêu lần cũng được; bản cuối cùng sẽ được nộp ở bước 6.</p>
+  <div class="row"><button class="pri" id="rb">🎙 Start recording</button><button id="rs" disabled>⏹ Stop</button><span id="rst" class="muted"></span></div><div id="rp" style="margin-top:10px"></div></div>${nav('wri','sub')}`;
+  document.querySelectorAll('[data-lp]').forEach(b=>b.onclick=()=>say(stripM(MODEL_PARTS[+b.dataset.lp].script).replace(/\n/g,' '),.85));
+  document.querySelectorAll('[data-ls]').forEach(b=>b.onclick=()=>say(stripM(MODEL_PARTS[+b.dataset.ls].script).replace(/\n/g,' '),.6));
+  document.querySelectorAll('[data-vi]').forEach(b=>b.onclick=()=>{const e=$('#vz'+b.dataset.vi);e.hidden=!e.hidden});
+  $('#pm').onclick=()=>say(MODEL_TALK,.85);$('#pm2').onclick=()=>say(MODEL_TALK,.6);
+  $('#rb').onclick=startRec;$('#rs').onclick=stopRec;bindNav('wri','sub');
+  if(R.blob)showRec();else if(S.audioSent)$('#rp').innerHTML='<div class="fb">Em đã nộp một bản ghi âm trước đó. Ghi lại nếu muốn thay bằng bản mới.</div>';
+}
+async function startRec(){
+  if(R.live||R.busy)return;R.busy=true;
+  try{
+    try{speechSynthesis.cancel()}catch(e){}
+    R.stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    R.chunks=[];R.tr='';R.blob=null;R.uploaded=false;if(R.url){URL.revokeObjectURL(R.url);R.url=null}
+    const mr=new MediaRecorder(R.stream);R.mr=mr;
+    mr.ondataavailable=e=>{if(e.data&&e.data.size)R.chunks.push(e.data)};
+    mr.onstop=()=>{R.stream.getTracks().forEach(t=>t.stop());R.blob=new Blob(R.chunks,{type:mr.mimeType||'audio/webm'});R.url=URL.createObjectURL(R.blob);R.dur=Math.round((Date.now()-R.t0)/1000);R.live=false;showRec();topbar()};
+    if(SR){try{const rc=new SR();rc.lang='en-US';rc.continuous=true;rc.interimResults=false;rc.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal)R.tr+=' '+e.results[i][0].transcript};rc.onerror=()=>{};R.rc=rc;rc.start()}catch(e){R.rc=null}}
+    R.t0=Date.now();mr.start();R.live=true;$('#rb').disabled=true;$('#rs').disabled=false;$('#rst').innerHTML='<span class="rec"></span> Recording…';
+  }catch(e){$('#rp').innerHTML='<div class="fb no">Không mở được micro. Em hãy bấm “Cho phép” micro cho trang này (dùng Chrome hoặc Safari) rồi thử lại.</div>'}
+  R.busy=false;
+}
+function stopRec(){if(!R.live)return;$('#rs').disabled=true;$('#rst').textContent='Processing…';try{R.rc&&R.rc.stop()}catch(e){}setTimeout(()=>{try{R.mr.stop()}catch(e){}},R.rc?900:0)}
+function showRec(){
+  if(!$('#rp'))return;$('#rb').disabled=false;$('#rb').textContent='🎙 Record again';$('#rs').disabled=true;$('#rst').textContent='';
+  $('#rp').innerHTML=`<audio controls src="${R.url}" style="width:100%"></audio><div class="muted">${R.dur}s · Bản ghi này sẽ được nộp cùng bài ở bước 6.</div>${R.tr.trim()?`<div class="fb">Máy nghe được: <i>${esc(R.tr.trim())}</i></div>`:''}`;
+}
+
+/* ---- scoring (ngầm, hiện sau khi nộp) ---- */
+function scoreAll(){
+  const r={A:0,B:0,C:0,D:0,E:0,F:0,Dd:[]};
+  Object.keys(HEAD_ANS).forEach(l=>{if(S.h[l]===HEAD_ANS[l])r.A++});
+  TFNG.forEach((t,i)=>{if(S.t[i]===t[1])r.B++});
+  EV_ORDER.forEach((ei,i)=>{if(String(S.o[i])===String(EVENTS[ei][1]))r.C++});
+  SHORT.forEach((s,i)=>{const txt=(S.d[i]||'').toLowerCase();let hit=0;const miss=[];s.k.forEach(([re,h])=>{if(new RegExp(re,'i').test(txt))hit++;else miss.push(h)});const f=txt.trim()?hit/s.k.length:0;r.D+=f;r.Dd.push({f,miss})});
+  CLOZE.forEach((c,i)=>{if(S.c[i]===c[1])r.E++});
+  LINKQ.forEach((c,i)=>{if(S.l[i]===c[1])r.F++});
+  return r;
+}
+
+/* ---- 6 Submit ---- */
+function rSub(){
+  const a=cnt(S.h),b=cnt(S.t),c=cnt(S.o),d=cnt(S.d),miss=[];
+  if(a<6||b<7||c<6||d<3)miss.push(`Check (${a+b+c+d}/22 ô)`);if(cnt(S.l)<8||cnt(S.c)<6)miss.push(`Words & Links (${cnt(S.l)+cnt(S.c)}/14)`);if(!wText())miss.push('bài viết');if(!(R.blob||S.audioSent))miss.push('bản ghi âm');
+  const wl=detectLinks(wText());
+  $('#main').innerHTML=`<div class="card"><h2>Submit</h2><p>Hệ thống sẽ gom toàn bộ bài làm, bài viết và bản ghi âm rồi gửi về cho cô. Sau khi nộp, em sẽ xem được điểm và đáp án.</p>
+  <h3>Self-check</h3>${SELFCHECK.map((t,i)=>`<label class="chk"><input type="checkbox" data-g="${i}" ${S.g[i]?'checked':''}> ${esc(t)}</label>`).join('')}
+  <table style="border-collapse:collapse;width:100%;margin-top:10px"><tr><th class="th">Warm-up</th><td class="td">${cnt(S.pre)}/2</td></tr><tr><th class="th">Từ đã tra</th><td class="td">${nLook()} từ</td></tr><tr><th class="th">Check (A–D)</th><td class="td">${a+b+c+d}/22 ô</td></tr><tr><th class="th">Words & Links</th><td class="td">${cnt(S.l)+cnt(S.c)}/14 ô</td></tr><tr><th class="th">Bài viết</th><td class="td">${wc(wText())} từ · ${wl.length} cụm liên kết</td></tr><tr><th class="th">Speaking</th><td class="td">${R.blob?R.dur+' giây':S.audioSent?'Đã nộp trước đó':'Chưa có ghi âm'}</td></tr><tr><th class="th">Thời gian học</th><td class="td">${fmtT(S.time)}</td></tr></table>
+  ${miss.length&&!S.sent?`<div class="fb" style="margin-top:10px">Em còn thiếu: ${miss.join(', ')}. Em vẫn nộp được, hoặc quay lại làm thêm.</div>`:''}
+  <div class="row" style="margin:12px 0"><button id="bp">← Speak</button><button class="pri" id="sb">${S.sent?'Submit again':'Submit to teacher'}</button></div><div id="sr">${S.sent?'<div class="fb ok">✅ Em đã nộp bài. Cô sẽ nhận xét sớm.</div>':''}</div></div><div id="res"></div>`;
+  $('#bp').onclick=()=>{cur='spk';render()};$('#sb').onclick=submitAll;
+  document.querySelectorAll('[data-g]').forEach(x=>x.onchange=()=>{S.g[x.dataset.g]=x.checked;save()});
+  if(S.sent)showResult();
+}
+function showResult(){
+  const r=scoreAll(),L='ABCDEF',wl=detectLinks(wText()),tl=detectLinks(R.tr||'');
+  $('#res').innerHTML=`<div class="card"><h2>Your results</h2><table style="border-collapse:collapse;width:100%">
+  <tr><th class="th">A · Headings</th><td class="td">${r.A}/6</td></tr><tr><th class="th">B · T/F/NG</th><td class="td">${r.B}/7</td></tr><tr><th class="th">C · Timeline</th><td class="td">${r.C}/6</td></tr><tr><th class="th">D · Short answers (máy chấm tạm)</th><td class="td">${r.D.toFixed(1)}/3</td></tr><tr><th class="th">Linking practice</th><td class="td">${r.F}/8</td></tr><tr><th class="th">Vocabulary</th><td class="td">${r.E}/6</td></tr>
+  <tr><th class="th">Writing: linking phrases used</th><td class="td">${wl.length} ${wl.length?'('+wl.join(', ')+')':''}</td></tr>${R.tr.trim()?`<tr><th class="th">Speaking: linking phrases heard</th><td class="td">${tl.length} ${tl.length?'('+tl.join(', ')+')':''}</td></tr>`:''}</table>
+  <h3 style="margin-top:12px">Answers</h3><p><b>A:</b> ${L.split('').map(l=>l+'–'+HEAD_ANS[l]).join(', ')}</p><p><b>B:</b> ${TFNG.map((t,i)=>(i+1)+'–'+t[1]).join(', ')}</p><p><b>C:</b> ${EV_ORDER.map(ei=>EVENTS[ei][1]).join(', ')} (theo thứ tự câu trên)</p>
+  <p><b>D:</b></p><ul>${SHORT.map(s=>`<li>${esc(s.model)}</li>`).join('')}</ul><p><b>Linking practice:</b> ${LINKQ.map((c,i)=>(i+1)+'–'+c[1]).join(', ')}</p><p><b>Vocabulary:</b> ${CLOZE.map((c,i)=>(i+1)+'–'+c[1]).join(', ')}</p></div>`;
+}
+async function post(body){const r=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(body)});let ok=r.ok;try{const j=await r.json();ok=j.ok!==false}catch(e){}if(!ok)throw new Error('server')}
+async function submitAll(){
+  $('#sb').disabled=true;$('#sr').innerHTML='<div class="fb">Đang gom bài và gửi cho cô…</div>';
+  try{
+    const tl=detectLinks(R.tr||'');
+    if(R.blob&&!R.uploaded){
+      const ext=R.blob.type.includes('mp4')?'m4a':R.blob.type.includes('ogg')?'ogg':'webm';
+      await post({type:'audio',name:S.name,lesson:LESSON,file:'ChiaSeStarbucks_01.'+ext,label:'Đề xuất thương hiệu Home Lunch',audio:await blobB64(R.blob),mime:R.blob.type||'audio/webm',dur:R.dur,score:null,target:SFRAME.task,transcript:R.tr.trim()});
+      R.uploaded=true;S.audioSent={dur:R.dur,links:tl};save();
+    }
+    const r=scoreAll(),wt=wText(),wl=detectLinks(wt);
+    const summary={vocab:`Từ vựng ${r.E}/6 · Linking practice ${r.F}/8 · đã tra ${nLook()} từ`,gram:`Headings ${r.A}/6 · T/F/NG ${r.B}/7 · Timeline ${r.C}/6 · Short answers (máy) ${r.D.toFixed(1)}/3`,ctx:`Viết ${wc(wt)} từ · ${wl.length} cụm liên kết (${wl.join(', ')})`,
+      rec:S.audioSent?`Đã nộp ghi âm chia sẻ (${S.audioSent.dur}s${S.audioSent.links&&S.audioSent.links.length?' · nghe được liên kết: '+S.audioSent.links.join(', '):''})`:'Không có ghi âm',para:`Self-check ${Object.values(S.g).filter(Boolean).length}/4 · Thời gian học ${fmtT(S.time)}`,feedback:'Reading Starbucks v2: cô chấm bài viết, short answers, ghi âm (chú ý cụm liên kết)'};
+    const d=[];
+    PRE.forEach((q,i)=>d.push({part:'Warm-up',question:q,answer:S.pre[i]||'',correct:'',result:''}));
+    Object.keys(HEAD_ANS).forEach(l=>d.push({part:'A · Headings',question:'Paragraph '+l,answer:S.h[l]||'',correct:HEAD_ANS[l],result:S.h[l]===HEAD_ANS[l]?'đúng':'sai'}));
+    TFNG.forEach((t,i)=>d.push({part:'B · T/F/NG',question:t[0],answer:S.t[i]||'',correct:t[1],result:S.t[i]===t[1]?'đúng':'sai'}));
+    EV_ORDER.forEach((ei,i)=>d.push({part:'C · Timeline',question:EVENTS[ei][0],answer:String(S.o[i]||''),correct:String(EVENTS[ei][1]),result:String(S.o[i])===String(EVENTS[ei][1])?'đúng':'sai'}));
+    SHORT.forEach((s,i)=>d.push({part:'D · Short answers',question:s.q,answer:S.d[i]||'',correct:s.model,result:`máy: ${Math.round(r.Dd[i].f*100)}%`+(r.Dd[i].miss.length?' · có thể thiếu: '+r.Dd[i].miss.join(', '):'')}));
+    LINKQ.forEach((c,i)=>d.push({part:'Linking practice',question:c[0],answer:S.l[i]||'',correct:c[1],result:S.l[i]===c[1]?'đúng':'sai'}));
+    CLOZE.forEach((c,i)=>d.push({part:'Vocabulary',question:c[0],answer:S.c[i]||'',correct:c[1],result:S.c[i]===c[1]?'đúng':'sai'}));
+    WFRAME.parts.forEach((p,i)=>d.push({part:'Writing · '+p.h,question:WFRAME.task,answer:S.wp[i]||'',correct:'',result:i===3?wc(wt)+' từ · '+wl.length+' cụm liên kết':''}));
+    d.push({part:'Speaking',question:SFRAME.task,answer:R.tr.trim(),correct:'',result:S.audioSent?'đã gửi file ghi âm':'không có'});
+    d.push({part:'Self-check',question:'Em đã làm được',answer:SELFCHECK.filter((_,i)=>S.g[i]).join(' | '),correct:'',result:''});
+    d.push({part:'Tra từ',question:'Các từ đã tra',answer:Object.keys(S.look).join(', '),correct:'',result:nLook()+' từ'});
+    await post({type:'submit',name:S.name,lesson:LESSON,summary,details:d});
+    S.sent=true;save();topbar();rSub();
+  }catch(e){$('#sr').innerHTML='<div class="fb no">Chưa gửi được. Em kiểm tra mạng rồi bấm lại nhé. Bài của em vẫn được giữ nguyên.</div>';$('#sb').disabled=false}
+}
+
+/* ---- gate ---- */
+function showApp(){$('#gate').hidden=true;$('#app').hidden=false;$('#who').textContent='Học sinh: '+S.name;cur='goal';render()}
+$('#go').onclick=()=>{const v=$('#nm').value.trim();if(!v){$('#nm').focus();return}S.name=v;save();showApp()};
+$('#nm').onkeydown=e=>{if(e.key==='Enter')$('#go').click()};
+$('#rename').onclick=()=>{S.name='';save();$('#app').hidden=true;$('#gate').hidden=false;$('#nm').value='';$('#nm').focus()};
+if(S.name)showApp();else $('#gate').hidden=false;
+
+</script>
+</body>
+</html>
