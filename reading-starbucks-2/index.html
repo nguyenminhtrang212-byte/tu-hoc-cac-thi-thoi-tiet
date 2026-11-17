@@ -110,6 +110,9 @@ details{margin:10px 0}summary{cursor:pointer}
 .lk-apply,.lkx.lk-apply{background:#ffd9c2;color:#6b2d00}
 .src{padding-left:18px;margin:6px 0}.src li{margin:8px 0}.src a{font-weight:600}
 .lk-hook,.lkx.lk-hook{background:#ffd6e7;color:#7a0b3b}
+.pron{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}.pr{background:var(--soft);border-radius:10px;padding:8px 10px}.pr .row{margin-top:6px}
+.pt{margin-top:6px;font-size:.92rem;background:var(--mark);padding:6px 8px;border-radius:8px}
+[hidden]{display:none!important}
 </style></head>
 <body>
 <div class="wrap">
@@ -125,6 +128,7 @@ details{margin:10px 0}summary{cursor:pointer}
   <div class="sticky">
     <div class="hero"><div class="ic">☕</div><div><h1>Reading · Starbucks</h1><div class="muted">Chọn phần bất kỳ để làm; nộp một lần ở bước 6.</div></div></div>
     <div class="muted" style="margin-top:6px"><span id="who"></span> <button id="rename" style="padding:2px 8px;font-size:.8rem">Đổi tên</button></div>
+    <div class="row" id="voicebar" style="margin-top:6px" hidden><label for="voice" class="muted">🔊 Giọng đọc</label><select id="voice" style="max-width:230px"></select><button id="vtest" style="padding:2px 8px;font-size:.8rem">Thử giọng</button></div>
     <div class="row" style="margin-top:6px"><div class="bar" style="flex:1"><i id="pbar"></i></div><span class="muted" id="ptxt"></span></div>
     <div class="chips" id="chips"></div>
   </div>
@@ -136,7 +140,7 @@ details{margin:10px 0}summary{cursor:pointer}
 const TITLE='Starbucks: selling a place, not just coffee';
 const PRE=['Have you ever been to a Starbucks? What do you think of its brand image?','Why do people pay more for coffee in some shops?'];
 const GLOSS=[['coffee beans','ˈkɒfi biːnz','hạt cà phê'],['trade show','ˈtreɪd ʃəʊ','hội chợ thương mại'],['barista','bəˈrɪstə','nhân viên pha chế cà phê'],['human connection','ˈhjuːmən kəˈnekʃn','sự kết nối giữa con người'],['third place','θɜːd pleɪs','“nơi thứ ba”, ngoài nhà và nơi làm việc'],['experience','ɪkˈspɪəriəns','trải nghiệm']];
-const DICT={
+const DICT={'hello':['həˈləʊ','xin chào'],'everyone':['ˈevriwʌn','mọi người'],'think':['θɪŋk','nghĩ'],'your':['jɔː','của bạn'],'favourite':['ˈfeɪvərɪt','yêu thích'],'ask':['ɑːsk','hỏi'],'yourself':['jɔːˈself','chính bạn'],'why':['waɪ','tại sao'],'you':['juː','bạn'],'go':['gəʊ','đi'],'i':['aɪ','tôi'],'only':['ˈəʊnli','chỉ'],'because':['bɪˈkɒz','bởi vì'],'also':['ˈɔːlsəʊ','cũng'],'believe':['bɪˈliːv','tin'],'turned':['tɜːnd','đã biến thành, đã quay'],'this':['ðɪs','này, điều này'],'feeling':['ˈfiːlɪŋ','cảm giác'],'will':['wɪl','sẽ'],'tell':['tel','kể, nói cho biết'],'how':['haʊ','như thế nào'],'built':['bɪlt','đã xây dựng'],'steps':['steps','các bước'],'talk':['tɔːk','nói chuyện'],'surprise':['səˈpraɪz','sự bất ngờ'],'after':['ˈɑːftə','sau'],'that':['ðæt','đó, rằng'],'explain':['ɪkˈspleɪn','giải thích'],'end':['end','cuối, kết thúc (in the end: cuối cùng)'],'without':['wɪˈðaʊt','không có'],'beginning':['bɪˈgɪnɪŋ','lúc bắt đầu'],'visited':['ˈvɪzɪtɪd','đã đến thăm'],'real':['rɪəl','thật sự'],'together':['təˈgeðə','cùng nhau'],'under':['ˈʌndə','dưới'],'now':['naʊ','bây giờ'],'comes':['kʌmz','đến, tới'],'other':['ˈʌðə','khác'],'words':['wɜːdz','từ, lời nói'],'for':['fɔː','cho, để'],'example':['ɪgˈzɑːmpl','ví dụ'],'enjoyed':['ɪnˈdʒɔɪd','đã thích, đã tận hưởng'],'were':['wɜː','đã (là)'],'has':['hæz','có'],'sum':['sʌm','tổng (to sum up: tóm lại)'],'up':['ʌp','lên'],'understood':['ˌʌndəˈstʊd','đã hiểu'],'what':['wɒt','cái gì'],'clear':['klɪə','rõ ràng'],'finally':['ˈfaɪnəli','cuối cùng'],'let':['let','để, cho phép'],'story':['ˈstɔːri','câu chuyện'],'next':['nekst','tiếp theo'],'time':['taɪm','lần, thời gian'],'please':['pliːz','xin vui lòng'],'customer':['ˈkʌstəmə','khách hàng'],'feels':['fiːlz','cảm thấy'],'thank':['θæŋk','cảm ơn'],'listening':['ˈlɪsnɪŋ','lắng nghe'],
 'a':['ə','một'],'about':['əˈbaʊt','khoảng, về'],'advertising':['ˈædvətaɪzɪŋ','quảng cáo'],'and':['ænd','và'],'appeal':['əˈpiːl','thu hút, hấp dẫn'],'as':['æz','với tư cách là'],'at':['æt','ở, tại'],
 'back':['bæk','trở lại'],'bar':['bɑː','quán (bar)'],'barista':['bəˈrɪstə','nhân viên pha chế cà phê'],'bars':['bɑːz','các quán'],'be':['biː','thì, là'],'beans':['biːnz','hạt (cà phê, đậu)'],
 'big':['bɪɡ','lớn'],'book':['bʊk','cuốn sách'],'bought':['bɔːt','đã mua'],'brand':['brænd','thương hiệu'],'brands':['brændz','các thương hiệu'],'build':['bɪld','xây dựng'],'but':['bʌt','nhưng'],'buy':['baɪ','mua'],'by':['baɪ','bởi, của (tác giả)'],
@@ -241,11 +245,11 @@ parts:[
 {h:'3 · Reason / Result',tip:'Why do customers pay more? What happens?',chips:['Customers pay more because…','As a result, …','That’s why…']},
 {h:'4 · Conclusion',tip:'Finish with one clear sentence.',chips:['In short, …','To sum up, …','So the lesson is…']}]};
 const SFRAME={
-task:'Tell your team the story (about 3 minutes): How did Starbucks build its brand image, and what can we learn from it?',
+task:'Tell your team the story (about 2–3 minutes): How did Starbucks build its brand image, and what can we learn from it?',
 parts:[{h:'1 · Hook'},{h:'2 · Introduction'},{h:'3 · Body'},{h:'4 · Conclusion'}]};
 const CONTEXT={
 title:'📍 Bối cảnh và lý do của bài thuyết trình này',
-body:'Sếp muốn cả nhóm học từ một ví dụ có thật: Starbucks đã xây dựng hình ảnh thương hiệu như thế nào. Em có khoảng 3 phút trong buổi họp để kể câu chuyện đó và nói điều nhóm mình có thể học.',
+body:'Sếp muốn cả nhóm học từ một ví dụ có thật: Starbucks đã xây dựng hình ảnh thương hiệu như thế nào. Em có khoảng 2–3 phút trong buổi họp để kể câu chuyện đó và nói điều nhóm mình có thể học.',
 why:'Vì vậy bài nói không liệt kê thông tin. Em kể như một câu chuyện, từ cửa hàng bán hạt cà phê đến thương hiệu toàn cầu, và dùng các từ nối để người nghe luôn biết câu chuyện đang đi đến đâu. Ý chính xuyên suốt: Starbucks bán một nơi và một cảm giác, không chỉ cà phê.',
 flow:['Hook: câu hỏi về quán cà phê em yêu thích','Introduction: báo ba phần của câu chuyện','Body: ngạc nhiên ở Ý → ý tưởng “third place” → thương hiệu lớn lên nhờ trải nghiệm','Conclusion: bài học và một câu hỏi cho người nghe']};
 const LK_TYPES={hook:'Grab attention',time:'Time & order',contrast:'Contrast',reason:'Reason',result:'Result',example:'Explain / example',sum:'Sum up'};
@@ -255,32 +259,49 @@ const CORE=[
 ['🔗','Từ nối dẫn người nghe đi qua câu chuyện.','At first… But then… Because of this… In the end… giúp người nghe không bị lạc và cảm xúc lên xuống đúng chỗ.']];
 const MODEL_PARTS=[
 {h:'Hook',t:'20 sec',core:'Hỏi một câu gần gũi, rồi chuyển sang câu chuyện bằng một câu gây tò mò.',
- script:'Hello, everyone! Let me ask you a small question. Think about your favourite café. Why do you go there? Is it only the coffee? I don’t think so. For many people, it’s the music, the smell, the chair by the window. It’s a feeling. [[hook|Believe it or not]], one company turned that feeling into a famous brand: Starbucks.',
- why:'Câu hỏi làm người nghe nghĩ ngay đến trải nghiệm của chính họ. “Believe it or not” nối từ cảm giác quen thuộc sang Starbucks.',tip:'Hỏi “Is it only the coffee?” rồi dừng 2 giây. Nói “It’s a feeling” chậm và nhẹ.',
- vi:'Chào mọi người. Hãy nghĩ đến quán cà phê em thích nhất. Vì sao em đến đó? Chỉ vì cà phê thôi sao? Tôi nghĩ là không. Với nhiều người, đó là âm nhạc, mùi cà phê, chiếc ghế cạnh cửa sổ. Đó là một cảm giác. Tin hay không, có một công ty đã biến cảm giác ấy thành một thương hiệu nổi tiếng: Starbucks.'},
+ script:'Hello, everyone. Think about your favourite café and ask yourself why you go there. I think it is not only [[reason|because of]] the coffee, but also [[reason|because of]] the music, the smell and the comfortable chairs. [[hook|Believe it or not]], one company turned this feeling into a famous brand, and it is called Starbucks.',
+ why:'Câu hỏi làm người nghe nghĩ ngay đến trải nghiệm của chính họ. “Believe it or not” nối từ cảm giác quen thuộc sang Starbucks.',tip:'Dừng khoảng 2 giây sau “why you go there” để người nghe tự trả lời. Dừng nửa giây sau “Believe it or not”, rồi nhấn mạnh “Starbucks”.',
+ vi:'Chào mọi người. Hãy nghĩ đến quán cà phê em thích nhất và tự hỏi vì sao em đến đó. Tôi nghĩ không chỉ vì cà phê, mà còn vì âm nhạc, mùi thơm và những chiếc ghế êm. Tin hay không, có một công ty đã biến cảm giác ấy thành một thương hiệu nổi tiếng, tên là Starbucks.'},
 {h:'Introduction',t:'15 sec',core:'Báo ba phần của câu chuyện để người nghe theo kịp.',
- script:'Today I’ll tell you how Starbucks built its brand. [[time|First]], a surprise in Italy. [[time|After that]], a big idea. [[time|And in the end]], how the brand grew without big ads. So, are you ready? Let’s begin.',
- why:'Người nghe biết trước sẽ nghe gì và theo thứ tự nào. Ba cụm First, After that, And in the end là “bản đồ” của bài.',tip:'Đưa ngón tay lên khi nói First, After that, And in the end (1, 2, 3). Mỉm cười khi hỏi “Are you ready?”',
- vi:'Hôm nay tôi kể Starbucks đã xây thương hiệu thế nào. Trước hết, một bất ngờ ở Ý. Sau đó, một ý tưởng lớn. Cuối cùng, thương hiệu lớn lên mà không cần quảng cáo lớn. Sẵn sàng chưa? Bắt đầu nhé.'},
-{h:'Body',t:'120 sec',core:'Kể ba chặng: cửa hàng nhỏ → bất ngờ ở Milan → ý tưởng “third place” → thương hiệu lớn lên nhờ trải nghiệm.',
- script:'[[time|At the beginning]], in 1971, three friends opened a small shop in Seattle. It sold only coffee beans. Customers took them home and made their coffee there. Nothing special, right?\n[[contrast|But]] [[time|then]], in 1983, a young man called Howard Schultz went to Milan. He was the head of marketing at Starbucks. [[time|At first]], he was just surprised: the city had about 1,500 coffee bars! [[contrast|But]] the real surprise was the people. They [[contrast|didn’t just]] buy a drink. They met friends, chatted with the barista and felt at home.\n[[reason|Because of this]], Schultz wanted to turn Starbucks into a café. What do you think the owners said? No! They wanted to sell beans, [[contrast|not]] drinks. [[result|So]] Schultz left. In 1985, he opened his own coffee bars. [[time|Two years later]], his bars and Starbucks came together under the Starbucks name.\n[[hook|Now comes]] the big idea: the “third place”. Home is the first place. Work is the second. [[example|In other words]], a third place is somewhere warm, comfortable and friendly, where you can relax, meet people, or even work.\nSo, how did people hear about Starbucks? Not through big advertising. Schultz said the brand grew “through the experience”: [[example|for example]], the smell of coffee, the music, the friendly staff and the comfortable chairs. [[reason|Because]] customers were happy, they told their friends. [[time|In the end]], word of mouth did the rest.\n[[time|Today]], Starbucks has more than 35,000 stores in about 80 countries. Even in Hanoi, its 100th Vietnamese store launched a coffee from the Central Highlands for local customers.',
- why:'Mỗi đoạn dùng từ nối khác nhau để chuyển ý: thời gian (At the beginning, But then, Two years later), đối lập (But, not), lý do và kết quả (Because of this, So), giải thích (In other words, for example). Nhờ vậy người nghe thấy một câu chuyện liền mạch, không phải một danh sách.',tip:'Nói “But the real surprise was the people” với giọng ngạc nhiên, đây là điểm cảm xúc chính. Hỏi “What do you think the owners said?” như một câu đố, nhìn người nghe rồi nói “No!” thật rõ.',
- vi:'1971: ba người bạn mở một cửa hàng nhỏ ở Seattle, chỉ bán hạt cà phê. 1983: Howard Schultz đến Milan, ngạc nhiên vì thành phố có khoảng 1.500 quán cà phê, và vì người ta không chỉ mua đồ uống mà còn gặp bạn bè, trò chuyện với barista, cảm thấy như ở nhà. Vì thế ông muốn biến Starbucks thành quán cà phê, nhưng chủ cũ từ chối vì chỉ muốn bán hạt. Ông rời đi, năm 1985 mở quán riêng, hai năm sau quán của ông và Starbucks hợp lại dưới tên Starbucks. Ý tưởng lớn: “nơi thứ ba”, không phải nhà, không phải chỗ làm, mà ấm áp, thoải mái, thân thiện. Thương hiệu lớn lên nhờ trải nghiệm (mùi cà phê, âm nhạc, nhân viên thân thiện, ghế êm), khách vui nên kể cho bạn bè. Ngày nay có hơn 35.000 cửa hàng ở khoảng 80 nước; ở Hà Nội, cửa hàng thứ 100 ra mắt cà phê Tây Nguyên cho khách địa phương.'},
-{h:'Conclusion',t:'30 sec',core:'Gom lại thành một bài học và đưa câu hỏi cho người nghe mang về.',
- script:'So, what can we learn? [[sum|To sum up]], Starbucks didn’t only sell coffee. It sold a place and a feeling. [[time|First]], it understood what customers really wanted. [[time|Then]], it built one clear idea. [[time|And finally]], it let the experience tell the story. [[result|So]] next time you think about your own work, ask yourself: how does my customer feel? Thank you for listening. Any questions?',
- why:'Quay lại ý ở Hook (cảm giác) và đưa ra một câu hỏi người nghe có thể dùng cho công việc của mình.',tip:'Nói “It sold a place and a feeling” thật chậm. Dừng trước câu hỏi cuối rồi mỉm cười.',
- vi:'Tóm lại, Starbucks không chỉ bán cà phê mà bán một nơi và một cảm giác. Trước hết họ hiểu điều khách thật sự muốn. Sau đó họ xây một ý tưởng rõ ràng. Cuối cùng họ để trải nghiệm kể chuyện. Vậy lần sau nghĩ về công việc của mình, hãy hỏi: khách hàng cảm thấy thế nào? Cảm ơn và mời đặt câu hỏi.'}];
+ script:'Today I will tell you how Starbucks built its brand in three steps. [[time|First]], I will talk about a surprise in Italy. [[time|After that]], I will explain a big idea. [[time|In the end]], I will show how the brand grew without big advertising.',
+ why:'Người nghe biết trước sẽ nghe gì và theo thứ tự nào. First, After that, In the end là “bản đồ” của bài.',tip:'Đưa ngón tay lên khi nói First, After that, In the end (1, 2, 3). Nhấn mạnh “three steps”.',
+ vi:'Hôm nay tôi kể Starbucks đã xây thương hiệu như thế nào, qua ba bước. Trước hết, một bất ngờ ở Ý. Sau đó, một ý tưởng lớn. Cuối cùng, thương hiệu lớn lên mà không cần quảng cáo lớn.'},
+{h:'Body',t:'90 sec',core:'Kể ba chặng: cửa hàng nhỏ và bất ngờ ở Milan → ý tưởng “third place” → thương hiệu lớn lên nhờ trải nghiệm.',
+ script:'[[time|At the beginning]], in 1971, Starbucks was a small shop in Seattle that sold only coffee beans. [[contrast|But]] [[time|then]], in 1983, Howard Schultz, the head of marketing, visited Milan and saw about 1,500 coffee bars. The real surprise was the people, [[reason|because]] they did not just buy a drink, [[contrast|but also]] met friends and felt at home.\n[[reason|Because of this]], Schultz wanted to turn Starbucks into a café, [[contrast|but]] the owners said no, [[result|so]] he left and opened his own coffee bars in 1985. [[time|Two years later]], his bars and Starbucks came together under the Starbucks name.\n[[hook|Now comes]] the big idea, which is called the third place. [[example|In other words]], home is the first place, work is the second, and a third place is a warm, comfortable and friendly place to relax and meet people.\nStarbucks did not build its image with big advertising. [[example|For example]], customers enjoyed the smell of coffee, the music, the friendly staff and the comfortable chairs. [[reason|Because]] they were happy, they told their friends, and [[time|in the end]] word of mouth did the rest. [[time|Today]], Starbucks has more than 35,000 stores in about 80 countries.',
+ why:'Mỗi đoạn dùng từ nối khác nhau để chuyển ý: thời gian (At the beginning, But then, Two years later), đối lập (But, but also), lý do và kết quả (Because of this, so), giải thích (In other words, For example). Nhờ vậy người nghe thấy một câu chuyện liền mạch, không phải một danh sách.',tip:'Nhấn mạnh “the people” ở câu về Milan, đây là điểm cảm xúc chính của bài. Dừng ngắn sau mỗi từ nối ở đầu đoạn (Because of this, Now comes, For example) để người nghe biết em sắp chuyển ý.',
+ vi:'1971: Starbucks là một cửa hàng nhỏ ở Seattle, chỉ bán hạt cà phê. 1983: Howard Schultz, trưởng bộ phận marketing, đến Milan, thấy khoảng 1.500 quán cà phê. Điều bất ngờ thật sự là con người: họ không chỉ mua đồ uống mà còn gặp bạn bè và thấy như ở nhà. Vì thế Schultz muốn biến Starbucks thành quán cà phê, nhưng chủ cũ từ chối nên ông rời đi và năm 1985 mở quán riêng. Hai năm sau, quán của ông và Starbucks hợp lại dưới tên Starbucks. Ý tưởng lớn là “nơi thứ ba”: nhà là nơi thứ nhất, chỗ làm là nơi thứ hai, còn nơi thứ ba là chỗ ấm áp, thoải mái, thân thiện để thư giãn và gặp gỡ. Starbucks không xây hình ảnh bằng quảng cáo lớn; khách hài lòng với mùi cà phê, âm nhạc, nhân viên thân thiện, ghế êm nên kể cho bạn bè, và truyền miệng làm phần còn lại. Ngày nay có hơn 35.000 cửa hàng ở khoảng 80 nước.'},
+{h:'Conclusion',t:'25 sec',core:'Gom lại thành một bài học và để người nghe mang về một câu hỏi.',
+ script:'[[sum|To sum up]], Starbucks sold not only coffee [[contrast|but also]] a place and a feeling. [[time|First]], it understood what customers wanted. [[time|Then]], it built one clear idea. [[time|Finally]], it let the experience tell the story. [[result|So]] next time you think about your own work, please ask yourself how your customer feels. Thank you for listening.',
+ why:'Quay lại ý ở Hook (cảm giác) và đưa ra một câu hỏi người nghe có thể dùng cho công việc của mình.',tip:'Nói chậm câu “a place and a feeling”. Dừng một nhịp trước câu hỏi cuối, nhìn người nghe rồi mới nói tiếp.',
+ vi:'Tóm lại, Starbucks không chỉ bán cà phê mà còn bán một nơi và một cảm giác. Trước hết họ hiểu điều khách muốn. Sau đó họ xây một ý tưởng rõ ràng. Cuối cùng họ để trải nghiệm kể chuyện. Vậy lần sau khi nghĩ về công việc của mình, hãy tự hỏi khách hàng cảm thấy thế nào. Cảm ơn đã lắng nghe.'}];
 const SOURCES=[
 ['Il Giornale (Starbucks, trang lịch sử chính thức)','https://about.starbucks.com/history/il-giornale/','Vì sao Schultz rời Starbucks năm 1985 và mở Il Giornale, lấy cảm hứng từ quán cà phê ở Milan.'],
 ['About us (Starbucks at Home)','https://www.starbucksathome.com/story/about-us','Ý tưởng “third place”: nơi trò chuyện và gắn kết giữa nhà và chỗ làm.'],
 ['The Starbucks story: from beans to billions (Quartr)','https://quartr.com/insights/company-research/the-starbucks-story-from-beans-to-billions','Tóm tắt dòng thời gian từ 1971 đến nay.'],
-['Starbucks opens 100th store in Vietnam (VnExpress)','https://e.vnexpress.net/news/business/companies/starbucks-opens-100th-store-in-vietnam-4654895.html','Cửa hàng đầu tiên ở TP.HCM (tháng 2/2013) và cửa hàng thứ 100.'],
-['Starbucks crosses 100-store mark in Vietnam (VIR)','https://vir.com.vn/starbucks-crosses-100-store-mark-in-vietnam-105254.html','Cửa hàng thứ 100 ở Hà Nội năm 2023.']];
+['Starbucks in Vietnam (thêm): Starbucks opens 100th store (VnExpress)','https://e.vnexpress.net/news/business/companies/starbucks-opens-100th-store-in-vietnam-4654895.html','Cửa hàng đầu tiên ở TP.HCM (tháng 2/2013) và cửa hàng thứ 100.'],
+['Starbucks in Vietnam (thêm): 100-store mark (VIR)','https://vir.com.vn/starbucks-crosses-100-store-mark-in-vietnam-105254.html','Cửa hàng thứ 100 ở Hà Nội năm 2023.']];
 const REUSE=[
 ['Hook','Think about your favourite … Why …? Is it only …? Believe it or not, …','Mở bằng câu hỏi gần gũi rồi gây tò mò'],
 ['Introduction','Today I’ll tell you … First, … After that, … And in the end, …','Họp tuần, báo cáo, kể câu chuyện công ty'],
 ['Body','At the beginning, … But then, … Because of this, … In other words, … In the end, …','Kể quá trình phát triển một dự án hoặc sản phẩm'],
 ['Conclusion','To sum up, … First, … Then, … And finally, … So next time, …','Kết bằng bài học và một câu hỏi cho người nghe']];
+const PRON=[
+{w:'Starbucks',ipa:'ˈstɑːbʌks',tip:'Đọc liền cụm /st/ ở đầu, không thêm âm “ờ” trước s. Nhấn âm đầu: STAR-bucks. Cuối từ là /ks/.'},
+{w:'coffee',ipa:'ˈkɒfi',tip:'Nhấn âm đầu: KO-fi. Âm cuối là /i/ ngắn, không đọc “cà-phê”.'},
+{w:'café',ipa:'ˈkæfeɪ',tip:'Nhấn âm đầu: KA-fay. Âm cuối /eɪ/ nghe như “ây”, khác với “cà-phê”.'},
+{w:'comfortable',ipa:'ˈkʌmftəbl',tip:'Chỉ có 3 âm tiết: KUMF-tờ-bồl. Đừng đọc đủ 4 âm “com-for-ta-ble”.'},
+{w:'favourite',ipa:'ˈfeɪvərɪt',tip:'Chỉ có 3 âm tiết: FAY-vờ-rịt. Nhấn âm đầu.'},
+{w:'company',ipa:'ˈkʌmpəni',tip:'Nhấn âm đầu: KUM-pờ-ni. Âm /ʌ/ ngắn, gần “ơ”, không phải “ô”.'},
+{w:'brand',ipa:'brænd',tip:'Cụm /br/ ở đầu và âm cuối /d/ đều phải rõ: BRAND. Đừng bỏ âm cuối.'},
+{w:'think · third · three',ipa:'θɪŋk · θɜːd · θriː',tip:'Âm /θ/: đặt đầu lưỡi giữa hai hàm răng và thổi nhẹ. Không đọc thành “t” hay “th” tiếng Việt. “third” kết thúc bằng /d/.',say:'think. third. three.'},
+{w:'advertising',ipa:'ˈædvətaɪzɪŋ',tip:'Nhấn âm đầu: AD-vờ-tai-zing. Chữ s ở giữa đọc là /z/.'},
+{w:'experience',ipa:'ɪkˈspɪəriəns',tip:'Nhấn âm thứ hai: ik-SPEER-ri-ənz. Đọc liền cụm /ksp/.'},
+{w:'Seattle · Milan',ipa:'siˈætl · mɪˈlæn',tip:'Cả hai đều nhấn âm thứ hai: si-AT-l và mi-LAN.',say:'Seattle. Milan.'},
+{w:'Schultz',ipa:'ʃʊlts',tip:'Đọc là SHULTS: bắt đầu bằng “sh”, kết thúc bằng /lts/.'},
+{w:'beans · friends · stores',ipa:'biːnz · frendz · stɔːz',tip:'Âm cuối /z/ phải nghe rõ. Người Việt hay bỏ âm cuối này, nên “beans” nghe thành “bin”.',say:'beans. friends. stores.'},
+{w:'opened · turned · wanted · visited',ipa:'ˈəʊpənd · tɜːnd · ˈwɒntɪd · ˈvɪzɪtɪd',tip:'Đuôi -ed đọc /d/ sau âm có tiếng (opened, turned) và /ɪd/ sau t, d (wanted, visited). Đừng bỏ âm cuối.',say:'opened. turned. wanted. visited.'},
+{w:'mouth',ipa:'maʊθ',tip:'word of mouth: âm cuối /θ/, đặt lưỡi giữa hai hàm răng, không đọc “mao-t”.',say:'word of mouth'}];
+const PRONMAP={};PRON.forEach(p=>p.w.split(' · ').forEach(x=>{PRONMAP[x.toLowerCase()]=p.tip}));
 const stripM=s=>s.replace(/\[\[\w+\|([^\]]*)\]\]/g,'$1');
 const MODEL_TALK=MODEL_PARTS.map(p=>stripM(p.script).replace(/\n/g,' ')).join(' ');
 const SELFCHECK=['I can use linking phrases to move from one idea to the next.','I can retell the Starbucks story with dates and names.','I can write a 4-part paragraph with a frame.','I can give a short talk: Hook → Introduction → Body → Conclusion.'];
@@ -292,12 +313,18 @@ const KEY='sbk2:'+LESSON;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
-let S=Object.assign({name:'',look:{},pre:{},h:{},t:{},o:{},d:{},c:{},l:{},wp:{},sp:{},g:{},sawGoal:false,hl:true,audioSent:null,sent:false,time:0},load());
+let S=Object.assign({name:'',look:{},pre:{},h:{},t:{},o:{},d:{},c:{},l:{},wp:{},sp:{},voice:'',g:{},sawGoal:false,hl:true,audioSent:null,sent:false,time:0},load());
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 const STEPS=[['goal','🎯 Goals'],['pre','1. Warm-up'],['chk','2. Read & Check'],['voc','3. Words & Links'],['wri','4. Write'],['spk','5. Speak'],['sub','6. Submit']];
 const label=id=>STEPS.find(s=>s[0]===id)[1].replace(/^\d\. /,'');
 let cur='goal',pane='text';
-function say(t,rate){try{if(!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-GB';u.rate=rate||.9;speechSynthesis.speak(u)}catch(e){}}
+let VOICES=[];
+function loadVoices(){try{VOICES=(speechSynthesis.getVoices()||[]).filter(v=>/^en/i.test(v.lang))}catch(e){VOICES=[]}
+  const rk=v=>/en-GB/i.test(v.lang)?0:/en-US/i.test(v.lang)?1:2;VOICES.sort((a,b)=>rk(a)-rk(b)||a.name.localeCompare(b.name));
+  const sel=document.getElementById('voice');if(!sel)return;document.getElementById('voicebar').hidden=!VOICES.length;
+  sel.innerHTML='<option value="">Tự động</option>'+VOICES.map(v=>`<option value="${esc(v.voiceURI)}" ${S.voice===v.voiceURI?'selected':''}>${esc(v.name)} · ${esc(v.lang)}</option>`).join('')}
+function pickVoice(){return VOICES.find(v=>v.voiceURI===S.voice)||VOICES.find(v=>/en-GB/i.test(v.lang))||VOICES.find(v=>/^en/i.test(v.lang))||null}
+function say(t,rate){try{if(!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);const v=pickVoice();if(v){u.voice=v;u.lang=v.lang}else u.lang='en-GB';u.rate=rate||.9;speechSynthesis.speak(u)}catch(e){}}
 function fmtT(s){const m=Math.floor(s/60);return m?m+' phút '+(s%60)+' giây':s+' giây'}
 setInterval(()=>{if(!document.hidden&&S.name){S.time++;if(S.time%10===0)save()}},1000);
 const nLook=()=>Object.keys(S.look).length;
@@ -326,12 +353,12 @@ function showWord(el){
   document.querySelectorAll('.w.sel').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');el.classList.add('seen');
   if(!S.look[k]){S.look[k]=1;save();topbar()}
   $('#sheetin').innerHTML=`<div class="row" style="justify-content:space-between"><div><span class="big">${esc(raw)}</span> <span class="muted">/${esc(d?d[0]:'?')}/</span></div><button id="sc" style="padding:2px 10px" aria-label="Close">✕</button></div>
-  <div style="font-size:1.1rem"><b>${esc(d?d[1]:'—')}</b></div><div class="row" style="margin-top:6px"><button id="sw">🔊 Listen</button><button id="sws">🐢 Slowly</button></div>`;
+  <div style="font-size:1.1rem"><b>${esc(d?d[1]:'—')}</b></div>${PRONMAP[k]?`<div class="pt">⚠️ ${esc(PRONMAP[k])}</div>`:''}<div class="row" style="margin-top:6px"><button id="sw">🔊 Listen</button><button id="sws">🐢 Slowly</button></div>`;
   $('#sheet').hidden=false;$('#sc').onclick=closeSheet;$('#sw').onclick=()=>say(raw,.9);$('#sws').onclick=()=>say(raw,.55);say(raw,.9);
 }
 document.addEventListener('click',e=>{if(!e.target.closest('.w')&&!e.target.closest('#sheet'))closeSheet()});
 function wrapWords(t){return esc(t).replace(/(\d[\d,.]*\w*)|([\p{L}][\p{L}'’]*)/gu,(m,n,w)=>n?m:`<span class="w ${S.look[w.toLowerCase().replace(/’/g,"'")]?'seen':''}" data-w="${w}" role="button" tabindex="0">${w}</span>`)}
-function renderMarked(p){let out='',last=0;p.replace(/\[\[(\w+)\|([^\]]*)\]\]/g,(m,c,t,i)=>{out+=wrapWords(p.slice(last,i))+`<mark class="lk lk-${c}" title="${LK_NAME[c]}">${wrapWords(t)}</mark>`;last=i+m.length;return m});return out+wrapWords(p.slice(last))}
+function renderMarked(p){let out='',last=0;p.replace(/\[\[(\w+)\|([^\]]*)\]\]/g,(m,c,t,i)=>{out+=wrapWords(p.slice(last,i))+`<mark class="lk lk-${c}" title="${LK_NAME[c]||LK_TYPES[c]||''}">${wrapWords(t)}</mark>`;last=i+m.length;return m});return out+wrapWords(p.slice(last))}
 function chipsRow(arr,onClick){return arr.map((c,i)=>`<button class="phr" data-i="${i}">${esc(c)}</button>`).join('')}
 
 /* ---- Goals ---- */
@@ -424,6 +451,7 @@ let R={mr:null,rc:null,stream:null,chunks:[],blob:null,url:null,t0:0,dur:0,tr:''
 function blobB64(b){return new Promise((res,rej)=>{const f=new FileReader();f.onload=()=>res(String(f.result).split(',')[1]);f.onerror=rej;f.readAsDataURL(b)})}
 
 /* ---- 5 Speak ---- */
+const renderTalk=s=>s.split("\n").map(renderMarked).join("<br><br>");
 const markLinks=s=>esc(s).replace(/\[\[(\w+)\|([^\]]*)\]\]/g,'<mark class="lk lk-$1" title="Linking word">$2</mark>').replace(/\n/g,'<br><br>');
 function rSpk(){
   const slides=MODEL_PARTS.map((p,i)=>{
@@ -431,7 +459,7 @@ function rSpk(){
     const seen=new Set(),uniq=links.filter(l=>{const k=l[1].toLowerCase();if(seen.has(k))return false;seen.add(k);return true});
     return `<div class="slide"><div class="sh"><span class="sn">${i+1}</span><b>${p.h}</b><span class="tag">${p.t}</span></div>
     <div class="coreline">💡 ${p.core}</div>
-    <div class="script">${markLinks(p.script)}</div>
+    <div class="script">${renderTalk(p.script)}</div>
     <div class="sn2"><b>Vì sao viết vậy:</b> ${p.why}</div><div class="sn2"><b>Mẹo nói:</b> ${p.tip}</div>
     <div class="lkl"><b>Linking words:</b> ${uniq.map(l=>`<span class="lkx lk-${l[0]}">${esc(l[1])}</span>`).join(' ')}</div>
     <div class="row"><button data-lp="${i}">🔊 Listen</button><button data-ls="${i}">🐢 Slowly</button><button data-vi="${i}">🇻🇳 Tóm tắt</button></div><div class="viz" id="vz${i}" hidden>${esc(p.vi)}</div></div>`}).join('');
@@ -440,7 +468,9 @@ function rSpk(){
   <div class="flow">${CONTEXT.flow.map((f,i)=>`<span><b>${i+1}</b> ${f}</span>`).join('')}</div>
   <div class="talkmap">${SFRAME.parts.map((p,i)=>`<span>${p.h.slice(4)}</span>${i<3?'<i>→</i>':''}`).join('')}</div>
   <div class="coregrid">${CORE.map(c=>`<div class="corebox"><div class="ci">${c[0]}</div><b>${c[1]}</b><div class="muted">${c[2]}</div></div>`).join('')}</div></div>
-  <div class="card"><h2>A · Listen to the model talk</h2><p class="muted">Bài chia sẻ mẫu khoảng 2 phút, từ vựng A2–B1. Các từ nối được tô màu. Nghe từng phần và chú ý cách chúng dẫn người nghe đi từ ý này sang ý khác.</p>
+  <div class="card"><h2>⚠️ Từ người Việt hay đọc sai</h2><p class="muted">Nghe trước, rồi đọc lại từng từ. Trong bài nói bên dưới, khi em chạm vào những từ này, lưu ý cũng hiện ra.</p>
+  <div class="pron">${PRON.map((p,i)=>`<div class="pr"><div><b>${esc(p.w)}</b> <span class="muted">/${esc(p.ipa)}/</span></div><div class="sn2">${esc(p.tip)}</div><div class="row"><button data-pr="${i}">🔊</button><button data-prs="${i}">🐢</button></div></div>`).join('')}</div></div>
+  <div class="card"><h2>A · Listen to the model talk</h2><p class="muted">Bài chia sẻ mẫu khoảng 2 phút, từ vựng A2–B1. Các từ nối được tô màu. Nghe từng phần và chú ý cách chúng dẫn người nghe đi từ ý này sang ý khác. <b>Chạm vào bất kỳ từ nào em chưa hiểu hoặc chưa biết đọc</b> để nghe, xem phiên âm và nghĩa tiếng Việt.</p>
   <div class="legend">${Object.entries(LK_TYPES).map(([k,v])=>`<span class="lkx lk-${k}">${v}</span>`).join('')}</div>
   <div class="row" style="margin-bottom:8px"><button class="pri" id="pm">🔊 Listen to the whole talk</button><button id="pm2">🐢 Slowly</button></div>${slides}</div>
   <div class="card"><h2>Want to learn more?</h2><p class="muted">Nguồn thông tin về câu chuyện Starbucks. Các nguồn có thể khác nhau ở vài chi tiết (ví dụ số quán cà phê ở Milan, hoặc việc năm 1987 Schultz “gia nhập” hay “mua lại” Starbucks), nên hãy đọc thêm để tự kiểm chứng.</p>
@@ -452,6 +482,9 @@ function rSpk(){
   document.querySelectorAll('[data-lp]').forEach(b=>b.onclick=()=>say(stripM(MODEL_PARTS[+b.dataset.lp].script).replace(/\n/g,' '),.85));
   document.querySelectorAll('[data-ls]').forEach(b=>b.onclick=()=>say(stripM(MODEL_PARTS[+b.dataset.ls].script).replace(/\n/g,' '),.6));
   document.querySelectorAll('[data-vi]').forEach(b=>b.onclick=()=>{const e=$('#vz'+b.dataset.vi);e.hidden=!e.hidden});
+  document.querySelectorAll('#main .w').forEach(w=>{w.onclick=()=>showWord(w);w.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showWord(w)}}});
+  document.querySelectorAll('[data-pr]').forEach(b=>b.onclick=()=>{const p=PRON[+b.dataset.pr];say(p.say||p.w,.85)});
+  document.querySelectorAll('[data-prs]').forEach(b=>b.onclick=()=>{const p=PRON[+b.dataset.prs];say(p.say||p.w,.5)});
   $('#pm').onclick=()=>say(MODEL_TALK,.85);$('#pm2').onclick=()=>say(MODEL_TALK,.6);
   $('#rb').onclick=startRec;$('#rs').onclick=stopRec;bindNav('wri','sub');
   if(R.blob)showRec();else if(S.audioSent)$('#rp').innerHTML='<div class="fb">Em đã nộp một bản ghi âm trước đó. Ghi lại nếu muốn thay bằng bản mới.</div>';
@@ -547,6 +580,7 @@ $('#nm').onkeydown=e=>{if(e.key==='Enter')$('#go').click()};
 $('#rename').onclick=()=>{S.name='';save();$('#app').hidden=true;$('#gate').hidden=false;$('#nm').value='';$('#nm').focus()};
 if(S.name)showApp();else $('#gate').hidden=false;
 
+try{loadVoices();speechSynthesis.onvoiceschanged=loadVoices;document.getElementById('voice').onchange=function(){S.voice=this.value;save();say('Hello, this is my voice.',.9)};document.getElementById('vtest').onclick=()=>say('Hello, I am your reading voice.',.9)}catch(e){}
 </script>
 </body>
 </html>
